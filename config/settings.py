@@ -12,7 +12,7 @@ INSTALLED_APPS = [
     'daphne', 'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes',
     'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles',
     'django_otp', 'django_otp.plugins.otp_totp', 'django_otp.plugins.otp_static',
-    'channels', 'store.apps.StoreConfig',
+    'channels', 'storages', 'store.apps.StoreConfig',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -40,6 +40,21 @@ PASSWORD_HASHERS = ['django.contrib.auth.hashers.Argon2PasswordHasher','django.c
 LANGUAGE_CODE='pt-br'; TIME_ZONE='America/Sao_Paulo'; USE_I18N=True; USE_TZ=True
 STATIC_URL='static/'; STATIC_ROOT=BASE_DIR/'staticfiles'; STATICFILES_DIRS=[BASE_DIR/'static'] if (BASE_DIR/'static').exists() else []
 MEDIA_URL='/media/'; MEDIA_ROOT=BASE_DIR/'media'
+R2_ACCOUNT_ID=os.environ.get('R2_ACCOUNT_ID'); R2_BUCKET_NAME=os.environ.get('R2_BUCKET_NAME')
+if R2_ACCOUNT_ID and R2_BUCKET_NAME and os.environ.get('R2_ACCESS_KEY_ID') and os.environ.get('R2_SECRET_ACCESS_KEY'):
+    STORAGES={
+        'default':{'BACKEND':'storages.backends.s3.S3Storage','OPTIONS':{
+            'bucket_name':R2_BUCKET_NAME,
+            'access_key':os.environ['R2_ACCESS_KEY_ID'],
+            'secret_key':os.environ['R2_SECRET_ACCESS_KEY'],
+            'endpoint_url':f'https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com',
+            'region_name':'auto',
+            'custom_domain':os.environ.get('R2_PUBLIC_DOMAIN') or None,
+            'default_acl':None,
+            'querystring_auth':False,
+        }},
+        'staticfiles':{'BACKEND':'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+    }
 DEFAULT_AUTO_FIELD='django.db.models.BigAutoField'
 LOGIN_URL='login'; LOGIN_REDIRECT_URL='account'; LOGOUT_REDIRECT_URL='home'
 SESSION_COOKIE_HTTPONLY=True; SESSION_COOKIE_SAMESITE='Lax'; SESSION_COOKIE_AGE=43200; SESSION_SAVE_EVERY_REQUEST=True
