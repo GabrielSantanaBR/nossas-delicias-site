@@ -9,16 +9,30 @@
   box-shadow:0 12px 34px rgba(42,23,18,.12)!important;
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px);
+  transition:min-height .2s ease,padding .2s ease,box-shadow .2s ease,background .2s ease;
 }
 .header .brand{display:flex!important;align-items:center!important;min-width:0}
-.header .brand img{display:block!important;visibility:visible!important;opacity:1!important}
+.header .brand img{display:block!important;visibility:visible!important;opacity:1!important;transition:width .2s ease,max-height .2s ease}
 .header-actions{display:flex!important;align-items:center!important;flex:0 0 auto!important}
 .cart-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important}
 
+.header.is-scrolled{
+  min-height:82px!important;
+  background:rgba(255,250,244,.985)!important;
+  box-shadow:0 14px 40px rgba(42,23,18,.16)!important;
+}
+.header.is-scrolled .brand img{
+  width:clamp(205px,15vw,245px)!important;
+  max-height:66px!important;
+}
+
 @media(max-width:900px){
   .header{top:8px!important;margin-top:8px!important}
+  .header.is-scrolled{min-height:74px!important}
 }
 
 @media(max-width:620px){
   .header{top:6px!important;margin-top:6px!important}
+  .header.is-scrolled{min-height:68px!important}
+  .header.is-scrolled .brand img{width:150px!important;max-height:52px!important}
 }
