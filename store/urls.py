@@ -6,6 +6,7 @@ urlpatterns=[
     path('cardapio/',views.catalog,name='catalog'),
     path('cadastro/',views.register,name='register'),
     path('minha-conta/',views.account,name='account'),
+    path('entrega/disponibilidade/',views.delivery_availability,name='delivery_availability'),
     path('pedidos/criar/',views.create_order,name='create_order'),
     path('pedidos/<uuid:public_id>/',views.order_detail,name='order_detail'),
     path('pedidos/<uuid:public_id>/pagar/',views.start_payment,name='start_payment'),
