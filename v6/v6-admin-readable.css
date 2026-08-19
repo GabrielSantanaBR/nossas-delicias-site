@@ -1,0 +1,72 @@
+/* Nossas Delícias v6 — readability upgrade */
+@media (min-width:1051px){
+  .nd-admin-workspace{grid-template-columns:285px 1fr!important}
+  .nd-admin-side{padding:24px 16px}
+  .nd-admin-brand{gap:12px;padding:4px 9px 22px}
+  .nd-admin-brand img{width:46px;height:46px}
+  .nd-admin-brand b{font-size:18px}
+  .nd-admin-brand span{font-size:9px;line-height:1.4;margin-top:2px}
+  .nd-admin-side nav{gap:5px;padding-top:18px}
+  .nd-admin-side nav button{grid-template-columns:26px 1fr auto;min-height:46px;padding:12px 14px;border-radius:12px;font-size:12px;line-height:1.2}
+  .nd-admin-side nav button>span{font-size:12px}
+  .nd-admin-side nav i{font-size:9px;padding:3px 7px}
+  .nd-admin-security{padding:15px;border-radius:13px}
+  .nd-admin-security b{font-size:10px}
+  .nd-admin-security span{font-size:9px;line-height:1.55;margin-top:5px}
+}
+.nd-admin-top{min-height:82px;padding:14px 24px}
+.nd-admin-top small{font-size:9px}
+.nd-admin-top h1{font-size:30px}
+.nd-admin-top button{padding:10px 14px;font-size:10px}
+.nd-admin-content{padding:24px}
+.nd-kpis{gap:12px;margin-bottom:14px}
+.nd-kpis article{padding:18px;border-radius:16px}
+.nd-kpis span{font-size:9px}
+.nd-kpis b{font-size:27px}
+.nd-kpis small{font-size:9px}
+.nd-panel{padding:18px;border-radius:16px}
+.nd-panel h3{font-size:20px}
+.nd-panel>p{font-size:10px;line-height:1.5}
+.nd-admin-heading h2{font-size:30px}
+.nd-admin-heading p{font-size:10px}
+.nd-admin-heading input{font-size:10px;padding:10px}
+.nd-admin-heading button,.nd-panel button{font-size:10px;padding:9px 12px}
+.nd-table th,.nd-table td{padding:11px 10px;font-size:10px;line-height:1.35}
+.nd-table th{font-size:8px}
+.nd-table img{width:46px;height:46px}
+.nd-table button{font-size:9px;padding:7px 9px}
+.nd-tag{font-size:8px;padding:5px 8px}
+.nd-list-row{padding:11px 0}
+.nd-list-row b{font-size:10px}
+.nd-list-row small{font-size:9px}
+.nd-order-card{padding:13px;border-radius:12px}
+.nd-order-card b,.nd-order-card strong{font-size:10px}
+.nd-order-card p{font-size:9px}
+.nd-order-card button{font-size:9px;padding:6px 9px}
+.nd-kanban header b{font-size:10px}
+.nd-kanban header span{font-size:9px}
+.nd-business-card{padding:16px}
+.nd-business-card h3{font-size:19px}
+.nd-business-card p{font-size:9px}
+.nd-business-card button{font-size:9px;padding:6px 9px}
+.nd-inbox aside b{font-size:10px}
+.nd-inbox aside span{font-size:9px}
+.nd-inbox aside small{font-size:8px}
+.nd-inbox>section>header b{font-size:11px}
+.nd-inbox>section>header span{font-size:9px}
+.nd-toggle b,.nd-security-row b,.nd-audit b{font-size:10px}
+.nd-toggle small,.nd-security-row span,.nd-audit span{font-size:9px}
+.nd-audit time{font-size:8px}
+@media(max-width:1050px) and (min-width:681px){
+  .nd-admin-workspace{grid-template-columns:82px 1fr!important}
+  .nd-admin-side nav button{min-height:48px;font-size:16px}
+}
+@media(max-width:680px){
+  .nd-admin-side{width:260px}
+  .nd-admin-side nav button{min-height:44px;padding:11px 12px;font-size:11px}
+  .nd-admin-side nav button>span{font-size:11px}
+  .nd-admin-brand b{font-size:17px}
+  .nd-admin-brand span{font-size:8px}
+  .nd-admin-content{padding:14px}
+  .nd-table th,.nd-table td{font-size:9px;padding:9px 8px}
+}
