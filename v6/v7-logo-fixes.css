@@ -1,0 +1,7 @@
+/* Cropped brand asset sizing */
+.brand img{width:clamp(250px,20vw,320px)!important;height:auto!important;max-height:none!important;object-fit:contain!important}
+footer img{width:240px!important;height:auto!important;max-height:none!important;object-fit:contain!important}
+.nd-admin-brand img{width:210px!important;height:auto!important;max-height:78px!important;object-fit:contain!important;background:#fff8f0;padding:8px 10px}
+@media(max-width:1250px){.brand img{width:235px!important}.nd-admin-brand img{width:185px!important}}
+@media(max-width:900px){.brand img{width:200px!important}.nd-admin-brand img{width:205px!important}}
+@media(max-width:620px){.brand img{width:175px!important}footer img{width:205px!important}.nd-admin-brand img{width:190px!important}}
