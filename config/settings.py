@@ -5,8 +5,11 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-only-change-me')
 DEBUG = os.environ.get('DEBUG', '0') == '1'
-ALLOWED_HOSTS = [h for h in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if h]
-CSRF_TRUSTED_ORIGINS = [u for u in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if u]
+render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME', '')
+allowed_default = f'localhost,127.0.0.1,{render_host}' if render_host else 'localhost,127.0.0.1'
+ALLOWED_HOSTS = [h for h in os.environ.get('ALLOWED_HOSTS', allowed_default).split(',') if h]
+csrf_default = f'https://{render_host}' if render_host else ''
+CSRF_TRUSTED_ORIGINS = [u for u in os.environ.get('CSRF_TRUSTED_ORIGINS', csrf_default).split(',') if u]
 
 INSTALLED_APPS = [
     'daphne', 'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes',
