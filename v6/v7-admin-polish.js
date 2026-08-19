@@ -1,10 +1,4 @@
 (()=>{
-  const cropped='logo-nossas-delicias-horizontal.svg?v=8';
-  document.querySelectorAll('.brand img, footer img').forEach(img=>{
-    img.src=cropped;
-    img.alt='Nossas Delícias';
-  });
-
   const publicHeader=document.querySelector('.header');
   const syncHeader=()=>{
     if(!publicHeader) return;
@@ -20,7 +14,7 @@
       requestAnimationFrame(()=>{
         const brand=document.querySelector('.nd-admin-brand img');
         if(brand){
-          brand.src=cropped;
+          brand.src='logo-nossas-delicias.svg?v=9';
           brand.alt='Nossas Delícias';
         }
         const content=document.querySelector('.nd-admin-content');
