@@ -1,17 +1,16 @@
 import json
-from decimal import Decimal
-from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django_ratelimit.decorators import ratelimit
 from .forms import RegisterForm
 from .models import Category, Conversation, CustomerProfile, Order, Payment, Product
+from .payment_gateway import create_checkout_preference, fetch_payment, validate_webhook
 from .services import eligible_promotions, price_for, region_for_zip
 
 
@@ -56,12 +55,16 @@ def order_detail(request,public_id):
 @ratelimit(key='user',rate='20/m',method='POST',block=True)
 def create_order(request):
     data=request.POST
-    try: product=get_object_or_404(Product,id=int(data.get('product_id')),active=True); quantity=max(product.min_quantity,int(data.get('quantity','1')))
-    except (TypeError,ValueError): return JsonResponse({'error':'Produto ou quantidade inválidos.'},status=400)
-    profile,_=CustomerProfile.objects.get_or_create(user=request.user); order_type=profile.customer_type if profile.customer_type in {'retail','cafe','event'} else 'retail'
+    try:
+        product=get_object_or_404(Product,id=int(data.get('product_id')),active=True)
+        quantity=max(product.min_quantity,int(data.get('quantity','1')))
+    except (TypeError,ValueError):
+        return JsonResponse({'error':'Produto ou quantidade inválidos.'},status=400)
+    profile,_=CustomerProfile.objects.get_or_create(user=request.user)
+    order_type=profile.customer_type if profile.customer_type in {'retail','cafe','event'} else 'retail'
     unit_price=price_for(request.user,product,quantity,order_type)
     if unit_price is None: return JsonResponse({'error':'Preço indisponível para este produto.'},status=409)
-    zip_code=data.get('zip_code',''); region=region_for_zip(zip_code)
+    region=region_for_zip(data.get('zip_code',''))
     if not region: return JsonResponse({'error':'Ainda não entregamos neste CEP. Consulte retirada ou atendimento.'},status=422)
     subtotal=unit_price*quantity
     if subtotal < region.minimum_order: return JsonResponse({'error':f'Pedido mínimo para {region.name}: R$ {region.minimum_order:.2f}'},status=422)
@@ -72,14 +75,49 @@ def create_order(request):
     return JsonResponse({'order_id':str(order.public_id),'redirect':f'/pedidos/{order.public_id}/'})
 
 
+@login_required
+@require_POST
+@ratelimit(key='user',rate='10/m',method='POST',block=True)
+def start_payment(request,public_id):
+    order=get_object_or_404(Order.objects.prefetch_related('items__product'),public_id=public_id,customer=request.user,status='pending_payment')
+    try: preference=create_checkout_preference(request,order)
+    except RuntimeError as exc: return JsonResponse({'error':str(exc)},status=503)
+    Payment.objects.get_or_create(order=order,provider='mercado_pago',provider_id=str(preference.get('id','')),defaults={'status':'pending','amount':order.total,'method':'checkout_pro','raw_reference':{'preference_id':str(preference.get('id',''))[:160]}})
+    url=preference.get('init_point')
+    if not url: return JsonResponse({'error':'Checkout indisponível.'},status=503)
+    return JsonResponse({'checkout_url':url})
+
+
+@login_required
+def payment_return(request):
+    reference=request.GET.get('external_reference')
+    if reference:
+        order=Order.objects.filter(public_id=reference,customer=request.user).first()
+        if order: return redirect('order_detail',public_id=order.public_id)
+    return redirect('account')
+
+
 @csrf_exempt
 @require_POST
+@ratelimit(key='ip',rate='120/m',method='POST',block=True)
 def mercado_pago_webhook(request):
-    # Signature verification is delegated to the official SDK adapter before production activation.
+    if not validate_webhook(request): return HttpResponse(status=401)
     try: payload=json.loads(request.body.decode('utf-8') or '{}')
     except json.JSONDecodeError: return HttpResponse(status=400)
     provider_id=str((payload.get('data') or {}).get('id') or request.GET.get('data.id') or '')[:160]
     if not provider_id: return HttpResponse(status=400)
-    # Webhook is acknowledged but no order state is trusted from body alone. A server-to-server
-    # authenticated fetch must confirm payment status before mutating Payment/Order.
+    try: remote=fetch_payment(provider_id)
+    except RuntimeError: return HttpResponse(status=503)
+    reference=remote.get('external_reference')
+    order=Order.objects.filter(public_id=reference).first()
+    if not order: return HttpResponse(status=200)
+    mapped={'approved':'approved','pending':'pending','in_process':'pending','rejected':'rejected','refunded':'refunded','cancelled':'cancelled'}.get(remote.get('status'),'pending')
+    with transaction.atomic():
+        payment,_=Payment.objects.get_or_create(order=order,provider='mercado_pago',provider_id=provider_id,defaults={'amount':order.total})
+        payment.status=mapped; payment.method=str(remote.get('payment_type_id') or remote.get('payment_method_id') or '')[:30]
+        payment.raw_reference={'payment_id':provider_id,'status':str(remote.get('status',''))[:40]}
+        if mapped=='approved': payment.paid_at=timezone.now()
+        payment.save()
+        if mapped=='approved' and order.status=='pending_payment':
+            order.status='paid'; order.save(update_fields=['status','updated_at']); order.status_history.create(status='paid',note='Pagamento confirmado pelo provedor.')
     return HttpResponse(status=200)
