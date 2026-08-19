@@ -1,4 +1,5 @@
 import json
+from datetime import date
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -6,12 +7,12 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from django_ratelimit.decorators import ratelimit
 from .forms import RegisterForm
 from .models import Category, Conversation, CustomerProfile, Order, Payment, Product
 from .payment_gateway import create_checkout_preference, fetch_payment, validate_webhook
-from .services import eligible_promotions, price_for, region_for_zip
+from .services import available_dates, can_schedule, eligible_promotions, price_for, region_for_zip
 
 
 def home(request):
@@ -51,6 +52,18 @@ def order_detail(request,public_id):
 
 
 @login_required
+@require_GET
+@ratelimit(key='user',rate='60/m',method='GET',block=True)
+def delivery_availability(request):
+    region=region_for_zip(request.GET.get('cep',''))
+    if not region: return JsonResponse({'available':False,'error':'Região ainda não atendida.'},status=404)
+    try: lead=max(1,min(int(request.GET.get('antecedencia','1')),60))
+    except ValueError: lead=1
+    dates=available_dates(region,lead_days=lead)
+    return JsonResponse({'available':bool(dates),'region':region.name,'fee':float(region.delivery_fee),'minimum_order':float(region.minimum_order),'dates':[{'date':d['date'].isoformat(),'remaining':d['remaining'],'start':d['start_time'].strftime('%H:%M'),'end':d['end_time'].strftime('%H:%M')} for d in dates]})
+
+
+@login_required
 @require_POST
 @ratelimit(key='user',rate='20/m',method='POST',block=True)
 def create_order(request):
@@ -58,18 +71,20 @@ def create_order(request):
     try:
         product=get_object_or_404(Product,id=int(data.get('product_id')),active=True)
         quantity=max(product.min_quantity,int(data.get('quantity','1')))
+        delivery_date=date.fromisoformat(data.get('delivery_date',''))
     except (TypeError,ValueError):
-        return JsonResponse({'error':'Produto ou quantidade inválidos.'},status=400)
+        return JsonResponse({'error':'Produto, quantidade ou data inválidos.'},status=400)
     profile,_=CustomerProfile.objects.get_or_create(user=request.user)
     order_type=profile.customer_type if profile.customer_type in {'retail','cafe','event'} else 'retail'
     unit_price=price_for(request.user,product,quantity,order_type)
     if unit_price is None: return JsonResponse({'error':'Preço indisponível para este produto.'},status=409)
     region=region_for_zip(data.get('zip_code',''))
     if not region: return JsonResponse({'error':'Ainda não entregamos neste CEP. Consulte retirada ou atendimento.'},status=422)
+    if not can_schedule(region,delivery_date,product.lead_time_days): return JsonResponse({'error':'Esta data não está mais disponível para sua região ou produto.'},status=409)
     subtotal=unit_price*quantity
     if subtotal < region.minimum_order: return JsonResponse({'error':f'Pedido mínimo para {region.name}: R$ {region.minimum_order:.2f}'},status=422)
     with transaction.atomic():
-        order=Order.objects.create(customer=request.user,order_type=order_type,status='pending_payment',delivery_region=region,delivery_address=data.get('address','')[:1000],delivery_fee=region.delivery_fee,subtotal=subtotal,total=subtotal+region.delivery_fee,customer_note=data.get('note','')[:1000])
+        order=Order.objects.create(customer=request.user,order_type=order_type,status='pending_payment',delivery_date=delivery_date,delivery_region=region,delivery_address=data.get('address','')[:1000],delivery_fee=region.delivery_fee,subtotal=subtotal,total=subtotal+region.delivery_fee,customer_note=data.get('note','')[:1000])
         order.items.create(product=product,quantity=quantity,unit_price=unit_price,note=data.get('item_note','')[:250])
         Conversation.objects.create(order=order,customer=request.user)
     return JsonResponse({'order_id':str(order.public_id),'redirect':f'/pedidos/{order.public_id}/'})
