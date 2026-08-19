@@ -1,9 +1,17 @@
 (()=>{
-  const cropped='logo-nossas-delicias-horizontal.svg?v=7';
+  const cropped='logo-nossas-delicias-horizontal.svg?v=8';
   document.querySelectorAll('.brand img, footer img').forEach(img=>{
     img.src=cropped;
     img.alt='Nossas Delícias';
   });
+
+  const publicHeader=document.querySelector('.header');
+  const syncHeader=()=>{
+    if(!publicHeader) return;
+    publicHeader.classList.toggle('is-scrolled',window.scrollY>70);
+  };
+  syncHeader();
+  window.addEventListener('scroll',syncHeader,{passive:true});
 
   const oldOpen=ND.openAdmin;
   if(oldOpen){
