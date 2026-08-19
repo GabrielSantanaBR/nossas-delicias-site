@@ -1,0 +1,212 @@
+/* Nossas Delícias — v7 visual/layout overhaul */
+
+/* PUBLIC BRAND / HEADER */
+.header{min-height:104px;padding:0 28px;gap:26px}
+.brand{min-width:0}
+.brand img{width:clamp(230px,18vw,290px);max-height:84px;object-fit:contain}
+.header nav{gap:20px;font-size:12px}
+.header-actions{flex:0 0 auto}
+footer img{width:220px;max-height:88px;object-fit:contain}
+
+/* ADMIN SHELL */
+.nd-admin-workspace{grid-template-columns:288px minmax(0,1fr)!important;background:#f0ebe6!important}
+.nd-admin-side{padding:24px 18px 18px;gap:0}
+.nd-admin-brand{display:grid;grid-template-columns:1fr;gap:10px;padding:0 4px 22px;margin-bottom:6px}
+.nd-admin-brand img{width:178px;height:64px;object-fit:contain;background:#fff8f0;border-radius:14px;padding:8px 10px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.nd-admin-brand div{display:grid!important;gap:2px}
+.nd-admin-brand b{font-size:18px;line-height:1.15}
+.nd-admin-brand span{font-size:10px;letter-spacing:.08em}
+.nd-admin-side nav{gap:6px;padding-top:10px}
+.nd-admin-side nav button{min-height:46px;border-radius:12px;padding:11px 13px;grid-template-columns:24px minmax(0,1fr) auto;gap:8px;font-size:13px;line-height:1.2}
+.nd-admin-side nav button>span{display:block!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nd-admin-side nav button>i{font-size:10px;padding:3px 7px;position:static!important;margin:0!important}
+.nd-admin-security{display:grid!important;padding:14px 15px;border-radius:13px;margin-top:18px}
+.nd-admin-security b{font-size:11px}
+.nd-admin-security span{font-size:10px;line-height:1.5}
+
+.nd-admin-main{min-width:0;overflow:hidden}
+.nd-admin-top{min-height:84px;padding:14px 26px;gap:18px;flex-wrap:wrap}
+.nd-admin-top>div{gap:12px;min-width:0}
+.nd-admin-top small{font-size:10px}
+.nd-admin-top h1{font-size:30px;line-height:1.05}
+.nd-admin-top button{min-height:38px;padding:9px 14px;font-size:11px}
+.nd-admin-content{padding:26px;overflow:auto;min-width:0}
+
+/* ADMIN TYPOGRAPHY + CONTROLS */
+.nd-admin-workspace input,.nd-admin-workspace select,.nd-admin-workspace textarea,.nd-admin-dialog input,.nd-admin-dialog select,.nd-admin-dialog textarea{font-size:12px!important;min-height:42px!important;padding:10px 12px!important;border-radius:10px!important;border:1px solid var(--line)!important;background:#fff!important;max-width:100%}
+.nd-admin-workspace textarea,.nd-admin-dialog textarea{min-height:100px!important;resize:vertical}
+.nd-admin-workspace label,.nd-admin-dialog label{font-size:11px!important;line-height:1.35;display:grid;gap:6px;margin-bottom:10px}
+.nd-admin-heading{gap:18px;margin-bottom:18px;flex-wrap:wrap}
+.nd-admin-heading h2{font-size:32px;line-height:1.08}
+.nd-admin-heading p{font-size:12px;line-height:1.55;margin-top:4px}
+.nd-admin-heading input{width:min(320px,100%);font-size:12px}
+.nd-admin-heading button,.nd-panel button{min-height:36px;padding:8px 13px;font-size:11px}
+
+/* DASHBOARD */
+.nd-kpis{grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:16px}
+.nd-kpis article{padding:19px 20px;border-radius:16px;min-height:120px}
+.nd-kpis span{font-size:10px;line-height:1.3}
+.nd-kpis b{font-size:30px;line-height:1.05;margin-top:9px}
+.nd-kpis small{font-size:10px;line-height:1.45;margin-top:7px;display:block}
+.nd-admin-grid{grid-template-columns:minmax(0,1.45fr) minmax(310px,.55fr);gap:14px}
+.nd-admin-grid-bottom{margin-top:14px}
+.nd-panel{padding:20px;border-radius:16px;min-width:0}
+.nd-panel h3{font-size:21px;line-height:1.15;margin-bottom:6px}
+.nd-panel>p{font-size:11px;line-height:1.55;margin-bottom:14px}
+.nd-bars{height:240px;gap:10px;padding-top:18px}
+.nd-bars span{font-size:9px;bottom:-22px}
+.nd-activity{grid-template-columns:9px minmax(0,1fr) auto;gap:10px;padding:11px 0}
+.nd-activity i{width:9px;height:9px;margin-top:4px}
+.nd-activity b{font-size:11px}
+.nd-activity p{font-size:10px;line-height:1.4}
+.nd-activity time{font-size:9px;white-space:nowrap}
+.nd-stat-list{gap:10px}
+.nd-stat-list>div{padding:15px;border-radius:12px}
+.nd-stat-list b{font-size:25px}
+.nd-stat-list span{font-size:10px}
+.nd-rank{grid-template-columns:34px minmax(0,1fr) auto;gap:10px;padding:11px 0}
+.nd-rank>span{width:34px;height:34px;font-size:10px}
+.nd-rank b{font-size:11px}
+.nd-rank small{font-size:10px;line-height:1.35;margin-top:2px}
+.nd-rank strong{font-size:11px;white-space:nowrap}
+
+/* ORDERS / KANBAN */
+.nd-kanban{grid-template-columns:repeat(5,minmax(270px,1fr));gap:12px;padding-bottom:12px;scrollbar-gutter:stable}
+.nd-kanban>section{min-height:500px;padding:11px;border-radius:15px}
+.nd-kanban>section>header{padding:6px 4px 12px}
+.nd-kanban header b{font-size:11px;letter-spacing:.03em}
+.nd-kanban header span{font-size:10px;padding:4px 8px}
+.nd-order-card{padding:14px;border-radius:13px;margin-bottom:10px;box-shadow:0 3px 12px rgba(36,20,15,.04)}
+.nd-order-card b,.nd-order-card strong{font-size:11px}
+.nd-order-card p{font-size:10px;line-height:1.55;margin:9px 0}
+.nd-order-card footer{gap:6px!important;flex-wrap:wrap}
+.nd-order-card button{min-height:30px;padding:6px 9px;font-size:9px}
+
+/* CALENDAR */
+.nd-calendar{grid-template-columns:repeat(7,minmax(125px,1fr));gap:9px;overflow-x:auto;padding-bottom:5px}
+.nd-calendar article{min-height:150px;padding:12px;border-radius:13px}
+.nd-calendar header{font-size:10px}
+.nd-calendar header b{font-size:18px}
+.nd-cap{height:7px;margin:18px 0 7px}
+.nd-calendar small,.nd-calendar p{font-size:9px;line-height:1.45}
+.nd-calendar p{margin-top:15px}
+
+/* CATALOG / TABLES / FORMS */
+.nd-two{grid-template-columns:minmax(280px,.72fr) minmax(0,1.7fr);gap:14px;align-items:start}
+.nd-list-row{grid-template-columns:minmax(0,1fr) auto auto;gap:10px;padding:12px 0}
+.nd-list-row b{font-size:11px}
+.nd-list-row small{font-size:10px}
+.nd-list-row button{font-size:12px}
+.nd-table-wrap{overflow:auto;border-radius:12px}
+.nd-table{min-width:920px}
+.nd-table th,.nd-table td{padding:12px 10px;font-size:11px;vertical-align:middle}
+.nd-table th{font-size:9px;letter-spacing:.04em;white-space:nowrap}
+.nd-table td>div{gap:10px}
+.nd-table img{width:50px;height:50px;border-radius:10px;flex:0 0 auto}
+.nd-table button{min-height:32px;font-size:10px;padding:6px 9px}
+.nd-tag{padding:5px 8px;font-size:9px;line-height:1.2}
+.nd-panel form{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
+.nd-panel form input{flex:1 1 170px}
+.nd-panel form button{flex:0 0 auto}
+
+/* BUSINESS / LOGISTICS / EVENTS / PROMOS */
+.nd-card-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.nd-business-card{padding:18px;border-radius:15px;min-width:0}
+.nd-business-card header{align-items:flex-start;gap:10px}
+.nd-business-card h3{font-size:20px;line-height:1.15;overflow-wrap:anywhere}
+.nd-business-card header>b{font-size:13px;white-space:nowrap}
+.nd-business-card p{font-size:11px;line-height:1.6;margin:12px 0}
+.nd-business-card footer{gap:7px!important}
+.nd-business-card button{min-height:32px;padding:6px 10px;font-size:9px}
+
+/* INBOX */
+.nd-inbox{grid-template-columns:330px minmax(0,1fr);gap:12px;height:calc(100vh - 185px);min-height:520px}
+.nd-inbox>aside,.nd-inbox>section{border-radius:15px}
+.nd-inbox aside button{padding:14px 13px}
+.nd-inbox aside b{font-size:11px;line-height:1.35}
+.nd-inbox aside span{font-size:10px;line-height:1.4;margin:5px 0}
+.nd-inbox aside small{font-size:9px}
+.nd-inbox>section>header{padding:15px 16px}
+.nd-inbox>section>header b{font-size:12px}
+.nd-inbox>section>header span{font-size:10px;margin-top:3px}
+.nd-inbox>section>main{padding:18px}
+.nd-inbox>section>footer{grid-template-columns:minmax(0,1fr) auto!important;gap:9px!important;padding:12px!important}
+.nd-inbox footer input{min-width:0}
+.nd-inbox footer button{min-width:84px;font-size:10px}
+.nd-inbox .msg{max-width:min(78%,680px);padding:11px 13px}
+.nd-inbox .msg small{font-size:9px}
+.nd-inbox .msg p{font-size:11px;line-height:1.5}
+
+/* REPORTS / SETTINGS */
+.nd-report-grid,.nd-settings{grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.nd-toggle{padding:12px 0;gap:12px}
+.nd-toggle b{font-size:11px}
+.nd-toggle small{font-size:10px;line-height:1.4;margin-top:3px}
+.nd-toggle>button{width:44px;height:24px;flex:0 0 auto}
+.nd-toggle i{width:20px;height:20px}
+.nd-toggle>button.on i{transform:translateX(20px)}
+.nd-security-row{padding:12px 0}
+.nd-security-row b{font-size:11px}
+.nd-security-row span{font-size:10px;line-height:1.5}
+.nd-audit{grid-template-columns:18px minmax(0,1fr) auto;gap:9px;padding:10px 0}
+.nd-audit b{font-size:11px}
+.nd-audit span{font-size:10px;line-height:1.4;margin-top:2px}
+.nd-audit time{font-size:9px;white-space:nowrap}
+
+/* ADMIN MODALS */
+.nd-admin-dialog{width:min(780px,calc(100% - 34px));padding:30px;border-radius:20px}
+.nd-admin-dialog h2{font-size:38px;line-height:1.05;margin-bottom:22px}
+.nd-detail-kpis{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.nd-detail-kpis span{padding:14px;border-radius:12px}
+.nd-detail-kpis small{font-size:9px}
+.nd-detail-kpis b{font-size:13px;line-height:1.25;margin-top:4px;overflow-wrap:anywhere}
+
+/* RESPONSIVE */
+@media(max-width:1250px){
+  .header{gap:18px;padding:0 22px}.brand img{width:220px}.header nav{gap:14px;font-size:11px}
+  .nd-admin-workspace{grid-template-columns:252px minmax(0,1fr)!important}
+  .nd-admin-side{padding-left:14px;padding-right:14px}
+  .nd-admin-brand img{width:155px}
+  .nd-admin-grid{grid-template-columns:1fr}
+  .nd-calendar{grid-template-columns:repeat(4,minmax(135px,1fr))}
+  .nd-two{grid-template-columns:1fr}
+  .nd-inbox{grid-template-columns:280px minmax(0,1fr)}
+}
+
+@media(max-width:900px){
+  .header{min-height:88px}.brand img{width:190px;max-height:68px}
+  .nd-admin-workspace{grid-template-columns:1fr!important}
+  .nd-admin-side{position:absolute;left:0;top:0;bottom:0;width:min(300px,86vw);z-index:6;transform:translateX(-105%);transition:.2s;padding:22px 16px;box-shadow:20px 0 45px rgba(0,0,0,.18)}
+  .nd-admin-side.open{transform:none}
+  .nd-admin-brand div,.nd-admin-side nav span,.nd-admin-security{display:grid!important}
+  .nd-admin-side nav button{grid-template-columns:24px minmax(0,1fr) auto!important;place-items:initial!important;font-size:13px!important}
+  .nd-admin-top #nd-side-toggle{display:block!important}
+  .nd-admin-top{padding:12px 16px;min-height:76px}
+  .nd-admin-top h1{font-size:26px}
+  .nd-admin-content{padding:18px}
+  .nd-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nd-calendar{grid-template-columns:repeat(3,minmax(130px,1fr))}
+  .nd-inbox{grid-template-columns:1fr;height:auto;min-height:0}
+  .nd-inbox>aside{max-height:240px}
+  .nd-inbox>section{min-height:500px}
+  .nd-report-grid,.nd-settings{grid-template-columns:1fr}
+}
+
+@media(max-width:620px){
+  .header{min-height:78px;padding:0 14px}.brand img{width:165px;max-height:58px}
+  footer img{width:185px}
+  .nd-admin-top>div:last-child{width:100%;justify-content:flex-end}.nd-admin-top>div:last-child button:first-child{display:none}
+  .nd-admin-content{padding:12px}
+  .nd-kpis{grid-template-columns:1fr}
+  .nd-kpis article{min-height:auto}
+  .nd-panel{padding:16px}
+  .nd-admin-heading h2{font-size:28px}
+  .nd-kanban{grid-template-columns:repeat(5,250px)}
+  .nd-calendar{grid-template-columns:repeat(2,minmax(130px,1fr))}
+  .nd-card-grid{grid-template-columns:1fr}
+  .nd-report-grid,.nd-settings{grid-template-columns:1fr}
+  .nd-admin-dialog{padding:22px 18px}
+  .nd-admin-dialog h2{font-size:32px}
+  .nd-detail-kpis{grid-template-columns:1fr}
+  .nd-inbox .msg{max-width:90%}
+}
