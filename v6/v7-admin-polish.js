@@ -1,4 +1,10 @@
 (()=>{
+  const cropped='logo-nossas-delicias-horizontal.svg?v=7';
+  document.querySelectorAll('.brand img, footer img').forEach(img=>{
+    img.src=cropped;
+    img.alt='Nossas Delícias';
+  });
+
   const oldOpen=ND.openAdmin;
   if(oldOpen){
     ND.openAdmin=()=>{
@@ -6,7 +12,7 @@
       requestAnimationFrame(()=>{
         const brand=document.querySelector('.nd-admin-brand img');
         if(brand){
-          brand.src='logo-nossas-delicias.svg?v=7';
+          brand.src=cropped;
           brand.alt='Nossas Delícias';
         }
         const content=document.querySelector('.nd-admin-content');
