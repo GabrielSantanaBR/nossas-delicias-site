@@ -1,1 +1,222 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#2a1712"><meta name="description" content="Nossas Delícias — central de pedidos, cafeterias e eventos."><title>Nossas Delícias | Central de Pedidos</title><link rel="icon" type="image/png" href="favicon.png?v=3"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css?v=4"></head><body><div class="demo-bar">DEMONSTRAÇÃO INTERATIVA • dados salvos apenas neste navegador</div><header class="header"><a class="brand" href="#inicio"><img src="logo-nossas-delicias.svg" alt="Nossas Delícias"></a><button class="mobile-menu" aria-label="Abrir menu">☰</button><nav id="nav"><a href="#cardapio">Cardápio</a><a href="#entrega">Entrega</a><a href="#cafeterias">Cafeterias</a><a href="#eventos">Eventos</a><button class="link-btn" data-open="account">Minha conta</button></nav><div class="header-actions"><button class="icon-btn" data-open="login">Entrar</button><button class="cart-btn" data-open="cart">Sacola <span id="cart-count">0</span></button></div></header><main id="inicio"><section class="hero"><div class="hero-copy"><span class="eyebrow">Confeitaria artesanal • Rio de Janeiro</span><h1>Seu momento merece uma <em>delícia.</em></h1><p>Escolha seus doces, consulte a região, selecione uma data disponível e acompanhe o pedido em um só lugar.</p><div class="actions"><a class="primary" href="#cardapio">Montar meu pedido</a><button class="secondary" data-open="event">Planejar um evento</button></div><div class="trust"><span>Produção artesanal</span><span>Agenda por região</span><span>Atendimento por pedido</span></div></div><div class="hero-media"><img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=1200&q=82" alt="Brownies artesanais"><div class="floating-card"><small>Pedido simples</small><b>Escolha → agenda → acompanhamento</b><span>Sem perder contexto em mensagens soltas.</span></div></div></section><section class="audiences"><button data-profile="retail" class="audience active"><span>Para você</span><b>Doces e encomendas</b></button><button data-profile="cafe" class="audience"><span>Para cafeterias</span><b>Preço B2B</b></button><button data-profile="event" class="audience"><span>Para eventos</span><b>Orçamento personalizado</b></button></section><section class="section" id="cardapio"><div class="section-head"><div><span class="eyebrow">Cardápio</span><h2>Escolha sua próxima delícia.</h2></div><p>Categorias, produtos, imagens e preços desta vitrine podem ser alterados no modo administrativo da demonstração.</p></div><div id="category-filters" class="filters"></div><div id="product-grid" class="product-grid"></div></section><section class="delivery-section" id="entrega"><div><span class="eyebrow light">Entrega inteligente</span><h2>Região, rota e disponibilidade trabalham juntas.</h2><p>O cliente só vê datas compatíveis com a região dele. No admin você pode criar regiões, definir prefixos de CEP, taxa, pedido mínimo, dias de entrega e capacidade.</p></div><div class="delivery-card"><label>Digite seu CEP<input id="delivery-zip" inputmode="numeric" maxlength="9" placeholder="00000-000"></label><div id="delivery-result" class="availability muted">Informe um CEP para consultar.</div></div></section><section class="section split" id="cafeterias"><div class="photo cafe-photo"></div><div class="split-copy"><span class="eyebrow">Cafeterias</span><h2>Um canal próprio para quem compra toda semana.</h2><p>Preços diferenciados, pedido mínimo, histórico e recorrência. Uma cafeteria aprovada pode ter sua própria tabela.</p><button class="primary" data-open="cafe">Simular área de cafeteria</button></div></section><section class="event-section" id="eventos"><div><span class="eyebrow light">Eventos & ocasiões</span><h2>Do aniversário ao evento corporativo.</h2><p>A solicitação entra como orçamento para avaliação do administrador. Depois de aprovada, pode virar pedido e abrir uma conversa vinculada ao atendimento.</p><button class="light-btn" data-open="event">Solicitar orçamento</button></div><div class="event-stats"><span><b>01</b> Solicite</span><span><b>02</b> Avaliamos</span><span><b>03</b> Confirmamos</span></div></section><section class="section"><div class="section-head"><div><span class="eyebrow">Acompanhamento</span><h2>Pedido e conversa no mesmo lugar.</h2></div><p>Cada pedido possui status, histórico e uma conversa própria. O cliente não precisa explicar novamente o número, produtos e entrega.</p></div><div class="benefit-grid"><article><b>Histórico</b><p>Pedidos, pagamentos simulados, datas e valores.</p></article><article><b>Fila do admin</b><p>Novos pedidos ficam aguardando análise antes de avançar.</p></article><article><b>Chat por pedido</b><p>Cliente e administração conversam dentro daquele atendimento.</p></article></div></section></main><footer><img src="logo-nossas-delicias.svg" alt="Nossas Delícias"><div><b>Nossas Delícias</b><span>Confeitaria artesanal • Central de pedidos</span></div><a href="https://www.instagram.com/nossas___delicias/" target="_blank" rel="noreferrer">Instagram ↗</a></footer><div id="overlay" class="overlay"></div><aside id="cart" class="drawer"><button class="close" data-close>×</button><span class="eyebrow">Sua sacola</span><h2>Monte seu pedido</h2><div id="cart-items"></div><div class="cart-total"><span>Total estimado</span><b id="cart-total">R$ 0,00</b></div><button id="checkout-btn" class="primary wide">Continuar para entrega</button></aside><div id="login" class="modal"><button class="close" data-close>×</button><span class="eyebrow">Demonstração</span><h2>Entrar</h2><p class="muted">Login local apenas para testar o fluxo visual.</p><label>Nome<input id="login-name" placeholder="Seu nome"></label><label>E-mail<input id="login-email" type="email" placeholder="voce@email.com"></label><button id="login-btn" class="primary wide">Entrar na demonstração</button></div><div id="account" class="modal large"><button class="close" data-close>×</button><span class="eyebrow">Minha conta</span><h2 id="account-title">Olá!</h2><div id="account-content"></div></div><div id="checkout" class="modal large"><button class="close" data-close>×</button><span class="eyebrow">Finalizar pedido</span><h2>Entrega e pagamento</h2><div class="checkout-grid"><div><label>CEP<input id="checkout-zip" placeholder="00000-000"></label><label>Endereço<input id="checkout-address" placeholder="Rua, número e complemento"></label><label>Data<select id="checkout-date"><option>Informe o CEP</option></select></label><label>Cupom<input id="coupon" placeholder="DELÍCIA10"></label></div><div class="summary" id="checkout-summary"></div></div><button id="place-order" class="primary wide">Criar pedido para avaliação</button><small class="muted">Pagamento real permanece desativado no GitHub Pages.</small></div><div id="event" class="modal large"><button class="close" data-close>×</button><span class="eyebrow">Eventos</span><h2>Solicitar orçamento</h2><div class="form-grid"><label>Tipo<select id="event-type"><option>Aniversário</option><option>Casamento</option><option>Corporativo</option><option>Festa</option><option>Outro</option></select></label><label>Data<input id="event-date" type="date"></label><label>Pessoas<input id="event-people" type="number" min="1" value="50"></label><label>Local<input id="event-location" placeholder="Bairro / espaço"></label></div><label>O que você procura?<textarea id="event-note" placeholder="Brownies, bolo, kits, ainda não sei..."></textarea></label><button id="event-submit" class="primary wide">Enviar para avaliação</button></div><div id="cafe" class="modal large"><button class="close" data-close>×</button><span class="eyebrow">Área B2B</span><h2>Cafeteria parceira</h2><p>Na versão real, a conta é aprovada pelo administrador e passa a enxergar a tabela de preços vinculada ao perfil.</p><div class="b2b-card"><b>Exemplo recorrente</b><span>30 brownies tradicionais</span><span>15 brownies especiais</span><span>Entrega: quinta-feira</span><strong>R$ 234,00</strong></div><button class="primary wide" data-close>Entendi</button></div><div id="chat" class="modal large"><button class="close" data-close>×</button><span class="eyebrow">Conversa do pedido</span><h2 id="chat-title">Atendimento</h2><div id="chat-context" class="chat-context"></div><div id="chat-messages" class="chat-messages"></div><div class="chat-compose"><input id="chat-input" placeholder="Escreva uma mensagem"><button id="chat-send" class="primary">Enviar</button></div></div><div id="admin" class="modal admin-modal"><button class="close" data-close>×</button><span class="eyebrow">Admin demonstrativo</span><div class="admin-title-row"><div><h2>Central de operações</h2><p class="warning">Apenas demo local. O admin real continua protegido no backend com autenticação e 2FA.</p></div><div class="admin-kpis" id="admin-kpis"></div></div><div class="admin-tabs"><button data-admin-tab="orders" class="active">Pedidos</button><button data-admin-tab="catalog">Cardápio</button><button data-admin-tab="regions">Regiões & agenda</button><button data-admin-tab="quotes">Eventos</button></div><section id="admin-orders" class="admin-panel"></section><section id="admin-catalog" class="admin-panel hidden"><div class="admin-grid"><form id="admin-category"><h3>Nova categoria</h3><input id="new-category" placeholder="Ex.: Cookies"><button class="secondary">Adicionar categoria</button></form><form id="admin-product"><h3>Novo produto</h3><input id="new-name" placeholder="Nome"><select id="new-product-category"></select><input id="new-price" type="number" step="0.01" placeholder="Preço cliente"><input id="new-cafe-price" type="number" step="0.01" placeholder="Preço cafeteria"><input id="new-image" placeholder="URL da foto"><textarea id="new-description" placeholder="Descrição"></textarea><button class="primary">Criar produto</button></form></div><div id="admin-products" class="admin-list"></div></section><section id="admin-regions" class="admin-panel hidden"><form id="admin-region" class="region-form"><input id="region-name" placeholder="Nome da região"><input id="region-prefix" placeholder="Prefixo CEP, ex.: 21"><input id="region-fee" type="number" step="0.01" placeholder="Taxa"><input id="region-minimum" type="number" step="0.01" placeholder="Pedido mínimo"><input id="region-days" placeholder="Dias: 2,4 (ter/qui)"><input id="region-capacity" type="number" placeholder="Capacidade/dia"><button class="primary">Criar região</button></form><div id="admin-regions-list" class="admin-list"></div></section><section id="admin-quotes" class="admin-panel hidden"></section></div><button id="admin-fab" class="admin-fab" title="Abrir administração demonstrativa">⚙</button><div id="toast" class="toast"></div><script src="script.js?v=4"></script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#2a1712">
+  <meta name="description" content="Nossas Delícias — confeitaria artesanal, encomendas, cafeterias e eventos no Rio de Janeiro.">
+  <title>Nossas Delícias | Central de Pedidos</title>
+  <link rel="icon" type="image/png" href="favicon.png?v=6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=6">
+</head>
+<body>
+  <div class="demo-bar">DEMONSTRAÇÃO INTERATIVA • dados salvos apenas neste navegador</div>
+
+  <header class="header" id="inicio">
+    <a class="brand" href="#inicio" aria-label="Nossas Delícias — início">
+      <img src="logo-nossas-delicias.svg?v=6" alt="Nossas Delícias">
+    </a>
+    <button class="mobile-menu" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <nav id="nav" aria-label="Navegação principal">
+      <a href="#cardapio">Cardápio</a>
+      <a href="#entrega">Entrega</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#cafeterias">Cafeterias</a>
+      <a href="#eventos">Eventos</a>
+      <button class="link-btn" data-open="account">Minha conta</button>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" data-open="login">Entrar</button>
+      <button class="cart-btn" data-open="cart">Sacola <span id="cart-count">0</span></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero reveal">
+      <div class="hero-copy">
+        <span class="eyebrow">Confeitaria artesanal • Rio de Janeiro</span>
+        <h1>Seu momento merece uma <em>delícia.</em></h1>
+        <p>Escolha seus doces, consulte a região, selecione uma data disponível e acompanhe o pedido em um só lugar — do primeiro clique à entrega.</p>
+        <div class="actions">
+          <a class="primary" href="#cardapio">Montar meu pedido</a>
+          <button class="secondary" data-open="event">Planejar um evento</button>
+        </div>
+        <div class="trust">
+          <span>Produção artesanal</span>
+          <span>Agenda por região</span>
+          <span>Atendimento por pedido</span>
+          <span>Preços B2B</span>
+        </div>
+      </div>
+      <div class="hero-media">
+        <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=1200&q=82" alt="Brownies artesanais">
+        <div class="floating-card">
+          <small>Uma central para tudo</small>
+          <b>Escolha → agenda → acompanhamento</b>
+          <span>Pedido, pagamento e conversa ficam no mesmo atendimento.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="audiences reveal" aria-label="Tipos de atendimento">
+      <button data-profile="retail" class="audience active"><span>Para você</span><b>Doces & encomendas</b></button>
+      <button data-profile="cafe" class="audience"><span>Para cafeterias</span><b>Preço B2B</b></button>
+      <button data-profile="event" class="audience"><span>Para eventos</span><b>Orçamento personalizado</b></button>
+    </section>
+
+    <section class="section" id="cardapio">
+      <div class="section-head products-intro reveal">
+        <div><span class="eyebrow">Cardápio</span><h2>Escolha sua próxima delícia.</h2></div>
+        <p>Busque por produto, filtre por categoria, salve favoritos e monte uma única sacola com tudo o que você quer.</p>
+      </div>
+      <div id="category-filters" class="filters"></div>
+      <div id="product-grid" class="product-grid"></div>
+    </section>
+
+    <section class="delivery-section reveal" id="entrega">
+      <div>
+        <span class="eyebrow light">Entrega inteligente</span>
+        <h2>Região, rota e disponibilidade trabalham juntas.</h2>
+        <p>O cliente só enxerga datas compatíveis com a região dele. A administração controla CEP, taxa, pedido mínimo, dias, horários, capacidade e bloqueios.</p>
+      </div>
+      <div class="delivery-card">
+        <label>Digite seu CEP<input id="delivery-zip" inputmode="numeric" maxlength="9" placeholder="00000-000"></label>
+        <div id="delivery-result" class="availability muted">Informe um CEP para consultar.</div>
+      </div>
+    </section>
+
+    <section class="section" id="como-funciona">
+      <div class="section-head reveal">
+        <div><span class="eyebrow">Como funciona</span><h2>Pedido simples para o cliente. Controle completo para a produção.</h2></div>
+        <p>O fluxo foi pensado para reduzir mensagens soltas e deixar cada etapa registrada no próprio pedido.</p>
+      </div>
+      <div class="benefit-grid reveal">
+        <article><b>01 • Escolha</b><p>Produtos, quantidades, observações, favoritos e preços adequados ao perfil.</p></article>
+        <article><b>02 • Agenda</b><p>CEP, região, pedido mínimo e datas com capacidade disponível.</p></article>
+        <article><b>03 • Avaliação</b><p>O pedido entra na fila administrativa antes de seguir para produção.</p></article>
+        <article><b>04 • Acompanhe</b><p>Status, pagamento, histórico e conversa ficam vinculados ao pedido.</p></article>
+        <article><b>05 • Receba</b><p>A equipe atualiza preparo, prontidão e saída para entrega.</p></article>
+        <article><b>06 • Volte</b><p>Histórico e recorrência podem liberar promoções e facilitar novos pedidos.</p></article>
+      </div>
+    </section>
+
+    <section class="section split reveal" id="cafeterias">
+      <div class="photo cafe-photo" role="img" aria-label="Cafeteria"></div>
+      <div class="split-copy">
+        <span class="eyebrow">Cafeterias</span>
+        <h2>Um canal próprio para quem compra toda semana.</h2>
+        <p>Parceiros aprovados podem ter tabela de preço diferenciada, pedido mínimo, dia de entrega, histórico, recorrência e condições específicas.</p>
+        <button class="primary" data-open="cafe">Conhecer área de cafeteria</button>
+      </div>
+    </section>
+
+    <section class="event-section reveal" id="eventos">
+      <div>
+        <span class="eyebrow light">Eventos & ocasiões</span>
+        <h2>Do aniversário ao evento corporativo.</h2>
+        <p>A solicitação entra como orçamento para avaliação. A administração pode definir valor, negociar, aprovar e converter o orçamento em pedido.</p>
+        <button class="light-btn" data-open="event">Solicitar orçamento</button>
+      </div>
+      <div class="event-stats">
+        <span><b>01</b> Solicite</span>
+        <span><b>02</b> Avaliamos</span>
+        <span><b>03</b> Ajustamos</span>
+        <span><b>04</b> Confirmamos</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head reveal">
+        <div><span class="eyebrow">Relacionamento</span><h2>Pedido e conversa no mesmo lugar.</h2></div>
+        <p>Cada pedido possui status, histórico e conversa própria. O cliente não precisa repetir número, produtos, endereço ou data a cada mensagem.</p>
+      </div>
+      <div class="benefit-grid reveal">
+        <article><b>Minha conta</b><p>Histórico, valores, perfil, pedidos, eventos e benefícios.</p></article>
+        <article><b>Fila do admin</b><p>Pedidos novos aguardam avaliação e avançam pelo quadro de produção.</p></article>
+        <article><b>Chat por pedido</b><p>Cliente e administração compartilham o mesmo contexto do atendimento.</p></article>
+      </div>
+    </section>
+
+    <section class="section cta-section">
+      <div class="cta-box reveal">
+        <div><span class="eyebrow">Nossas Delícias</span><h2>Um pedido mais fácil começa por aqui.</h2></div>
+        <div class="cta-side"><p>Explore o cardápio ou use a área de eventos para uma necessidade personalizada.</p><a class="button button-primary" href="#cardapio">Ver cardápio</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <img src="logo-nossas-delicias.svg?v=6" alt="Nossas Delícias">
+    <div><b>Nossas Delícias</b><span>Confeitaria artesanal • Central de pedidos</span></div>
+    <a href="https://www.instagram.com/nossas___delicias/" target="_blank" rel="noreferrer">Instagram ↗</a>
+  </footer>
+
+  <div id="overlay" class="overlay"></div>
+
+  <aside id="cart" class="drawer" aria-label="Sacola">
+    <button class="close" data-close>×</button><span class="eyebrow">Sua sacola</span><h2>Monte seu pedido</h2>
+    <div id="cart-items"></div><div class="cart-total"><span>Total estimado</span><b id="cart-total">R$ 0,00</b></div>
+    <button id="checkout-btn" class="primary wide">Continuar para entrega</button>
+  </aside>
+
+  <div id="login" class="modal">
+    <button class="close" data-close>×</button><span class="eyebrow">Demonstração</span><h2>Entrar</h2>
+    <p class="muted">Nesta versão pública, a conta fica apenas neste navegador. A autenticação real pertence ao backend seguro.</p>
+    <label>Nome<input id="login-name" autocomplete="name" placeholder="Seu nome"></label>
+    <label>E-mail<input id="login-email" type="email" autocomplete="email" placeholder="voce@email.com"></label>
+    <button id="login-btn" class="primary wide">Entrar na demonstração</button>
+  </div>
+
+  <div id="account" class="modal large">
+    <button class="close" data-close>×</button><span class="eyebrow">Minha conta</span><h2 id="account-title">Olá!</h2><div id="account-content"></div>
+  </div>
+
+  <div id="checkout" class="modal large">
+    <button class="close" data-close>×</button><span class="eyebrow">Finalizar pedido</span><h2>Entrega e pagamento</h2>
+    <div class="checkout-grid">
+      <div>
+        <label>CEP<input id="checkout-zip" inputmode="numeric" placeholder="00000-000"></label>
+        <label>Endereço<input id="checkout-address" placeholder="Rua, número e complemento"></label>
+        <label>Data<select id="checkout-date"><option value="">Informe o CEP</option></select></label>
+        <label>Cupom<input id="coupon" placeholder="Código promocional"></label>
+      </div>
+      <div class="summary" id="checkout-summary"></div>
+    </div>
+    <button id="place-order" class="primary wide">Criar pedido para avaliação</button>
+    <small class="muted">Pagamento real permanece desativado no GitHub Pages.</small>
+  </div>
+
+  <div id="event" class="modal large">
+    <button class="close" data-close>×</button><span class="eyebrow">Eventos</span><h2>Solicitar orçamento</h2>
+    <div class="form-grid">
+      <label>Tipo<select id="event-type"><option>Aniversário</option><option>Casamento</option><option>Corporativo</option><option>Festa</option><option>Outro</option></select></label>
+      <label>Data<input id="event-date" type="date"></label>
+      <label>Pessoas<input id="event-people" type="number" min="1" value="50"></label>
+      <label>Local<input id="event-location" placeholder="Bairro / espaço"></label>
+    </div>
+    <label>O que você procura?<textarea id="event-note" placeholder="Brownies, bolo, kits, ainda não sei..."></textarea></label>
+    <button id="event-submit" class="primary wide">Enviar para avaliação</button>
+  </div>
+
+  <div id="cafe" class="modal large">
+    <button class="close" data-close>×</button><span class="eyebrow">Área B2B</span><h2>Cafeteria parceira</h2>
+    <p>Solicite uma parceria. Na versão real, a conta precisa ser aprovada pela administração antes de acessar condições exclusivas.</p>
+    <div class="b2b-card"><b>O que a área B2B prevê</b><span>Tabela própria por cafeteria</span><span>Pedido mínimo configurável</span><span>Dia de entrega e recorrência</span><span>Histórico comercial</span></div>
+  </div>
+
+  <div id="chat" class="modal large">
+    <button class="close" data-close>×</button><span class="eyebrow">Conversa do pedido</span><h2 id="chat-title">Atendimento</h2>
+    <div id="chat-context" class="chat-context"></div><div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-compose"><input id="chat-input" placeholder="Escreva uma mensagem"><button id="chat-send" class="primary">Enviar</button></div>
+  </div>
+
+  <div id="admin" class="modal" aria-label="Administração demonstrativa"></div>
+  <button id="admin-fab" class="admin-fab" title="Abrir administração demonstrativa" aria-label="Abrir administração">⚙</button>
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="script.js?v=6"></script>
+</body>
+</html>
