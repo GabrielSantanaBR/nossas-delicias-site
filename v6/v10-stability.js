@@ -7,6 +7,10 @@
     catch(err){console.error(err);ND.toast?.('Não foi possível salvar localmente. Libere espaço do navegador e tente novamente.');return false}
   };
 
+  if(s.user?.email&&!s.auth?.accounts?.some(a=>String(a.email||'').toLowerCase()===String(s.user.email||'').toLowerCase())){
+    s.user=null;s.auth.sessionExpires=null;ND.save();
+  }
+
   const currentOpen=ND.open;
   ND.open=name=>{
     if(name==='login'&&s.user) return currentOpen('account');
