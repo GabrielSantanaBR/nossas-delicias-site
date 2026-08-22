@@ -4,29 +4,51 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#2a1712">
-  <meta name="description" content="Nossas Delícias — confeitaria artesanal, encomendas, cafeterias e eventos no Rio de Janeiro.">
-  <title>Nossas Delícias | Central de Pedidos</title>
-  <link rel="icon" type="image/png" href="favicon.png?v=11">
-  <link rel="preload" as="image" href="logo-nossas-delicias.svg?v=11">
+  <meta name="description" content="Nossas Delícias — confeitaria artesanal com encomendas, agenda por região, atendimento a cafeterias e eventos no Rio de Janeiro.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://images.unsplash.com data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+  <title>Nossas Delícias | Confeitaria, encomendas e eventos</title>
+  <link rel="canonical" href="https://gabrielsantanabr.github.io/nossas-delicias-site/">
+  <link rel="icon" type="image/png" href="favicon.png?v=12">
+  <link rel="manifest" href="manifest.webmanifest?v=12">
+  <link rel="preload" as="image" href="logo-nossas-delicias.svg?v=12">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Nossas Delícias">
+  <meta property="og:title" content="Nossas Delícias | Confeitaria, encomendas e eventos">
+  <meta property="og:description" content="Cardápio, pedidos, agenda por região, cafeterias e eventos em uma experiência organizada.">
+  <meta property="og:url" content="https://gabrielsantanabr.github.io/nossas-delicias-site/">
+  <meta property="og:image" content="https://gabrielsantanabr.github.io/nossas-delicias-site/favicon.png?v=12">
+  <meta property="og:image:width" content="256">
+  <meta property="og:image:height" content="256">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Nossas Delícias | Confeitaria, encomendas e eventos">
+  <meta name="twitter:description" content="Cardápio, pedidos, agenda por região, cafeterias e eventos.">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=11">
-  <link rel="stylesheet" href="v6/v6-public.css?v=11">
-  <link rel="stylesheet" href="v6/v7-layout-fixes.css?v=11">
-  <link rel="stylesheet" href="v6/v7-logo-fixes.css?v=11">
-  <link rel="stylesheet" href="v6/v7-sticky-header.css?v=11">
-  <link rel="stylesheet" href="v6/v10-auth-chat.css?v=11">
-  <link rel="stylesheet" href="v6/v11-premium.css?v=11">
+  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="v6/v6-public.css?v=12">
+  <link rel="stylesheet" href="v6/v7-layout-fixes.css?v=12">
+  <link rel="stylesheet" href="v6/v7-logo-fixes.css?v=12">
+  <link rel="stylesheet" href="v6/v7-sticky-header.css?v=12">
+  <link rel="stylesheet" href="v6/v10-auth-chat.css?v=12">
+  <link rel="stylesheet" href="v6/v11-premium.css?v=12">
+  <link rel="stylesheet" href="v6/v12-production.css?v=12">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Bakery","name":"Nossas Delícias","url":"https://gabrielsantanabr.github.io/nossas-delicias-site/","description":"Confeitaria artesanal com encomendas, atendimento a cafeterias e eventos.","areaServed":{"@type":"AdministrativeArea","name":"Rio de Janeiro"},"sameAs":["https://www.instagram.com/nossas___delicias/"]}</script>
 </head>
 <body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
   <div class="demo-bar">DEMONSTRAÇÃO INTERATIVA • dados salvos apenas neste navegador</div>
+  <noscript><div style="padding:12px 18px;background:#fff1dd;color:#5f3b27;text-align:center;font:600 13px Arial,sans-serif">Ative o JavaScript para usar o cardápio, a sacola e a demonstração da central de pedidos.</div></noscript>
 
   <header class="header" id="inicio">
     <a class="brand" href="#inicio" aria-label="Nossas Delícias — início">
-      <img src="logo-nossas-delicias.svg?v=11" width="320" height="78" alt="Nossas Delícias">
+      <img src="logo-nossas-delicias.svg?v=12" width="320" height="78" alt="Nossas Delícias">
     </a>
-    <button class="mobile-menu" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <button class="mobile-menu" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav">☰</button>
     <nav id="nav" aria-label="Navegação principal">
       <a href="#cardapio">Cardápio</a>
       <a href="#entrega">Entrega</a>
@@ -37,11 +59,11 @@
     </nav>
     <div class="header-actions">
       <button class="icon-btn" data-open="login">Entrar</button>
-      <button class="cart-btn" data-open="cart">Sacola <span id="cart-count">0</span></button>
+      <button class="cart-btn" data-open="cart">Sacola <span id="cart-count" aria-live="polite">0</span></button>
     </div>
   </header>
 
-  <main>
+  <main id="conteudo">
     <section class="hero reveal">
       <div class="hero-copy">
         <span class="eyebrow">Confeitaria artesanal • Rio de Janeiro</span>
@@ -59,7 +81,7 @@
         </div>
       </div>
       <div class="hero-media">
-        <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=1200&q=82" alt="Brownies artesanais">
+        <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=1200&q=82" width="1200" height="900" fetchpriority="high" decoding="async" alt="Brownies artesanais">
         <div class="floating-card">
           <small>Uma central para tudo</small>
           <b>Escolha → agenda → acompanhamento</b>
@@ -90,8 +112,8 @@
         <p>O cliente só enxerga datas compatíveis com a região dele. A administração controla CEP, taxa, pedido mínimo, dias, horários, capacidade e bloqueios.</p>
       </div>
       <div class="delivery-card">
-        <label>Digite seu CEP<input id="delivery-zip" inputmode="numeric" maxlength="9" placeholder="00000-000"></label>
-        <div id="delivery-result" class="availability muted">Informe um CEP para consultar.</div>
+        <label>Digite seu CEP<input id="delivery-zip" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000"></label>
+        <div id="delivery-result" class="availability muted" aria-live="polite">Informe um CEP para consultar.</div>
       </div>
     </section>
 
@@ -156,7 +178,7 @@
   </main>
 
   <footer>
-    <img src="logo-nossas-delicias.svg?v=11" width="250" height="76" alt="Nossas Delícias">
+    <img src="logo-nossas-delicias.svg?v=12" width="250" height="76" loading="lazy" decoding="async" alt="Nossas Delícias">
     <div><b>Nossas Delícias</b><span>Confeitaria artesanal • Central de pedidos</span></div>
     <a href="https://www.instagram.com/nossas___delicias/" target="_blank" rel="noreferrer">Instagram ↗</a>
   </footer>
@@ -164,31 +186,31 @@
   <div id="overlay" class="overlay"></div>
 
   <aside id="cart" class="drawer" aria-label="Sacola">
-    <button class="close" data-close>×</button><span class="eyebrow">Sua sacola</span><h2>Monte seu pedido</h2>
+    <button class="close" data-close aria-label="Fechar sacola">×</button><span class="eyebrow">Sua sacola</span><h2>Monte seu pedido</h2>
     <div id="cart-items"></div><div class="cart-total"><span>Total estimado</span><b id="cart-total">R$ 0,00</b></div>
     <button id="checkout-btn" class="primary wide">Continuar para entrega</button>
   </aside>
 
-  <div id="login" class="modal">
-    <button class="close" data-close>×</button><span class="eyebrow">Demonstração</span><h2>Entrar</h2>
+  <div id="login" class="modal" aria-label="Acesso à conta">
+    <button class="close" data-close aria-label="Fechar login">×</button><span class="eyebrow">Demonstração</span><h2>Entrar</h2>
     <p class="muted">Nesta versão pública, a conta fica apenas neste navegador. A autenticação real pertence ao backend seguro.</p>
-    <label>Nome<input id="login-name" autocomplete="name" placeholder="Seu nome"></label>
-    <label>E-mail<input id="login-email" type="email" autocomplete="email" placeholder="voce@email.com"></label>
+    <label>Nome<input id="login-name" autocomplete="name" maxlength="80" placeholder="Seu nome"></label>
+    <label>E-mail<input id="login-email" type="email" autocomplete="email" maxlength="160" placeholder="voce@email.com"></label>
     <button id="login-btn" class="primary wide">Entrar na demonstração</button>
   </div>
 
-  <div id="account" class="modal large">
-    <button class="close" data-close>×</button><span class="eyebrow">Minha conta</span><h2 id="account-title">Olá!</h2><div id="account-content"></div>
+  <div id="account" class="modal large" aria-label="Minha conta">
+    <button class="close" data-close aria-label="Fechar conta">×</button><span class="eyebrow">Minha conta</span><h2 id="account-title">Olá!</h2><div id="account-content"></div>
   </div>
 
-  <div id="checkout" class="modal large">
-    <button class="close" data-close>×</button><span class="eyebrow">Finalizar pedido</span><h2>Entrega e pagamento</h2>
+  <div id="checkout" class="modal large" aria-label="Finalizar pedido">
+    <button class="close" data-close aria-label="Fechar checkout">×</button><span class="eyebrow">Finalizar pedido</span><h2>Entrega e pagamento</h2>
     <div class="checkout-grid">
       <div>
-        <label>CEP<input id="checkout-zip" inputmode="numeric" placeholder="00000-000"></label>
-        <label>Endereço<input id="checkout-address" placeholder="Rua, número e complemento"></label>
+        <label>CEP<input id="checkout-zip" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000"></label>
+        <label>Endereço<input id="checkout-address" autocomplete="street-address" maxlength="180" placeholder="Rua, número e complemento"></label>
         <label>Data<select id="checkout-date"><option value="">Informe o CEP</option></select></label>
-        <label>Cupom<input id="coupon" placeholder="Código promocional"></label>
+        <label>Cupom<input id="coupon" maxlength="32" placeholder="Código promocional"></label>
       </div>
       <div class="summary" id="checkout-summary"></div>
     </div>
@@ -196,34 +218,34 @@
     <small class="muted">Pagamento real permanece desativado no GitHub Pages.</small>
   </div>
 
-  <div id="event" class="modal large">
-    <button class="close" data-close>×</button><span class="eyebrow">Eventos</span><h2>Solicitar orçamento</h2>
+  <div id="event" class="modal large" aria-label="Orçamento para evento">
+    <button class="close" data-close aria-label="Fechar evento">×</button><span class="eyebrow">Eventos</span><h2>Solicitar orçamento</h2>
     <div class="form-grid">
       <label>Tipo<select id="event-type"><option>Aniversário</option><option>Casamento</option><option>Corporativo</option><option>Festa</option><option>Outro</option></select></label>
       <label>Data<input id="event-date" type="date"></label>
       <label>Pessoas<input id="event-people" type="number" min="1" value="50"></label>
-      <label>Local<input id="event-location" placeholder="Bairro / espaço"></label>
+      <label>Local<input id="event-location" maxlength="120" placeholder="Bairro / espaço"></label>
     </div>
-    <label>O que você procura?<textarea id="event-note" placeholder="Brownies, bolo, kits, ainda não sei..."></textarea></label>
+    <label>O que você procura?<textarea id="event-note" maxlength="600" placeholder="Brownies, bolo, kits, ainda não sei..."></textarea></label>
     <button id="event-submit" class="primary wide">Enviar para avaliação</button>
   </div>
 
-  <div id="cafe" class="modal large">
-    <button class="close" data-close>×</button><span class="eyebrow">Área B2B</span><h2>Cafeteria parceira</h2>
+  <div id="cafe" class="modal large" aria-label="Área para cafeterias">
+    <button class="close" data-close aria-label="Fechar cafeterias">×</button><span class="eyebrow">Área B2B</span><h2>Cafeteria parceira</h2>
     <p>Solicite uma parceria. Na versão real, a conta precisa ser aprovada pela administração antes de acessar condições exclusivas.</p>
     <div class="b2b-card"><b>O que a área B2B prevê</b><span>Tabela própria por cafeteria</span><span>Pedido mínimo configurável</span><span>Dia de entrega e recorrência</span><span>Histórico comercial</span></div>
   </div>
 
-  <div id="chat" class="modal large">
-    <button class="close" data-close>×</button><span class="eyebrow">Conversa do pedido</span><h2 id="chat-title">Atendimento</h2>
-    <div id="chat-context" class="chat-context"></div><div id="chat-messages" class="chat-messages"></div>
-    <div class="chat-compose"><input id="chat-input" maxlength="500" placeholder="Escreva uma mensagem"><button id="chat-send" class="primary">Enviar</button></div>
+  <div id="chat" class="modal large" aria-label="Conversa do pedido">
+    <button class="close" data-close aria-label="Fechar conversa">×</button><span class="eyebrow">Conversa do pedido</span><h2 id="chat-title">Atendimento</h2>
+    <div id="chat-context" class="chat-context"></div><div id="chat-messages" class="chat-messages" aria-live="polite"></div>
+    <div class="chat-compose"><input id="chat-input" maxlength="500" autocomplete="off" placeholder="Escreva uma mensagem"><button id="chat-send" class="primary">Enviar</button></div>
   </div>
 
   <div id="admin" class="modal" aria-label="Administração demonstrativa"></div>
   <button id="admin-fab" class="admin-fab" title="Abrir administração demonstrativa" aria-label="Abrir administração">⚙</button>
-  <div id="toast" class="toast" role="status"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="script.js?v=11"></script>
+  <script src="script.js?v=12"></script>
 </body>
 </html>
