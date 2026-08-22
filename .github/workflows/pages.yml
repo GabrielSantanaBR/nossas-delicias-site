@@ -1,4 +1,4 @@
-name: Deploy static site to GitHub Pages
+name: Validate and deploy static site
 
 on:
   push:
@@ -15,7 +15,57 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            echo "Checking $file"
+            node --check "$file"
+          done < <(find . -type f -name '*.js' -not -path './node_modules/*' -print0)
+
+      - name: Validate production assets and metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f index.html
+          test -f styles.css
+          test -f script.js
+          test -f favicon.png
+          test -f logo-nossas-delicias.svg
+          test -f manifest.webmanifest
+          test -f robots.txt
+          test -f sitemap.xml
+          test -f 404.html
+          test -f v6/v12-production.css
+          test -f v6/v12-production.js
+          python -m json.tool manifest.webmanifest >/dev/null
+          python - <<'PY'
+          import pathlib, xml.etree.ElementTree as ET
+          ET.parse('sitemap.xml')
+          html = pathlib.Path('index.html').read_text(encoding='utf-8')
+          required = [
+              'rel="canonical"',
+              'og:title',
+              'application/ld+json',
+              'manifest.webmanifest',
+              'script.js?v=12',
+              'v12-production.css?v=12',
+          ]
+          missing = [item for item in required if item not in html]
+          if missing:
+              raise SystemExit(f'Missing production metadata/assets: {missing}')
+          print('HTML production markers OK')
+          PY
+
   deploy:
+    needs: validate
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
