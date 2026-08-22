@@ -14,3 +14,4 @@ gunicorn>=23,<24
 mercadopago>=3.4,<4
 django-otp[segno]>=1.7,<2
 django-storages[s3]>=1.14,<2
+openpyxl>=3.1,<4
