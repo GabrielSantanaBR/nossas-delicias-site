@@ -8,10 +8,10 @@
   </div>
 
   {% if editable %}
-  <form method="post" class="note-grid">{% csrf_token %}
-    <div class="note-card">
+  <div class="note-grid">
+    <form method="post" class="note-card">{% csrf_token %}<input type="hidden" name="action" value="save">
       <h2>Itens da entrega</h2>
-      <p class="muted">Você pode alterar quantidades ou zerar um item para removê-lo. O sistema recalcula a tabela B2B, o pedido mínimo e os valores financeiros antes de salvar.</p>
+      <p class="muted">Altere quantidades ou use zero para remover. O sistema reaplica a tabela B2B, valida o pedido mínimo e recalcula a nota antes de salvar.</p>
       <div class="table-wrap">
         <table class="data-table">
           <thead><tr><th>Produto</th><th class="number">Preço atual</th><th>Quantidade</th><th>Observação</th></tr></thead>
@@ -19,20 +19,32 @@
         </table>
       </div>
       <label style="display:grid;gap:6px;margin-top:16px;font-weight:800;font-size:11px">Observações para esta entrega<textarea name="note" maxlength="1000">{{ order.customer_note }}</textarea></label>
-    </div>
-    <aside class="note-card">
-      <span class="eyebrow">Antes de salvar</span><h2>Regra da nota</h2>
-      <p>Até <b>16h do dia da entrega</b>, os itens e quantidades podem ser ajustados. Depois do corte, a nota financeira fica fixa.</p>
-      <div class="note-summary">
-        <div><span>Subtotal atual</span><b>R$ {{ order.subtotal|floatformat:2 }}</b></div>
-        <div><span>Total atual</span><b>R$ {{ order.total|floatformat:2 }}</b></div>
-        <div><span>Entrega</span><b>R$ {{ order.delivery_fee|floatformat:2 }}</b></div>
-        <div><span>Status</span><b>{{ order.get_status_display }}</b></div>
+      <button class="cta" type="submit" style="margin-top:14px">Salvar quantidades</button>
+    </form>
+
+    <aside style="display:grid;gap:14px;align-content:start">
+      <div class="note-card">
+        <span class="eyebrow">Adicionar à mesma nota</span><h2>Novo item</h2>
+        <p class="muted">Produtos adicionados antes do corte entram no mesmo pedido e recebem o preço B2B vigente para a quantidade final.</p>
+        <form method="post" class="stack-form">{% csrf_token %}<input type="hidden" name="action" value="add">
+          <label>Produto<select name="product_id" required><option value="">Selecione</option>{% for product in available_products %}<option value="{{ product.pk }}">{{ product.category.name }} · {{ product.name }}</option>{% endfor %}</select></label>
+          <label>Quantidade<input type="number" name="add_quantity" min="1" max="9999" value="1" required></label>
+          <button class="cta" type="submit" style="width:100%">Adicionar à nota</button>
+        </form>
       </div>
-      <button class="cta" type="submit" style="width:100%;margin-top:14px">Salvar alterações</button>
-      <a class="cta-secondary" style="width:100%;margin-top:8px" href="{% url 'cafe_note' order.public_id %}">Cancelar e ver nota</a>
+      <div class="note-card">
+        <span class="eyebrow">Regra da nota</span><h2>Fechamento às 16h</h2>
+        <p>Até <b>16h do dia da entrega</b>, itens e quantidades podem mudar. Depois do corte, preços, custos e valores ficam congelados no histórico financeiro.</p>
+        <div class="note-summary">
+          <div><span>Subtotal atual</span><b>R$ {{ order.subtotal|floatformat:2 }}</b></div>
+          <div><span>Total atual</span><b>R$ {{ order.total|floatformat:2 }}</b></div>
+          <div><span>Entrega</span><b>R$ {{ order.delivery_fee|floatformat:2 }}</b></div>
+          <div><span>Status</span><b>{{ order.get_status_display }}</b></div>
+        </div>
+        <a class="cta-secondary" style="width:100%;margin-top:12px" href="{% url 'cafe_note' order.public_id %}">Ver nota atual</a>
+      </div>
     </aside>
-  </form>
+  </div>
   {% else %}
     <div class="locked-banner">Esta nota já passou do horário de corte. Os itens e valores não podem mais ser alterados.</div>
     <div class="hero-actions" style="margin-top:16px"><a class="cta" href="{% url 'cafe_note' order.public_id %}">Ver nota fechada</a><a class="cta-secondary" href="{% url 'cafe_portal' %}">Voltar para cafeterias</a></div>
