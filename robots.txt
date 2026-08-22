@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gabrielsantanabr.github.io/nossas-delicias-site/sitemap.xml
