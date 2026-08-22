@@ -11,8 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
-from .models import CafeAccount, Order
-from .financial_models import CafeDeliveryNote
+from .models import CafeAccount, Order, Product
 from .financial_services import (
     business_financial_summary,
     cafe_order_editable,
@@ -21,7 +20,7 @@ from .financial_services import (
     refresh_order_financials,
     sales_report,
 )
-from .services import discount_for, price_for, promotion_for_code
+from .services import discount_for, price_for, product_allowed, promotion_for_code
 
 
 def _approved_cafe_for(user):
@@ -46,6 +45,33 @@ def _parse_date(value, fallback):
         return fallback
 
 
+def _reprice_cafe_order(order, cafe, user, note_text=None):
+    subtotal = Decimal('0.00')
+    for item in order.items.select_related('product').all():
+        unit_price = price_for(user, item.product, item.quantity, 'cafe')
+        if unit_price is None:
+            raise ValueError(f'Não existe preço B2B válido para {item.product.name}.')
+        if item.unit_price != unit_price:
+            item.unit_price = unit_price
+            item.save(update_fields=['unit_price', 'updated_at'])
+        subtotal += unit_price * item.quantity
+
+    minimum = max(order.delivery_region.minimum_order if order.delivery_region else Decimal('0'), cafe.minimum_order)
+    if subtotal < minimum:
+        raise ValueError(f'O pedido mínimo desta cafeteria/região é R$ {minimum:.2f}.')
+
+    promotion = promotion_for_code(user, order.promotion_code) if order.promotion_code else None
+    discount = discount_for(promotion, subtotal)
+    order.subtotal = subtotal
+    order.discount = discount
+    order.total = subtotal - discount + order.delivery_fee
+    if note_text is not None:
+        order.customer_note = note_text[:1000]
+    order.save(update_fields=['subtotal', 'discount', 'total', 'customer_note', 'updated_at'])
+    refresh_order_financials(order)
+    return order
+
+
 @login_required
 @require_http_methods(['GET', 'POST'])
 def cafe_order_edit(request, public_id):
@@ -68,73 +94,91 @@ def cafe_order_edit(request, public_id):
             messages.error(request, 'Esta nota já passou do horário de corte e não aceita mais alterações.')
             return redirect('cafe_note', public_id=order.public_id)
 
-        proposals = []
-        subtotal = Decimal('0.00')
-        for item in order.items.select_related('product').all():
-            raw = request.POST.get(f'qty_{item.pk}', str(item.quantity))
-            try:
-                quantity = max(0, min(int(raw), 9999))
-            except (TypeError, ValueError):
-                quantity = item.quantity
-            if quantity == 0:
-                proposals.append((item, 0, None))
-                continue
-            unit_price = price_for(request.user, item.product, quantity, 'cafe')
-            if unit_price is None:
-                messages.error(request, f'Não existe preço B2B válido para {item.product.name}.')
-                return redirect('cafe_order_edit', public_id=order.public_id)
-            proposals.append((item, quantity, unit_price))
-            subtotal += unit_price * quantity
+        action = request.POST.get('action', 'save')
+        try:
+            with transaction.atomic():
+                locked_order = Order.objects.select_for_update().get(pk=order.pk)
+                if not cafe_order_editable(locked_order):
+                    messages.error(request, 'O horário de corte foi atingido enquanto você editava. Nenhuma alteração foi salva.')
+                    return redirect('cafe_note', public_id=order.public_id)
 
-        if not any(quantity > 0 for _, quantity, _ in proposals):
-            messages.error(request, 'A nota precisa ter pelo menos um item.')
+                if action == 'add':
+                    try:
+                        product_id = int(request.POST.get('product_id', ''))
+                        quantity = int(request.POST.get('add_quantity', '1'))
+                    except (TypeError, ValueError):
+                        raise ValueError('Produto ou quantidade inválidos.')
+                    product = get_object_or_404(Product, pk=product_id, active=True)
+                    if not product_allowed(product, 'cafe'):
+                        raise ValueError('Este produto não está disponível para cafeterias.')
+                    quantity = max(product.min_quantity, min(quantity, 9999))
+                    unit_price = price_for(request.user, product, quantity, 'cafe')
+                    if unit_price is None:
+                        raise ValueError('Este produto ainda não possui preço B2B válido.')
+                    item = locked_order.items.filter(product=product).first()
+                    if item:
+                        item.quantity = min(item.quantity + quantity, 9999)
+                        item.unit_price = price_for(request.user, product, item.quantity, 'cafe') or unit_price
+                        item.save(update_fields=['quantity', 'unit_price', 'updated_at'])
+                    else:
+                        locked_order.items.create(product=product, quantity=quantity, unit_price=unit_price)
+                    _reprice_cafe_order(locked_order, cafe, request.user)
+                    locked_order.status_history.create(status=locked_order.status, changed_by=request.user, note=f'{product.name} adicionado à nota antes do corte.')
+                    messages.success(request, f'{product.name} adicionado à nota.')
+                    return redirect('cafe_order_edit', public_id=order.public_id)
+
+                proposals = []
+                for item in locked_order.items.select_related('product').all():
+                    raw = request.POST.get(f'qty_{item.pk}', str(item.quantity))
+                    try:
+                        quantity = max(0, min(int(raw), 9999))
+                    except (TypeError, ValueError):
+                        quantity = item.quantity
+                    proposals.append((item, quantity))
+
+                if not any(quantity > 0 for _, quantity in proposals):
+                    raise ValueError('A nota precisa ter pelo menos um item.')
+
+                # Validate the future state before deleting rows.
+                projected_subtotal = Decimal('0.00')
+                prices = {}
+                for item, quantity in proposals:
+                    if quantity <= 0:
+                        continue
+                    unit_price = price_for(request.user, item.product, quantity, 'cafe')
+                    if unit_price is None:
+                        raise ValueError(f'Não existe preço B2B válido para {item.product.name}.')
+                    prices[item.pk] = unit_price
+                    projected_subtotal += unit_price * quantity
+                minimum = max(locked_order.delivery_region.minimum_order if locked_order.delivery_region else Decimal('0'), cafe.minimum_order)
+                if projected_subtotal < minimum:
+                    raise ValueError(f'O pedido mínimo desta cafeteria/região é R$ {minimum:.2f}.')
+
+                for item, quantity in proposals:
+                    if quantity == 0:
+                        item.delete()
+                    else:
+                        item.quantity = quantity
+                        item.unit_price = prices[item.pk]
+                        item.save(update_fields=['quantity', 'unit_price', 'updated_at'])
+
+                note_text = (request.POST.get('note') or '')[:1000]
+                _reprice_cafe_order(locked_order, cafe, request.user, note_text=note_text)
+                locked_order.status_history.create(status=locked_order.status, changed_by=request.user, note='Nota da cafeteria atualizada antes do horário de corte.')
+        except ValueError as exc:
+            messages.error(request, str(exc))
             return redirect('cafe_order_edit', public_id=order.public_id)
-
-        minimum = max(order.delivery_region.minimum_order if order.delivery_region else Decimal('0'), cafe.minimum_order)
-        if subtotal < minimum:
-            messages.error(request, f'O pedido mínimo desta cafeteria/região é R$ {minimum:.2f}.')
-            return redirect('cafe_order_edit', public_id=order.public_id)
-
-        promotion = promotion_for_code(request.user, order.promotion_code) if order.promotion_code else None
-        discount = discount_for(promotion, subtotal)
-        note_text = (request.POST.get('note') or '')[:1000]
-
-        with transaction.atomic():
-            # Lock the order row so two edits from different browser tabs cannot
-            # overwrite each other at the same time.
-            locked_order = Order.objects.select_for_update().get(pk=order.pk)
-            if not cafe_order_editable(locked_order):
-                messages.error(request, 'O horário de corte foi atingido enquanto você editava. Nenhuma alteração foi salva.')
-                return redirect('cafe_note', public_id=order.public_id)
-
-            for item, quantity, unit_price in proposals:
-                if quantity == 0:
-                    item.delete()
-                else:
-                    item.quantity = quantity
-                    item.unit_price = unit_price
-                    item.save(update_fields=['quantity', 'unit_price', 'updated_at'])
-
-            locked_order.subtotal = subtotal
-            locked_order.discount = discount
-            locked_order.total = subtotal - discount + locked_order.delivery_fee
-            locked_order.customer_note = note_text
-            locked_order.save(update_fields=['subtotal', 'discount', 'total', 'customer_note', 'updated_at'])
-            refresh_order_financials(locked_order)
-            locked_order.status_history.create(
-                status=locked_order.status,
-                changed_by=request.user,
-                note='Nota da cafeteria atualizada antes do horário de corte.',
-            )
 
         messages.success(request, 'Nota atualizada. Os valores financeiros foram recalculados.')
         return redirect('cafe_note', public_id=order.public_id)
 
+    available_products = Product.objects.filter(active=True, sell_cafe=True).select_related('category').order_by('category__sort_order', 'sort_order', 'name')
     return render(request, 'store/cafe_order_edit.html', {
         'cafe': cafe,
         'order': order,
         'note': note,
         'editable': cafe_order_editable(order),
+        'available_products': available_products,
     })
 
 
