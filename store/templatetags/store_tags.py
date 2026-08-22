@@ -1,8 +1,10 @@
 from django import template
 from store.models import ProductPrice
 from store.services import price_for
+from store.financial_services import cafe_order_editable, ensure_cafe_note, maybe_lock_cafe_note
 
 register=template.Library()
+
 
 @register.simple_tag(takes_context=True)
 def product_price(context,product,quantity=1):
@@ -14,9 +16,37 @@ def product_price(context,product,quantity=1):
         value=row.unit_price if row else None
     return value
 
+
 @register.simple_tag(takes_context=True)
 def cart_count(context):
     user=context.get('user')
-    if not user or not user.is_authenticated: return 0
-    try: return sum(item.quantity for item in user.cart.items.all())
-    except Exception: return 0
+    if not user or not user.is_authenticated:
+        return 0
+    try:
+        return sum(item.quantity for item in user.cart.items.all())
+    except Exception:
+        return 0
+
+
+@register.simple_tag(takes_context=True)
+def cafe_orders(context,limit=12):
+    user=context.get('user')
+    if not user or not user.is_authenticated:
+        return []
+    account=getattr(user,'cafe_account',None)
+    if not account or not account.approved or not account.active:
+        return []
+    return user.orders.filter(order_type='cafe').select_related('delivery_region').prefetch_related('items','payments').order_by('-delivery_date','-created_at')[:limit]
+
+
+@register.simple_tag
+def cafe_note_for(order):
+    if not order or order.order_type!='cafe' or not order.delivery_date:
+        return None
+    note=ensure_cafe_note(order)
+    return maybe_lock_cafe_note(note) if note else None
+
+
+@register.simple_tag
+def cafe_order_can_edit(order):
+    return cafe_order_editable(order)
