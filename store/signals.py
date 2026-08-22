@@ -2,9 +2,9 @@ from django.db.models import Sum
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
-from .models import CustomerProfile, Order, OrderItem
+from .models import CustomerProfile, Order, OrderItem, Payment
 from .financial_models import OrderItemFinancialSnapshot
-from .financial_services import ensure_cafe_note, recalculate_note_totals, refresh_item_financial_snapshot
+from .financial_services import ensure_cafe_note, recalculate_note_totals, refresh_item_financial_snapshot, sync_note_payment
 
 
 @receiver(post_save, sender=Order)
@@ -36,3 +36,9 @@ def refresh_note_after_item_delete(sender, instance, **kwargs):
         note = ensure_cafe_note(instance.order)
         if note and not note.is_locked:
             recalculate_note_totals(note)
+
+
+@receiver(post_save, sender=Payment)
+def refresh_cafe_note_payment(sender, instance, **kwargs):
+    if instance.order.order_type == 'cafe':
+        sync_note_payment(instance.order)
