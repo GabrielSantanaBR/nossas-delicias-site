@@ -2,10 +2,9 @@ from collections import defaultdict
 from datetime import datetime, time
 from decimal import Decimal, ROUND_HALF_UP
 from django.db import transaction
-from django.db.models import Q
 from django.utils import timezone
 
-from .models import Order, OrderItem
+from .models import Order
 from .financial_models import (
     BusinessExpense,
     CafeDeliveryNote,
@@ -22,7 +21,7 @@ def money(value):
 
 
 def cafe_cutoff(order):
-    """Delivery-day edit deadline: 16:00 in the configured local timezone."""
+    """Delivery-day edit deadline: 16:00 in America/Sao_Paulo (project timezone)."""
     if not order.delivery_date:
         return timezone.now()
     naive = datetime.combine(order.delivery_date, time(hour=16, minute=0))
@@ -40,10 +39,7 @@ def ensure_cafe_note(order):
     cutoff = cafe_cutoff(order)
     note, created = CafeDeliveryNote.objects.get_or_create(
         order=order,
-        defaults={
-            'note_number': cafe_note_number(order),
-            'editable_until': cutoff,
-        },
+        defaults={'note_number': cafe_note_number(order), 'editable_until': cutoff},
     )
     if not created and note.status == 'draft' and note.locked_at is None and note.editable_until != cutoff:
         note.editable_until = cutoff
@@ -142,12 +138,22 @@ def recalculate_note_totals(note):
     return note
 
 
+def sync_note_payment(order):
+    """Payment can change after the commercial note is frozen; item values cannot."""
+    note = CafeDeliveryNote.objects.filter(order=order).first()
+    if not note:
+        return None
+    label = payment_label(order)
+    if note.payment_snapshot != label:
+        note.payment_snapshot = label
+        note.save(update_fields=['payment_snapshot', 'updated_at'])
+    return note
+
+
 @transaction.atomic
 def lock_cafe_note(note, user=None, force=False):
     note = CafeDeliveryNote.objects.select_for_update().select_related('order').get(pk=note.pk)
-    if note.status == 'cancelled':
-        return note
-    if note.locked_at:
+    if note.status == 'cancelled' or note.locked_at:
         return note
     now = timezone.now()
     if not force and now < note.editable_until:
@@ -170,6 +176,10 @@ def maybe_lock_cafe_note(note, user=None, at=None):
 
 def lock_due_cafe_notes(at=None):
     at = at or timezone.now()
+    # Backfill a note first if an older cafe order predates this feature.
+    missing = Order.objects.filter(order_type='cafe', delivery_date__isnull=False, cafe_delivery_note__isnull=True).exclude(status='cancelled')
+    for order in missing.iterator():
+        ensure_cafe_note(order)
     qs = CafeDeliveryNote.objects.filter(status='draft', locked_at__isnull=True, editable_until__lte=at).select_related('order')
     locked = 0
     for note in qs.iterator():
@@ -182,7 +192,7 @@ def _sales_rows(start, end, cafe=None, order_type=None):
     qs = OrderItemFinancialSnapshot.objects.select_related(
         'order_item__order__customer',
         'order_item__product',
-    ).filter(
+    ).prefetch_related('order_item__order__payments').filter(
         order_item__order__delivery_date__range=(start, end),
     ).exclude(order_item__order__status='cancelled')
     if order_type:
@@ -197,6 +207,7 @@ def sales_report(start, end, cafe=None, order_type=None):
     totals = {
         'items': 0,
         'revenue': Decimal('0'),
+        'received_revenue': Decimal('0'),
         'cost': Decimal('0'),
         'profit': Decimal('0'),
         'missing_cost_items': 0,
@@ -207,13 +218,16 @@ def sales_report(start, end, cafe=None, order_type=None):
     by_cafe = defaultdict(lambda: {'quantity': 0, 'revenue': Decimal('0'), 'cost': Decimal('0'), 'profit': Decimal('0'), 'orders': set()})
     by_month = defaultdict(lambda: {'quantity': 0, 'revenue': Decimal('0'), 'cost': Decimal('0'), 'profit': Decimal('0')})
 
+    payment_cache = {}
     for row in rows:
         order = row.order_item.order
+        is_paid = payment_cache.setdefault(order.pk, order.payments.filter(status='approved').exists())
         totals['items'] += row.quantity
         totals['revenue'] += row.revenue or 0
         totals['orders'].add(order.pk)
-        if order.payments.filter(status='approved').exists():
+        if is_paid:
             totals['paid_orders'].add(order.pk)
+            totals['received_revenue'] += row.revenue or 0
         if row.total_cost is None:
             totals['missing_cost_items'] += row.quantity
         else:
@@ -246,6 +260,8 @@ def sales_report(start, end, cafe=None, order_type=None):
             m['profit'] += row.profit or 0
 
     totals['revenue'] = money(totals['revenue'])
+    totals['received_revenue'] = money(totals['received_revenue'])
+    totals['accounts_receivable'] = money(totals['revenue'] - totals['received_revenue'])
     totals['cost'] = money(totals['cost'])
     totals['profit'] = money(totals['profit'])
     totals['order_count'] = len(totals.pop('orders'))
