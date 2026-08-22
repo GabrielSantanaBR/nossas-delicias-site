@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Editar nota da cafeteria | Nossas Delícias{% endblock %}
+{% block content %}
+<section class="cafe-note-wrap platform-section">
+  <div class="note-header">
+    <div><span class="eyebrow">Cafeteria · {{ cafe.business_name }}</span><h1 class="note-title">Ajustar pedido.</h1><p class="muted">Pedido #{{ order.public_id|stringformat:'s'|slice:':8'|upper }} · entrega {{ order.delivery_date|date:'d/m/Y' }}</p></div>
+    {% if note %}<div class="note-status"><span class="{% if editable %}editable{% else %}locked{% endif %}">{% if editable %}Editável até {{ note.editable_until|date:'d/m/Y H:i' }}{% else %}Nota fechada{% endif %}</span></div>{% endif %}
+  </div>
+
+  {% if editable %}
+  <form method="post" class="note-grid">{% csrf_token %}
+    <div class="note-card">
+      <h2>Itens da entrega</h2>
+      <p class="muted">Você pode alterar quantidades ou zerar um item para removê-lo. O sistema recalcula a tabela B2B, o pedido mínimo e os valores financeiros antes de salvar.</p>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Produto</th><th class="number">Preço atual</th><th>Quantidade</th><th>Observação</th></tr></thead>
+          <tbody>{% for item in order.items.all %}<tr><td><b>{{ item.product.name }}</b></td><td class="number">R$ {{ item.unit_price|floatformat:2 }}</td><td><input class="edit-qty" type="number" min="0" max="9999" name="qty_{{ item.pk }}" value="{{ item.quantity }}"></td><td>{{ item.note|default:'—' }}</td></tr>{% endfor %}</tbody>
+        </table>
+      </div>
+      <label style="display:grid;gap:6px;margin-top:16px;font-weight:800;font-size:11px">Observações para esta entrega<textarea name="note" maxlength="1000">{{ order.customer_note }}</textarea></label>
+    </div>
+    <aside class="note-card">
+      <span class="eyebrow">Antes de salvar</span><h2>Regra da nota</h2>
+      <p>Até <b>16h do dia da entrega</b>, os itens e quantidades podem ser ajustados. Depois do corte, a nota financeira fica fixa.</p>
+      <div class="note-summary">
+        <div><span>Subtotal atual</span><b>R$ {{ order.subtotal|floatformat:2 }}</b></div>
+        <div><span>Total atual</span><b>R$ {{ order.total|floatformat:2 }}</b></div>
+        <div><span>Entrega</span><b>R$ {{ order.delivery_fee|floatformat:2 }}</b></div>
+        <div><span>Status</span><b>{{ order.get_status_display }}</b></div>
+      </div>
+      <button class="cta" type="submit" style="width:100%;margin-top:14px">Salvar alterações</button>
+      <a class="cta-secondary" style="width:100%;margin-top:8px" href="{% url 'cafe_note' order.public_id %}">Cancelar e ver nota</a>
+    </aside>
+  </form>
+  {% else %}
+    <div class="locked-banner">Esta nota já passou do horário de corte. Os itens e valores não podem mais ser alterados.</div>
+    <div class="hero-actions" style="margin-top:16px"><a class="cta" href="{% url 'cafe_note' order.public_id %}">Ver nota fechada</a><a class="cta-secondary" href="{% url 'cafe_portal' %}">Voltar para cafeterias</a></div>
+  {% endif %}
+</section>
+{% endblock %}
