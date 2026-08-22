@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Nota {{ note.note_number }} | Nossas Delícias{% endblock %}
+{% block content %}
+<section class="cafe-note-wrap platform-section">
+  <div class="note-header">
+    <div><span class="eyebrow">Nota de entrega · {{ cafe.business_name }}</span><h1 class="note-title">{{ note.note_number }}</h1><p class="muted">Entrega {{ order.delivery_date|date:'d/m/Y' }} · pedido #{{ order.public_id|stringformat:'s'|slice:':8'|upper }}</p></div>
+    <div class="note-status"><span class="{% if editable %}editable{% else %}locked{% endif %}">{% if editable %}Editável até {{ note.editable_until|date:'H:i' }}{% else %}Fechada{% endif %}</span><span>{{ order.get_status_display }}</span></div>
+  </div>
+
+  {% if editable %}<div class="status-ok">Esta nota ainda pode ser ajustada. Às 16h do dia da entrega, itens e valores ficam fixos automaticamente.</div>{% else %}<div class="locked-banner">Nota fechada. Os valores abaixo passam a representar o histórico financeiro desta entrega.</div>{% endif %}
+
+  <div class="note-grid" style="margin-top:18px">
+    <div class="note-card">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Código</th><th>Produto</th><th class="number">Qtd.</th><th class="number">Preço un.</th><th class="number">Faturamento</th></tr></thead>
+          <tbody>{% for row in rows %}<tr><td>{{ row.sku|default:'—' }}</td><td><b>{{ row.product_name }}</b></td><td class="number">{{ row.quantity }}</td><td class="number">R$ {{ row.unit_price|floatformat:2 }}</td><td class="number"><b>R$ {{ row.revenue|floatformat:2 }}</b></td></tr>{% empty %}<tr><td colspan="5">A nota ainda não possui snapshots financeiros.</td></tr>{% endfor %}</tbody>
+        </table>
+      </div>
+      {% if order.customer_note %}<div style="margin-top:16px"><span class="eyebrow">Observações</span><p>{{ order.customer_note }}</p></div>{% endif %}
+      <div class="hero-actions" style="margin-top:16px">{% if editable %}<a class="cta" href="{% url 'cafe_order_edit' order.public_id %}">Editar pedido</a>{% endif %}<a class="cta-secondary" href="{% url 'cafe_portal' %}">Voltar</a></div>
+    </div>
+    <aside class="note-card">
+      <span class="eyebrow">Resumo da nota</span><h2>Entrega e valores</h2>
+      <div class="note-summary">
+        <div><span>Itens</span><b>{{ note.quantity_snapshot }}</b></div>
+        <div><span>Faturamento</span><b>R$ {{ note.revenue_snapshot|floatformat:2 }}</b></div>
+        <div><span>Pagamento</span><b>{{ note.payment_snapshot|default:'Pendente' }}</b></div>
+        <div><span>Total pedido</span><b>R$ {{ order.total|floatformat:2 }}</b></div>
+      </div>
+      <p class="muted" style="margin-top:16px">A cafeteria vê os valores comerciais da própria nota. Custos internos, lucro e margem ficam restritos à central financeira/admin.</p>
+      {% if note.locked_at %}<small class="muted">Fechada em {{ note.locked_at|date:'d/m/Y H:i' }}.</small>{% endif %}
+    </aside>
+  </div>
+</section>
+{% endblock %}

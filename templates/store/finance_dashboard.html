@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Financeiro | Nossas Delícias{% endblock %}
+{% block content %}
+<section class="finance-wrap">
+  <div class="finance-header">
+    <div><span class="eyebrow">Central financeira</span><h1 class="finance-title">Números do negócio.</h1><p class="muted">Vendas, custos, lucro, margem, despesas e desempenho por canal usando snapshots históricos — sem alterar o passado quando o custo de uma receita muda.</p></div>
+    <a class="cta-secondary" href="/nd-admin/">Abrir administração</a>
+  </div>
+
+  <form class="finance-filters" method="get">
+    <label>De<input type="date" name="from" value="{{ start|date:'Y-m-d' }}"></label>
+    <label>Até<input type="date" name="to" value="{{ end|date:'Y-m-d' }}"></label>
+    <button class="cta" type="submit">Atualizar período</button>
+    <a class="cta-secondary" href="{% url 'finance_export_csv' %}?from={{ start|date:'Y-m-d' }}&to={{ end|date:'Y-m-d' }}">Exportar vendas CSV</a>
+  </form>
+
+  <div class="finance-kpis">
+    <article class="metric-card"><span>Itens vendidos</span><b>{{ report.totals.items }}</b><small>{{ report.totals.order_count }} pedidos</small></article>
+    <article class="metric-card"><span>Faturamento</span><b>R$ {{ report.totals.revenue|floatformat:2 }}</b><small>Ticket R$ {{ report.totals.ticket_average|floatformat:2 }}</small></article>
+    <article class="metric-card"><span>Custo vendido</span><b>R$ {{ report.totals.cost|floatformat:2 }}</b><small>{% if report.totals.missing_cost_items %}{{ report.totals.missing_cost_items }} item(ns) sem custo{% else %}Custos completos{% endif %}</small></article>
+    <article class="metric-card"><span>Lucro bruto</span><b>R$ {{ report.totals.profit|floatformat:2 }}</b><small>{% if report.totals.margin_percent != None %}Margem {{ report.totals.margin_percent|floatformat:2 }}%{% else %}Margem pendente{% endif %}</small></article>
+    <article class="metric-card"><span>Despesas</span><b>R$ {{ report.expenses|floatformat:2 }}</b><small>Despesas pagas no período</small></article>
+    <article class="metric-card"><span>Resultado após despesas</span><b>R$ {{ report.net_after_expenses|floatformat:2 }}</b><small>Lucro bruto − despesas</small></article>
+  </div>
+
+  <section class="finance-section">
+    <div class="section-head"><div><span class="eyebrow">Canais</span><h2>De onde vem o faturamento.</h2></div></div>
+    <div class="platform-grid">
+      <article class="metric-card"><span>Clientes</span><b>R$ {{ retail_report.totals.revenue|floatformat:2 }}</b><small>{{ retail_report.totals.items }} itens · lucro R$ {{ retail_report.totals.profit|floatformat:2 }}</small></article>
+      <article class="metric-card"><span>Cafeterias</span><b>R$ {{ cafe_report.totals.revenue|floatformat:2 }}</b><small>{{ cafe_report.totals.items }} itens · lucro R$ {{ cafe_report.totals.profit|floatformat:2 }}</small></article>
+      <article class="metric-card"><span>Eventos</span><b>R$ {{ event_report.totals.revenue|floatformat:2 }}</b><small>{{ event_report.totals.items }} itens · lucro R$ {{ event_report.totals.profit|floatformat:2 }}</small></article>
+      <article class="metric-card"><span>Pedidos pagos</span><b>{{ report.totals.paid_order_count }}</b><small>de {{ report.totals.order_count }} pedidos no período</small></article>
+    </div>
+  </section>
+
+  <section class="finance-section">
+    <div class="section-head"><div><span class="eyebrow">Cafeterias</span><h2>Comparação B2B.</h2></div><p>O mesmo princípio do consolidado da planilha, agora calculado diretamente dos pedidos fechados/salvos no sistema.</p></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Cafeteria</th><th class="number">Pedidos</th><th class="number">Itens</th><th class="number">Faturamento</th><th class="number">Custo</th><th class="number">Lucro</th><th class="number">Margem</th></tr></thead><tbody>{% for row in cafe_report.by_cafe %}<tr><td><b>{{ row.name }}</b></td><td class="number">{{ row.order_count }}</td><td class="number">{{ row.quantity }}</td><td class="number">R$ {{ row.revenue|floatformat:2 }}</td><td class="number">R$ {{ row.cost|floatformat:2 }}</td><td class="number profit-positive">R$ {{ row.profit|floatformat:2 }}</td><td class="number">{{ row.margin_percent|floatformat:2 }}%</td></tr>{% empty %}<tr><td colspan="7">Nenhuma venda para cafeteria neste período.</td></tr>{% endfor %}</tbody></table></div>
+  </section>
+
+  <section class="finance-section">
+    <div class="section-head"><div><span class="eyebrow">Produtos</span><h2>O que mais movimenta o negócio.</h2></div></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Produto</th><th class="number">Quantidade</th><th class="number">Faturamento</th><th class="number">Custo</th><th class="number">Lucro</th><th class="number">Margem</th></tr></thead><tbody>{% for row in report.by_product %}<tr><td><b>{{ row.name }}</b></td><td class="number">{{ row.quantity }}</td><td class="number">R$ {{ row.revenue|floatformat:2 }}</td><td class="number">R$ {{ row.cost|floatformat:2 }}</td><td class="number profit-positive">R$ {{ row.profit|floatformat:2 }}</td><td class="number">{{ row.margin_percent|floatformat:2 }}%</td></tr>{% empty %}<tr><td colspan="6">Sem vendas no período.</td></tr>{% endfor %}</tbody></table></div>
+  </section>
+
+  <section class="finance-section">
+    <div class="section-head"><div><span class="eyebrow">Meses</span><h2>Evolução financeira.</h2></div></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Mês</th><th class="number">Itens</th><th class="number">Faturamento</th><th class="number">Custo</th><th class="number">Lucro</th><th class="number">Margem</th></tr></thead><tbody>{% for row in report.by_month %}<tr><td>{{ row.name }}</td><td class="number">{{ row.quantity }}</td><td class="number">R$ {{ row.revenue|floatformat:2 }}</td><td class="number">R$ {{ row.cost|floatformat:2 }}</td><td class="number profit-positive">R$ {{ row.profit|floatformat:2 }}</td><td class="number">{{ row.margin_percent|floatformat:2 }}%</td></tr>{% empty %}<tr><td colspan="6">Sem dados.</td></tr>{% endfor %}</tbody></table></div>
+  </section>
+
+  {% if report.totals.missing_cost_items %}<div class="status-warning" style="margin-top:22px">Há {{ report.totals.missing_cost_items }} item(ns) sem custo unitário cadastrado. O faturamento está correto, mas lucro e margem globais só ficam confiáveis depois de mapear esses produtos na área “Custos dos produtos”.</div>{% endif %}
+</section>
+{% endblock %}

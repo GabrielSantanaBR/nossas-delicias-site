@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Nossas Delícias | Confeitaria e central de pedidos{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <span class="eyebrow">Confeitaria artesanal · Rio de Janeiro</span>
+    <h1>Seu momento merece uma delícia.</h1>
+    <p>Uma experiência para escolher, pedir e acompanhar — com atendimento próprio para clientes, cafeterias e eventos.</p>
+    <div class="hero-actions"><a class="cta" href="{% url 'catalog' %}">Montar meu pedido</a><a class="cta-secondary" href="{% url 'event_portal' %}">Planejar um evento</a></div>
+    <div class="trust-row"><span>Cardápio por perfil</span><span>Agenda por região</span><span>Atendimento por pedido</span><span>Histórico na conta</span></div>
+  </div>
+  <div class="hero-card"><span class="eyebrow" style="color:#e8c8b6">Uma central para tudo</span><b>Do cardápio à entrega, sem perder o contexto.</b><p>Pedido, região, data, pagamento e conversa ficam conectados à mesma operação.</p></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><span class="eyebrow">Em destaque</span><h2>Delícias para cada momento.</h2></div><p>O cardápio é administrável pela equipe e pode mostrar preços diferentes conforme o perfil aprovado.</p></div>
+  <div class="grid">{% for product in featured %}<article class="product interactive">{% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" decoding="async">{% endif %}<small class="eyebrow">{{ product.category.name }}</small><h3>{{ product.name }}</h3><p>{{ product.description|truncatechars:120 }}</p><a class="cta-secondary" href="{% url 'catalog' %}#cat-{{ product.category.slug }}">Ver no cardápio</a></article>{% empty %}<div class="panel"><h2>Cardápio em preparação</h2><p>Os produtos aparecem aqui assim que forem publicados pela administração.</p></div>{% endfor %}</div>
+</section>
+
+<section class="platform-section">
+  <div class="section-head"><div><span class="eyebrow">Três formas de atender</span><h2>Uma marca, fluxos diferentes.</h2></div><p>Cada público vê as regras e condições que fazem sentido para ele, sem misturar varejo, B2B e orçamento de evento.</p></div>
+  <div class="platform-grid">
+    <article class="metric-card"><span>Para você</span><b>Encomendas</b><small>Cardápio, sacola, região, data, pagamento e acompanhamento pela conta.</small></article>
+    <article class="metric-card"><span>Cafeterias</span><b>Canal B2B</b><small>Tabela própria, pedidos recorrentes, notas por entrega e histórico comercial.</small></article>
+    <article class="metric-card"><span>Eventos</span><b>Orçamento</b><small>Solicitação personalizada, negociação, aprovação e conversão em pedido.</small></article>
+    <article class="metric-card"><span>Atendimento</span><b>Conversa por pedido</b><small>Mensagens ficam ligadas ao contexto correto, sem informações soltas.</small></article>
+  </div>
+</section>
+
+<section class="platform-section">
+  <div class="note-grid">
+    <div class="note-card"><span class="eyebrow">Entrega inteligente</span><h2 class="platform-title">A agenda respeita a operação.</h2><p>CEP, região, rota, dia disponível, antecedência e capacidade são verificados antes da confirmação. Isso evita prometer uma data que a produção não consegue cumprir.</p><a class="cta" href="{% url 'cart' %}">Consultar pelo pedido</a></div>
+    <div class="note-card"><span class="eyebrow">Relacionamento</span><h2>Voltar fica mais fácil.</h2><p>O cliente mantém histórico de pedidos e benefícios; cafeterias mantêm uma rotina comercial; eventos têm o próprio fluxo de orçamento.</p><a class="cta-secondary" href="{% url 'account' %}">Minha conta</a></div>
+  </div>
+</section>
+{% endblock %}
