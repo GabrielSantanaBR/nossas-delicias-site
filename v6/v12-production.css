@@ -1,0 +1,42 @@
+/* Nossas Delícias v12 — production polish inspired by the saved site reference pack */
+
+:root{--nd-focus:#9f5f3d;--nd-surface:#fffaf4;--nd-ink:#2a1712;--nd-soft:#f2e7de;--nd-shadow:0 18px 55px rgba(42,23,18,.10)}
+html{scroll-padding-top:126px;scroll-behavior:smooth}
+body{min-height:100vh;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
+.skip-link{position:fixed;left:16px;top:10px;z-index:9999;transform:translateY(-180%);background:var(--nd-ink);color:#fff;padding:10px 14px;border-radius:999px;font-size:12px;font-weight:800;transition:transform .18s ease}.skip-link:focus{transform:none}
+:where(a,button,input,select,textarea,summary):focus-visible{outline:3px solid color-mix(in srgb,var(--nd-focus) 62%,white);outline-offset:3px}
+button,a,.audience,.nd-product,.nd-experience-card,.benefit-grid article{touch-action:manipulation}
+
+/* Stable, premium header */
+.header{isolation:isolate;contain:layout style}.header::after{content:"";position:absolute;inset:auto 24px 0;height:1px;background:linear-gradient(90deg,transparent,rgba(98,55,36,.18),transparent);pointer-events:none}.header nav a,.header nav button{position:relative}.header nav a::after{content:"";position:absolute;left:8px;right:8px;bottom:-8px;height:2px;border-radius:999px;background:var(--nd-focus);transform:scaleX(0);transform-origin:left;transition:transform .18s ease}.header nav a:hover::after,.header nav a.nd-active::after{transform:scaleX(1)}
+
+/* Editorial composition / GetLayers-like clarity */
+.hero{position:relative}.hero-copy{position:relative;z-index:1}.hero-copy h1{text-wrap:balance}.hero-copy>p{max-width:62ch}.hero-media{box-shadow:var(--nd-shadow)}.floating-card{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.section-head h2,.nd-experience h2,.nd-confidence h2,.nd-faq h2,.cta-box h2{text-wrap:balance}
+.section-head p,.nd-experience-head p,.nd-faq-head p{max-width:62ch}
+
+/* Reusable premium interactions inspired by 21st/Uiverse/Unlumen */
+.primary,.secondary,.light-btn,.button,.cart-btn,.nd-add{position:relative;overflow:hidden;isolation:isolate;transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease}.primary:hover,.button-primary:hover,.cart-btn:hover,.nd-add:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(42,23,18,.17)}.secondary:hover,.light-btn:hover{transform:translateY(-2px)}
+.nd-product{transition:transform .24s cubic-bezier(.2,.8,.2,1),box-shadow .24s ease,border-color .24s ease}.nd-product:hover{transform:translateY(-5px);box-shadow:0 22px 50px rgba(42,23,18,.12);border-color:rgba(159,95,61,.28)}
+.nd-product-media::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,35%),rgba(255,255,255,.22),transparent 38%);opacity:0;transition:opacity .2s ease;pointer-events:none}.nd-product:hover .nd-product-media::after{opacity:1}
+.nd-experience-card,.benefit-grid article,.delivery-card,.nd-business-card{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.nd-experience-card:hover,.benefit-grid article:hover{transform:translateY(-3px);box-shadow:0 16px 38px rgba(42,23,18,.08);border-color:rgba(159,95,61,.24)}
+
+/* Checkout flow clarity */
+.nd-checkout-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:2px 0 22px}.nd-checkout-steps span{display:flex;align-items:center;gap:8px;min-height:44px;padding:9px 11px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:10px;font-weight:800;color:var(--muted)}.nd-checkout-steps i{display:grid;place-items:center;width:23px;height:23px;flex:0 0 23px;border-radius:50%;background:var(--nd-soft);font-style:normal;font-size:9px;color:var(--nd-ink)}.nd-checkout-steps span.active{border-color:rgba(159,95,61,.34);background:#fff8f2;color:var(--nd-ink)}.nd-checkout-steps span.active i{background:var(--nd-ink);color:#fff}.summary{position:sticky;top:18px;align-self:start}
+
+/* Better modal/dialog behavior */
+.modal.open,.drawer.open{overscroll-behavior:contain}.modal[aria-modal="true"]{box-shadow:0 30px 90px rgba(35,19,14,.28)}.close{display:grid!important;place-items:center!important;min-width:38px;min-height:38px}.chat-messages{overscroll-behavior:contain;scrollbar-gutter:stable}.chat-compose{position:sticky;bottom:0;background:linear-gradient(180deg,rgba(255,250,244,.78),#fffaf4 30%);padding-top:10px}.msg{overflow-wrap:anywhere}
+
+/* Trust / operational states */
+.nd-system-note{display:flex;gap:10px;align-items:flex-start;margin:14px 0;padding:12px 13px;border:1px solid rgba(159,95,61,.18);border-radius:12px;background:#fff8f2;color:#684531;font-size:10px;line-height:1.55}.nd-system-note b{color:var(--nd-ink)}
+.nd-empty-state{display:grid;place-items:center;min-height:150px;padding:24px;border:1px dashed rgba(89,56,43,.22);border-radius:16px;text-align:center;color:var(--muted)}
+.nd-loading{position:relative;overflow:hidden;background:#eee5de!important;color:transparent!important}.nd-loading::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:nd-shimmer 1.15s infinite}@keyframes nd-shimmer{to{transform:translateX(100%)}}
+
+/* Performance: skip layout/paint work for deep content until close to viewport */
+@supports(content-visibility:auto){main>section:nth-of-type(n+3){content-visibility:auto;contain-intrinsic-size:720px}}
+
+/* Reduced motion is a first-class behavior */
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal,.nd-product,.nd-product-media img,.primary,.secondary,.light-btn,.button,.cart-btn,.nd-add,.nd-experience-card,.benefit-grid article{transition:none!important;animation:none!important;transform:none!important}.nd-product-media::after{display:none}.v11-progress{display:none}}
+
+@media(max-width:900px){html{scroll-padding-top:100px}.header nav a::after{display:none}.summary{position:static}.nd-checkout-steps{grid-template-columns:1fr}.nd-checkout-steps span{min-height:40px}}
+@media(max-width:620px){.hero-copy h1{text-wrap:pretty}.nd-checkout-steps{gap:6px}.nd-checkout-steps span{padding:8px 10px}.primary,.secondary,.light-btn,.button,.cart-btn{min-height:44px}}
