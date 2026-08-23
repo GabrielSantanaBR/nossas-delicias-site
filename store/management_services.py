@@ -1,6 +1,7 @@
 from collections import defaultdict
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
+from math import ceil
 
 from django.db.models import Q, Sum
 from django.utils import timezone
@@ -105,13 +106,19 @@ def pricing_health():
     for row in rows:
         statuses[row['status']] += 1
     active = [row for row in rows if row['recipe'].active]
+    status_map = dict(statuses)
+    # Stable aliases are useful in Django templates, where dictionary keys with
+    # spaces are intentionally awkward to address.
+    status_map['PREENCHER_PREÇO'] = statuses['PREENCHER PREÇO']
+    status_map['ABAIXO_DA_META'] = statuses['ABAIXO DA META']
+    status_map['REVISAR_CUSTO'] = statuses['REVISAR CUSTO/RENDIMENTO']
     return {
         'rows': rows,
         'active_recipes': len(active),
         'cafe_prices': sum(1 for row in active if row['cafe_price'] is not None),
         'client_prices': sum(1 for row in active if row['client_price'] is not None),
         'desired_margin': FinancialSettings.current().desired_margin_percent,
-        'statuses': dict(statuses),
+        'statuses': status_map,
         'ok_count': statuses['OK'],
         'fill_price_count': statuses['PREENCHER PREÇO'],
         'below_target_count': statuses['ABAIXO DA META'],
@@ -155,6 +162,12 @@ def fixed_cost_forecast(start, end):
         total += amount
         rows.append({'cost': cost, 'months': months, 'forecast': money(amount)})
     return {'rows': rows, 'total': money(total)}
+
+
+def active_monthly_fixed_cost():
+    today = timezone.localdate()
+    queryset = FixedCost.objects.filter(active=True, start_date__lte=today).filter(Q(end_date__isnull=True) | Q(end_date__gte=today))
+    return money(queryset.aggregate(total=Sum('monthly_amount'))['total'] or 0)
 
 
 def receivables_report(start, end):
@@ -209,6 +222,29 @@ def cashflow_summary(start, end):
     }
 
 
+def break_even_for_period(start, end):
+    report = business_financial_summary(start, end)
+    fixed = fixed_cost_forecast(start, end)['total']
+    revenue = report['totals']['revenue']
+    profit = report['totals']['profit']
+    missing_cost = report['totals']['missing_cost_items']
+    if revenue > 0 and not missing_cost and profit > 0:
+        contribution_margin = profit / revenue
+    else:
+        contribution_margin = FinancialSettings.current().desired_margin_percent / HUNDRED
+    break_even_revenue = money(fixed / contribution_margin) if contribution_margin > 0 else None
+    gap = money(max((break_even_revenue or Decimal('0')) - revenue, Decimal('0'))) if break_even_revenue is not None else None
+    progress = min((revenue / break_even_revenue * HUNDRED), Decimal('999.99')).quantize(CENT, rounding=ROUND_HALF_UP) if break_even_revenue else None
+    return {
+        'fixed_cost': fixed,
+        'contribution_margin_percent': (contribution_margin * HUNDRED).quantize(CENT, rounding=ROUND_HALF_UP),
+        'break_even_revenue': break_even_revenue,
+        'current_revenue': revenue,
+        'gap': gap,
+        'progress_percent': progress,
+    }
+
+
 def management_dashboard(start, end):
     financial = business_financial_summary(start, end)
     cashflow = cashflow_summary(start, end)
@@ -222,6 +258,7 @@ def management_dashboard(start, end):
         'cashflow': cashflow,
         'pricing': pricing,
         'inventory': inventory,
+        'break_even': break_even_for_period(start, end),
         'cafe': cafe,
         'retail': retail,
         'event': event,
@@ -244,6 +281,9 @@ def simulate_price(recipe, current_price=None, desired_margin=None, increase_per
     margin = (new_profit / new_price * HUNDRED).quantize(CENT, rounding=ROUND_HALF_UP) if new_price and new_profit is not None else None
     extra_per_unit = (new_profit - current_profit).quantize(CENT, rounding=ROUND_HALF_UP) if current_profit is not None and new_profit is not None else None
     extra_total = (extra_per_unit * Decimal(quantity or 1)).quantize(CENT, rounding=ROUND_HALF_UP) if extra_per_unit is not None else None
+    fixed_monthly = active_monthly_fixed_cost()
+    break_even_units = ceil(fixed_monthly / new_profit) if fixed_monthly > 0 and new_profit and new_profit > 0 else None
+    break_even_revenue = money(Decimal(break_even_units) * new_price) if break_even_units is not None and new_price is not None else None
     return {
         'recipe': recipe,
         'unit_cost': unit_cost,
@@ -256,4 +296,7 @@ def simulate_price(recipe, current_price=None, desired_margin=None, increase_per
         'extra_per_unit': extra_per_unit,
         'extra_total': extra_total,
         'quantity': quantity,
+        'fixed_monthly': fixed_monthly,
+        'break_even_units': break_even_units,
+        'break_even_revenue': break_even_revenue,
     }
