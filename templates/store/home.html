@@ -11,15 +11,24 @@
       <a class="button button-ghost" href="#experiencia" data-scroll-to="#experiencia">Conhecer a experiência</a>
     </div>
     <div class="hero-proof">
-      <div><strong>01</strong><span>Pedido organizado</span></div>
+      <div><strong>01</strong><span>Produção artesanal</span></div>
       <div><strong>02</strong><span>Entrega planejada</span></div>
       <div><strong>03</strong><span>Atendimento próximo</span></div>
     </div>
   </div>
 
-  <div class="hero-visual" data-reveal data-parallax="0.045" aria-label="Resumo da experiência Nossas Delícias">
+  <div class="hero-visual" data-reveal data-parallax="0.035" aria-label="Experiência visual Nossas Delícias">
+    <div class="hero-photo-shell">
+      {% with hero_product=featured.0 %}
+        {% if hero_product and hero_product.image %}
+          <img src="{{ hero_product.image.url }}" alt="{{ hero_product.name }} — Nossas Delícias" fetchpriority="high" decoding="async">
+        {% else %}
+          <div class="hero-dessert-art" aria-hidden="true"></div>
+        {% endif %}
+      {% endwith %}
+    </div>
     <div class="hero-visual-glow"></div>
-    <div class="floating-card floating-card-top"><span>Hoje</span><b>Fornada em produção</b><small>Pedidos organizados por entrega</small></div>
+    <div class="floating-card floating-card-top"><span>Feito em pequenos lotes</span><b>Produção com cuidado</b><small>Agenda e capacidade organizadas</small></div>
     <div class="signature-card">
       <span class="signature-kicker">Nossas Delícias</span>
       <strong>Uma experiência que começa antes da primeira mordida.</strong>
@@ -27,6 +36,7 @@
       <div class="signature-meta"><span>feito à mão</span><span>pedido digital</span><span>atendimento humano</span></div>
     </div>
     <div class="floating-card floating-card-bottom"><span>Seu pedido</span><b>Contexto em um só lugar</b><small>Itens · entrega · pagamento · conversa</small></div>
+    <div class="hero-scroll-cue" aria-hidden="true"><span>Role para descobrir</span><i></i></div>
   </div>
 </section>
 
@@ -63,7 +73,7 @@
         <span class="story-index">03 · Operar</span><h3>Cafeteria não é cliente comum.</h3><p>Parceiros B2B recebem tabela própria, histórico comercial, pedidos recorrentes e notas editáveis até o corte operacional. Eventos seguem um fluxo separado de orçamento.</p><a href="{% url 'cafe_portal' %}">Conhecer o canal B2B →</a>
       </article>
       <article class="story-step" data-story-step="data">
-        <span class="story-index">04 · Entender</span><h3>O negócio passa a enxergar o que vende.</h3><p>Custos, faturamento, lucro, margem, pagamentos e desempenho por produto ou cafeteria deixam de ficar espalhados. A operação gera informação enquanto trabalha.</p>{% if user.is_staff %}<a href="{% url 'finance_dashboard' %}">Abrir central financeira →</a>{% else %}<a href="{% url 'event_portal' %}">Planejar um evento →</a>{% endif %}
+        <span class="story-index">04 · Entender</span><h3>O negócio passa a enxergar o que vende.</h3><p>Custos, faturamento, lucro, margem, pagamentos e desempenho por produto ou cafeteria deixam de ficar espalhados. A operação gera informação enquanto trabalha.</p>{% if user.is_staff %}<a href="{% url 'management_center' %}">Abrir central de gestão →</a>{% else %}<a href="{% url 'event_portal' %}">Planejar um evento →</a>{% endif %}
       </article>
     </div>
 
