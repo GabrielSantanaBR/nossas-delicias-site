@@ -1,1 +1,67 @@
-{% extends 'base.html' %}{% block title %}Carrinho | Nossas Delícias{% endblock %}{% block content %}<section class="page-intro"><span class="eyebrow">Seu pedido</span><h1>Carrinho</h1><p>Os preços são recalculados no servidor conforme o seu perfil antes do fechamento.</p></section><section class="dashboard cart-layout"><div class="panel"><h2>Itens</h2>{% for row in snapshot.rows %}<form class="cart-row" method="post" action="{% url 'update_cart_item' row.item.id %}">{% csrf_token %}<div>{% if row.product.image %}<img src="{{ row.product.image.url }}" alt="{{ row.product.name }}" loading="lazy">{% endif %}<div><b>{{ row.product.name }}</b><small>R$ {{ row.unit_price }} por unidade</small></div></div><input type="number" name="quantity" value="{{ row.quantity }}" min="{{ row.product.min_quantity }}"><input type="text" name="note" value="{{ row.item.note }}" maxlength="250" placeholder="Observação do item"><strong>R$ {{ row.total }}</strong><button type="submit">Atualizar</button></form><form method="post" action="{% url 'remove_cart_item' row.item.id %}" class="remove-line">{% csrf_token %}<button type="submit">Remover {{ row.product.name }}</button></form>{% empty %}<div class="empty-state"><h3>Seu carrinho está vazio.</h3><a class="cta" href="{% url 'catalog' %}">Escolher doces</a></div>{% endfor %}</div><aside class="panel checkout-panel"><h2>Entrega e fechamento</h2><div class="summary"><span>Subtotal</span><strong>R$ {{ snapshot.subtotal }}</strong></div>{% if snapshot.rows %}<form method="post" action="{% url 'checkout_cart' %}" id="checkout-form">{% csrf_token %}{{ form.non_field_errors }}<label>CEP{{ form.zip_code }}{{ form.zip_code.errors }}</label><label>Data de entrega<select name="delivery_date" id="delivery-date" required disabled><option value="">Informe o CEP primeiro</option></select>{{ form.delivery_date.errors }}</label><label>Endereço{{ form.address }}{{ form.address.errors }}</label><label>Observações{{ form.note }}</label><label>Cupom{{ form.promotion_code }}</label>{% if promotions %}<div class="coupon-list">{% for promotion in promotions %}<button type="button" data-coupon="{{ promotion.code }}">{{ promotion.code }} · {{ promotion.percent_off }}%</button>{% endfor %}</div>{% endif %}<label class="inline-check">{{ form.save_address }} {{ form.save_address.label }}</label><p id="delivery-info" class="delivery-info" aria-live="polite"></p><button class="cta" type="submit">Criar pedido e ir para pagamento</button></form>{% endif %}</aside></section>{% endblock %}{% block scripts %}<script>(()=>{const form=document.querySelector('#checkout-form');if(!form)return;const zip=form.querySelector('[name=zip_code]'),date=form.querySelector('#delivery-date'),info=document.querySelector('#delivery-info'),coupon=form.querySelector('[name=promotion_code]');let timer;async function lookup(){const value=zip.value.replace(/\D/g,'');if(value.length<5)return;date.disabled=true;date.innerHTML='<option>Consultando...</option>';try{const r=await fetch(`/entrega/disponibilidade/?cep=${encodeURIComponent(value)}`);const d=await r.json();if(!r.ok)throw new Error(d.error||'Região não atendida');date.innerHTML='<option value="">Escolha a data</option>'+d.dates.map(x=>`<option value="${x.date}">${new Date(x.date+'T12:00:00').toLocaleDateString('pt-BR')} · ${x.start}–${x.end} · ${x.remaining} vagas</option>`).join('');date.disabled=false;info.textContent=`${d.region} · taxa R$ ${d.fee.toFixed(2)} · pedido mínimo R$ ${d.minimum_order.toFixed(2)}`;}catch(err){date.innerHTML='<option value="">Sem datas</option>';info.textContent=err.message;}}zip.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(lookup,400)});document.querySelectorAll('[data-coupon]').forEach(b=>b.addEventListener('click',()=>{coupon.value=b.dataset.coupon;}));})();</script>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Sacola | Nossas Delícias{% endblock %}
+{% block content %}
+<section class="page-intro" data-reveal>
+  <span class="eyebrow">Sua sacola</span>
+  <h1>Seu pedido começa a ganhar forma.</h1>
+  <p>Os preços são validados novamente no servidor conforme o seu perfil. A disponibilidade da entrega também é confirmada no fechamento.</p>
+</section>
+
+<section class="dashboard cart-layout">
+  <div class="panel" data-reveal>
+    <div class="section-head" style="margin-bottom:12px"><div><span class="eyebrow">01 · Escolhas</span><h2>Itens do pedido</h2></div><a class="cta-secondary" href="{% url 'catalog' %}">Continuar escolhendo</a></div>
+    {% for row in snapshot.rows %}
+      <form class="cart-row" method="post" action="{% url 'update_cart_item' row.item.id %}">{% csrf_token %}
+        <div>{% if row.product.image %}<img src="{{ row.product.image.url }}" alt="{{ row.product.name }}" loading="lazy" decoding="async">{% else %}<div class="product-placeholder" style="width:64px;height:64px;border-radius:14px"><span style="font-size:28px">{{ row.product.name|slice:':1' }}</span></div>{% endif %}<div><b>{{ row.product.name }}</b><small>R$ {{ row.unit_price|floatformat:2 }} por unidade</small></div></div>
+        <input aria-label="Quantidade de {{ row.product.name }}" type="number" name="quantity" value="{{ row.quantity }}" min="{{ row.product.min_quantity }}" {% if row.product.stock_limit %}max="{{ row.product.stock_limit }}"{% else %}max="9999"{% endif %} inputmode="numeric">
+        <input aria-label="Observação de {{ row.product.name }}" type="text" name="note" value="{{ row.item.note }}" maxlength="250" placeholder="Observação do item">
+        <strong>R$ {{ row.total|floatformat:2 }}</strong>
+        <button type="submit">Atualizar</button>
+      </form>
+      <form method="post" action="{% url 'remove_cart_item' row.item.id %}" class="remove-line">{% csrf_token %}<button type="submit">Remover {{ row.product.name }}</button></form>
+    {% empty %}
+      <div class="empty-state"><span class="eyebrow">Nada por aqui ainda</span><h3>Sua sacola está esperando a primeira escolha.</h3><a class="cta" href="{% url 'catalog' %}">Explorar cardápio</a></div>
+    {% endfor %}
+  </div>
+
+  <aside class="panel checkout-panel" data-reveal>
+    <span class="eyebrow">02 · Entrega</span><h2>Fechar pedido</h2>
+    <div class="summary"><span>Subtotal</span><strong>R$ {{ snapshot.subtotal|floatformat:2 }}</strong></div>
+    {% if snapshot.rows %}
+      <form method="post" action="{% url 'checkout_cart' %}" id="checkout-form">{% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="checkout-step"><div class="checkout-step-label"><i>1</i><span>Onde entregar</span></div><label>CEP{{ form.zip_code }}{{ form.zip_code.errors }}</label><p id="delivery-info" class="delivery-info" aria-live="polite"></p></div>
+        <div class="checkout-step"><div class="checkout-step-label"><i>2</i><span>Quando entregar</span></div><label>Data de entrega<select name="delivery_date" id="delivery-date" required disabled><option value="">Informe o CEP primeiro</option></select>{{ form.delivery_date.errors }}</label></div>
+        <div class="checkout-step"><div class="checkout-step-label"><i>3</i><span>Detalhes finais</span></div><label>Endereço{{ form.address }}{{ form.address.errors }}</label><label>Observações{{ form.note }}</label></div>
+        <div class="checkout-step"><div class="checkout-step-label"><i>4</i><span>Benefícios</span></div><label>Cupom{{ form.promotion_code }}</label>{% if promotions %}<div class="coupon-list">{% for promotion in promotions %}<button type="button" data-coupon="{{ promotion.code }}">{{ promotion.code }} · {{ promotion.percent_off }}%</button>{% endfor %}</div>{% endif %}</div>
+        <label class="inline-check">{{ form.save_address }} {{ form.save_address.label }}</label>
+        <button class="cta" type="submit">Criar pedido e continuar</button>
+        <small class="muted">Antes de criar o pedido, o servidor confirma preço, quantidade e a última vaga da data.</small>
+      </form>
+    {% endif %}
+  </aside>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+(()=>{
+  const form=document.querySelector('#checkout-form');if(!form)return;
+  const zip=form.querySelector('[name=zip_code]'),date=form.querySelector('#delivery-date'),info=document.querySelector('#delivery-info'),coupon=form.querySelector('[name=promotion_code]');let timer,controller;
+  async function lookup(){
+    const value=zip.value.replace(/\D/g,'');
+    if(value.length!==8){date.disabled=true;date.innerHTML='<option value="">Informe um CEP completo</option>';info.textContent='';return;}
+    if(controller)controller.abort();controller=new AbortController();
+    date.disabled=true;date.innerHTML='<option>Consultando disponibilidade...</option>';info.textContent='Verificando região e capacidade...';
+    try{
+      const response=await fetch(`/entrega/disponibilidade/?cep=${encodeURIComponent(value)}`,{signal:controller.signal,headers:{'X-Requested-With':'XMLHttpRequest'}});
+      const data=await response.json();if(!response.ok)throw new Error(data.error||'Região não atendida');
+      date.innerHTML='<option value="">Escolha a data</option>'+data.dates.map((item)=>`<option value="${item.date}">${new Date(item.date+'T12:00:00').toLocaleDateString('pt-BR')} · ${item.start}–${item.end} · ${item.remaining} vaga${item.remaining===1?'':'s'}</option>`).join('');
+      date.disabled=!data.dates.length;info.textContent=`${data.region} · entrega R$ ${data.fee.toFixed(2)} · pedido mínimo R$ ${data.minimum_order.toFixed(2)}`;
+    }catch(error){if(error.name==='AbortError')return;date.innerHTML='<option value="">Sem datas disponíveis</option>';info.textContent=error.message;}
+  }
+  zip.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(lookup,350)});
+  document.querySelectorAll('[data-coupon]').forEach((button)=>button.addEventListener('click',()=>{coupon.value=button.dataset.coupon;coupon.focus();}));
+  if(zip.value.replace(/\D/g,'').length===8)lookup();
+})();
+</script>
+{% endblock %}
