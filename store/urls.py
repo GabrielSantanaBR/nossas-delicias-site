@@ -23,6 +23,13 @@ urlpatterns=[
     path('pedidos/<uuid:public_id>/pagar/',views.start_payment,name='start_payment'),
 
     path('gestao/',views_management.management_center,name='management_center'),
+    path('gestao/pedidos/status/',views_management.management_order_status,name='management_order_status'),
+    path('gestao/mensagens/enviar/',views_management.management_conversation_send,name='management_conversation_send'),
+    path('gestao/mensagens/lida/',views_management.management_conversation_read,name='management_conversation_read'),
+    path('gestao/mensagens/alternar/',views_management.management_conversation_toggle,name='management_conversation_toggle'),
+    path('gestao/cafeterias/acao/',views_management.management_cafe_action,name='management_cafe_action'),
+    path('gestao/eventos/status/',views_management.management_event_status,name='management_event_status'),
+    path('gestao/logistica/disponibilidade/',views_management.management_availability_save,name='management_availability_save'),
     path('gestao/ingredientes/salvar/',views_management.ingredient_save,name='ingredient_save'),
     path('gestao/estoque/movimentar/',views_management.inventory_move,name='inventory_move'),
     path('gestao/receitas/salvar/',views_management.recipe_save,name='recipe_save'),
