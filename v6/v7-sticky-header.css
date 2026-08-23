@@ -1,4 +1,4 @@
-/* Keep brand + navigation + cart visible without layout shift. */
+/* Stable sticky public navigation. v15 uses a live wordmark instead of the legacy cropped image. */
 .header{
   position:sticky!important;
   top:12px!important;
@@ -13,15 +13,13 @@
   transition:box-shadow .2s ease,background .2s ease;
 }
 .header .brand{display:flex!important;align-items:center!important;min-width:0!important;flex:0 0 auto!important}
-.header .brand img{display:block!important;visibility:visible!important;opacity:1!important;transition:none!important}
+.header .brand img{display:none!important;visibility:hidden!important;opacity:0!important;transition:none!important}
 .header-actions{display:flex!important;align-items:center!important;flex:0 0 auto!important}
 .cart-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important}
 .header.is-scrolled{
   background:rgba(255,250,244,.985)!important;
   box-shadow:0 14px 40px rgba(42,23,18,.16)!important;
 }
-/* Deliberately do not resize the brand on scroll. */
-.header.is-scrolled .brand img{transition:none!important}
 
 @media(max-width:900px){
   .header{top:8px!important;margin-top:8px!important;min-height:84px!important}
