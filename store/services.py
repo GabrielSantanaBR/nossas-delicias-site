@@ -65,7 +65,6 @@ def price_for(user, product, quantity=1, order_type=None):
         table__active=True,
         min_quantity__lte=quantity,
     ).order_by('-min_quantity', '-updated_at').first()
-
     if not price and order_type != 'retail':
         price = ProductPrice.objects.filter(
             product=product,
@@ -91,8 +90,7 @@ def cart_snapshot(user):
     subtotal = Decimal('0.00')
     max_lead = 1
 
-    items = cart.items.select_related('product', 'product__category').all()
-    for item in items:
+    for item in cart.items.select_related('product', 'product__category').all():
         product = item.product
         if not product.active or not product_allowed(product, order_type):
             continue
@@ -170,11 +168,7 @@ def can_schedule(region, date, lead_days=1):
 
 
 def lock_delivery_slot(region, date, lead_days=1):
-    """Serialize the final capacity check for checkout.
-
-    This must be called inside transaction.atomic(). Locking the matching route
-    means two simultaneous checkouts cannot both claim the last available slot.
-    """
+    """Serialize the last capacity check inside an atomic checkout."""
     if not transaction.get_connection().in_atomic_block:
         raise RuntimeError('lock_delivery_slot precisa ser executado dentro de transaction.atomic().')
     if date < timezone.localdate() + timedelta(days=max(int(lead_days or 1), 1)):
@@ -183,7 +177,6 @@ def lock_delivery_slot(region, date, lead_days=1):
     route = route_for(region, date, lock=True)
     if not route:
         return False
-
     override = AvailabilityDay.objects.select_for_update().filter(date=date).first()
     if override and not override.enabled:
         return False
@@ -221,21 +214,18 @@ def eligible_promotions(user):
     audiences = ['all', customer_order_type(user)]
     if profile.orders_count >= 2:
         audiences.append('loyal')
-
     queryset = queryset.filter(
         audience__in=audiences,
         minimum_orders__lte=profile.orders_count,
         minimum_spend__lte=profile.lifetime_value,
     )
-    redeemed_counts = {
-        promotion_id: count
-        for promotion_id, count in user.promotion_redemptions.values_list('promotion_id').annotate_count()
-    } if False else None
-    # Keep the final eligibility rule explicit. The expected number of active
-    # promotions is small and this avoids exposing promotions with exhausted uses.
+
+    redemption_counts = {}
+    for promotion_id in user.promotion_redemptions.values_list('promotion_id', flat=True):
+        redemption_counts[promotion_id] = redemption_counts.get(promotion_id, 0) + 1
     return [
         promotion for promotion in queryset
-        if user.promotion_redemptions.filter(promotion=promotion).count() < promotion.max_uses_per_user
+        if redemption_counts.get(promotion.id, 0) < promotion.max_uses_per_user
     ]
 
 
