@@ -1,9 +1,9 @@
 from django.urls import path
-from . import views
-from . import views_finance
+from . import health, views, views_finance, views_management
 
 urlpatterns=[
     path('',views.home,name='home'),
+    path('health/',health.health_check,name='health_check'),
     path('cardapio/',views.catalog,name='catalog'),
     path('cadastro/',views.register,name='register'),
     path('minha-conta/',views.account,name='account'),
@@ -21,6 +21,19 @@ urlpatterns=[
     path('eventos/orcamento/',views.event_quote_create,name='event_quote_create'),
     path('pedidos/<uuid:public_id>/',views.order_detail,name='order_detail'),
     path('pedidos/<uuid:public_id>/pagar/',views.start_payment,name='start_payment'),
+
+    path('gestao/',views_management.management_center,name='management_center'),
+    path('gestao/ingredientes/salvar/',views_management.ingredient_save,name='ingredient_save'),
+    path('gestao/estoque/movimentar/',views_management.inventory_move,name='inventory_move'),
+    path('gestao/receitas/salvar/',views_management.recipe_save,name='recipe_save'),
+    path('gestao/receitas/ingrediente/',views_management.recipe_ingredient_save,name='recipe_ingredient_save'),
+    path('gestao/custos-fixos/salvar/',views_management.fixed_cost_save,name='fixed_cost_save'),
+    path('gestao/despesas/salvar/',views_management.expense_save,name='expense_save'),
+    path('gestao/configuracoes-financeiras/salvar/',views_management.financial_settings_save,name='financial_settings_save'),
+    path('gestao/planilha/importar/',views_management.spreadsheet_import,name='spreadsheet_import'),
+    path('gestao/planilha/exportar.xlsx',views_management.management_export_xlsx,name='management_export_xlsx'),
+    path('gestao/simulador/',views_management.pricing_simulator,name='pricing_simulator'),
+
     path('financeiro/',views_finance.finance_dashboard,name='finance_dashboard'),
     path('financeiro/exportar.csv',views_finance.finance_export_csv,name='finance_export_csv'),
     path('pagamentos/retorno/',views.payment_return,name='payment_return'),
