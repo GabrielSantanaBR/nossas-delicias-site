@@ -22,9 +22,12 @@ jobs:
           mkdir -p store/migrations
           touch store/migrations/__init__.py
           python manage.py makemigrations store --no-header
-          echo '__MIGRATION_START__'
-          cat store/migrations/0001_initial.py
-          echo '__MIGRATION_END__'
+      - name: Upload generated migration
+        uses: actions/upload-artifact@v4
+        with:
+          name: store-initial-migration
+          path: store/migrations/0001_initial.py
+          if-no-files-found: error
       - run: python manage.py check
         env:
           DEBUG: '1'
