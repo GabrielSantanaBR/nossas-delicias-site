@@ -1,0 +1,54 @@
+/* v17 public — confectionery first, private system hidden */
+:root{--v17-ease:cubic-bezier(.22,.72,.2,1);--v17-ink:#2a1712;--v17-caramel:#b86f4b;--v17-cream:#fbf5ed;--v17-line:rgba(42,23,18,.10)}
+
+/* The internal system is not part of the public experience. */
+#admin,#admin-fab,.nd-system-showcase{display:none!important}
+
+/* Stable motion: never transform sticky/layout containers. */
+.hero-media{transform:none!important;transition:box-shadow .35s ease!important;will-change:auto!important}
+.hero-media>img{transform:translate3d(0,var(--v17-hero-image-y,0px),0) scale(1.07)!important;transition:filter .45s ease!important;will-change:transform}
+.split .photo{transform:none!important;will-change:auto!important}
+.nd-product,.audience,.benefit-grid article{transform:none!important;transform-style:flat!important;will-change:auto!important}
+.nd-product:hover,.audience:hover,.benefit-grid article:hover{transform:translateY(-4px)!important}
+.primary,.secondary,.button,.light-btn,.cart-btn,.icon-btn{will-change:auto!important}
+
+.reveal{opacity:0!important;transform:translate3d(0,24px,0)!important;filter:none!important;transition:opacity .68s var(--v17-ease),transform .72s var(--v17-ease)!important}
+.reveal.visible{opacity:1!important;transform:none!important}
+
+/* Portfolio */
+.nd-portfolio{width:min(calc(100% - 34px),1240px);margin:0 auto;padding:125px 0 105px}
+.nd-portfolio-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.52fr);gap:46px;align-items:end;margin-bottom:48px}
+.nd-portfolio-head h2{font:600 clamp(48px,5.4vw,80px)/.98 "Playfair Display",Georgia,serif;letter-spacing:-.05em;margin:8px 0 0;color:var(--v17-ink)}
+.nd-portfolio-head p{color:#735f56;line-height:1.75;margin:0}
+.nd-portfolio-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:22px}
+.nd-portfolio-card{position:relative;min-height:520px;border-radius:34px;overflow:hidden;background:#3c2219;box-shadow:0 28px 70px rgba(42,23,18,.12);isolation:isolate}
+.nd-portfolio-card:nth-child(2),.nd-portfolio-card:nth-child(3){min-height:420px}
+.nd-portfolio-card img{position:absolute;inset:-5% 0;width:100%;height:110%;object-fit:cover;transform:translate3d(0,var(--v17-portfolio-y,0px),0) scale(1.035);filter:saturate(.88) contrast(1.03);will-change:transform}
+.nd-portfolio-card::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(32,15,10,.03),rgba(32,15,10,.18) 45%,rgba(32,15,10,.78))}
+.nd-portfolio-copy{position:absolute;z-index:2;left:28px;right:28px;bottom:27px;color:#fff}
+.nd-portfolio-copy span{font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:#efc9b8;font-weight:800}
+.nd-portfolio-copy h3{font:600 clamp(30px,3.4vw,48px)/1.02 "Playfair Display",Georgia,serif;letter-spacing:-.035em;margin:8px 0 9px}
+.nd-portfolio-copy p{max-width:560px;color:rgba(255,255,255,.76);line-height:1.6;margin:0}
+.nd-portfolio-card.is-wide{grid-column:1/-1;min-height:470px}
+
+/* Customer-facing scroll sequence. */
+.nd-process{width:min(calc(100% - 34px),1240px);margin:0 auto;padding:105px 0 125px}
+.nd-process-head{max-width:760px;margin-bottom:38px}.nd-process-head h2{font:600 clamp(44px,5vw,72px)/.98 "Playfair Display",Georgia,serif;letter-spacing:-.045em;margin:8px 0 14px}.nd-process-head p{color:#715d54;line-height:1.7}
+.nd-process-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.nd-process-card{padding:25px;border:1px solid var(--v17-line);border-radius:24px;background:rgba(255,252,248,.82);box-shadow:0 10px 30px rgba(42,23,18,.045)}
+.nd-process-card span{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#2a1712;color:#fff;font-size:10px;font-weight:800;margin-bottom:23px}
+.nd-process-card h3{font:600 25px/1.05 "Playfair Display",Georgia,serif;margin:0 0 10px}.nd-process-card p{margin:0;color:#755f56;line-height:1.65;font-size:13px}
+
+/* Softer public copy blocks. */
+.delivery-section h2,.event-section h2,.split-copy h2{max-width:760px}
+.delivery-section p,.event-section p,.split-copy p{line-height:1.75}
+
+@media(max-width:900px){
+  .nd-portfolio{padding:88px 0}.nd-portfolio-head{grid-template-columns:1fr;gap:16px}.nd-portfolio-grid{grid-template-columns:1fr}.nd-portfolio-card,.nd-portfolio-card:nth-child(2),.nd-portfolio-card:nth-child(3),.nd-portfolio-card.is-wide{grid-column:auto;min-height:460px}.nd-process{padding:82px 0}.nd-process-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:620px){
+  .nd-portfolio,.nd-process{width:min(calc(100% - 22px),1240px)}.nd-portfolio{padding:72px 0}.nd-portfolio-card,.nd-portfolio-card:nth-child(2),.nd-portfolio-card:nth-child(3),.nd-portfolio-card.is-wide{min-height:390px;border-radius:27px}.nd-portfolio-copy{left:21px;right:21px;bottom:21px}.nd-process-grid{grid-template-columns:1fr}.nd-process-card{padding:21px}
+}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1!important;transform:none!important;transition:none!important}.hero-media>img,.nd-portfolio-card img{transform:none!important;will-change:auto!important}
+}
