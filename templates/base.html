@@ -1,69 +1,78 @@
-{% load static store_tags %}<!doctype html>
+{% load static store_tags %}
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Nossas Delícias — confeitaria artesanal, pedidos, cafeterias e eventos.">
-  <meta name="theme-color" content="#291713">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Nossas Delícias — confeitaria artesanal, pedidos online, cafeterias e eventos com acompanhamento completo.">
+  <meta name="theme-color" content="#2d1a15">
+  <meta name="color-scheme" content="light">
   <title>{% block title %}Nossas Delícias{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'app.css' %}">
   <link rel="stylesheet" href="{% static 'commerce.css' %}">
   <link rel="stylesheet" href="{% static 'platform.css' %}">
   {% block head %}{% endblock %}
 </head>
 <body>
-  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
-  <header class="platform-header">
-    <a class="brand" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
-      <img src="{% static 'logo-nossas-delicias.svg' %}" width="220" height="58" alt="Nossas Delícias">
-    </a>
-    <button class="mobile-nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="platform-nav">☰</button>
-    <nav class="platform-nav" id="platform-nav" aria-label="Navegação principal">
-      <a href="{% url 'catalog' %}">Cardápio</a>
-      <a href="{% url 'event_portal' %}">Eventos</a>
-      <a href="{% url 'cafe_portal' %}">Cafeterias</a>
-      {% if user.is_authenticated %}
-        {% cart_count as cart_total %}
-        <a href="{% url 'cart' %}">Carrinho{% if cart_total %} · {{ cart_total }}{% endif %}</a>
-        <a href="{% url 'account' %}">Minha conta</a>
-        {% if user.is_staff %}
-          <a href="{% url 'finance_dashboard' %}">Financeiro</a>
-          <a href="/nd-admin/">Central admin</a>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <div class="scroll-progress" aria-hidden="true"><span data-scroll-progress></span></div>
+  <div class="ambient-orb ambient-orb-one" aria-hidden="true"></div>
+  <div class="ambient-orb ambient-orb-two" aria-hidden="true"></div>
+
+  <header class="site-header" data-site-header>
+    <div class="header-inner">
+      <a class="brand-lockup" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
+        <span class="brand-art" aria-hidden="true"><img src="{% static 'logo-nossas-delicias.svg' %}" alt=""></span>
+      </a>
+
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menu">
+        <span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" data-site-nav aria-label="Navegação principal">
+        <a href="{% url 'catalog' %}">Cardápio</a>
+        <a href="{% url 'event_portal' %}">Eventos</a>
+        <a href="{% url 'cafe_portal' %}">Cafeterias</a>
+        {% if user.is_authenticated %}
+          {% cart_count as cart_total %}
+          <a href="{% url 'cart' %}">Sacola{% if cart_total %}<span class="nav-count">{{ cart_total }}</span>{% endif %}</a>
+          <a href="{% url 'account' %}">Minha conta</a>
+          {% if user.is_staff %}<a href="{% url 'finance_dashboard' %}">Financeiro</a><a href="/nd-admin/">Admin</a>{% endif %}
+          <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sair</button></form>
+        {% else %}
+          <a href="{% url 'login' %}">Entrar</a>
+          <a class="nav-cta" href="{% url 'register' %}">Criar conta</a>
         {% endif %}
-        <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sair</button></form>
-      {% else %}
-        <a href="{% url 'login' %}">Entrar</a>
-      {% endif %}
-    </nav>
-    <div class="platform-actions">
-      {% if user.is_authenticated %}
-        {% cart_count as header_cart %}
-        <a class="cta-secondary hide-tablet" href="{% url 'account' %}">Conta</a>
-        <a class="nav-pill" href="{% url 'cart' %}">Sacola{% if header_cart %} · {{ header_cart }}{% endif %}</a>
-      {% else %}
-        <a class="cta-secondary hide-mobile" href="{% url 'login' %}">Entrar</a>
-        <a class="nav-pill" href="{% url 'register' %}">Criar conta</a>
-      {% endif %}
+      </nav>
     </div>
   </header>
 
-  <main class="platform-main" id="conteudo">
-    {% if messages %}<div class="messages" role="status">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
+  <main id="conteudo" class="site-main">
+    {% if messages %}
+      <div class="messages" role="status" aria-live="polite">
+        {% for message in messages %}<p class="message {{ message.tags|default:'' }}">{{ message }}</p>{% endfor %}
+      </div>
+    {% endif %}
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="platform-footer">
-    <img src="{% static 'logo-nossas-delicias.svg' %}" width="205" height="64" loading="lazy" alt="Nossas Delícias">
-    <div class="footer-copy">Confeitaria artesanal com pedidos para clientes, cafeterias e eventos. Operação, atendimento e histórico em uma única plataforma.</div>
-    <nav aria-label="Rodapé"><a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}">Cafeterias</a></nav>
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="brand-art brand-art-footer" aria-hidden="true"><img src="{% static 'logo-nossas-delicias.svg' %}" alt=""></span>
+        <p>Confeitaria artesanal com operação digital para clientes, cafeterias e eventos.</p>
+      </div>
+      <div><span class="footer-label">Explorar</span><a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}">Cafeterias</a></div>
+      <div><span class="footer-label">Sua experiência</span>{% if user.is_authenticated %}<a href="{% url 'account' %}">Minha conta</a><a href="{% url 'cart' %}">Sacola</a>{% else %}<a href="{% url 'login' %}">Entrar</a><a href="{% url 'register' %}">Criar conta</a>{% endif %}</div>
+      <div class="footer-note"><span class="footer-label">Nossas Delícias</span><p>Pedidos, atendimento, logística e histórico em um só lugar.</p></div>
+    </div>
+    <div class="footer-bottom"><span>© {% now 'Y' %} Nossas Delícias</span><span>Feito para uma operação leve, segura e próxima.</span></div>
   </footer>
 
-  <script>
-  (()=>{const button=document.querySelector('.mobile-nav-toggle'),nav=document.querySelector('#platform-nav');if(!button||!nav)return;button.addEventListener('click',()=>{const open=nav.classList.toggle('open');button.setAttribute('aria-expanded',open?'true':'false')});nav.querySelectorAll('a,button').forEach(el=>el.addEventListener('click',()=>{nav.classList.remove('open');button.setAttribute('aria-expanded','false')}));})();
-  </script>
+  <script src="{% static 'app.js' %}" defer></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
