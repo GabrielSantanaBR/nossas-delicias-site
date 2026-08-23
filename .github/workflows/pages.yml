@@ -45,6 +45,8 @@ jobs:
           test -f 404.html
           test -f v6/v12-production.css
           test -f v6/v12-production.js
+          test -f v6/v15-cinematic.css
+          test -f v6/v15-cinematic.js
           python -m json.tool manifest.webmanifest >/dev/null
           python - <<'PY'
           import pathlib, xml.etree.ElementTree as ET
@@ -55,8 +57,9 @@ jobs:
               'og:title',
               'application/ld+json',
               'manifest.webmanifest',
-              'script.js?v=12',
-              'v12-production.css?v=12',
+              'script.js?v=15',
+              'v12-production.css?v=15',
+              'v15-cinematic.css?v=15',
           ]
           missing = [item for item in required if item not in html]
           if missing:
