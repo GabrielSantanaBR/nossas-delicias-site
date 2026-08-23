@@ -18,6 +18,14 @@ jobs:
         run: pip install -r requirements.txt
       - name: Compile Python modules
         run: python -m compileall -q config store
+      - name: Validate frontend JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            echo "Checking $file"
+            node --check "$file"
+          done < <(find static -type f -name '*.js' -print0)
       - name: Ensure migrations are committed
         env:
           DEBUG: '1'
