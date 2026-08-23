@@ -1,7 +1,8 @@
 import hashlib
 import io
 import unicodedata
-from datetime import date
+import zipfile
+from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 
 from django.db import transaction
@@ -23,10 +24,10 @@ from .management_models import (
 from .management_services import cashflow_summary, pricing_health, sync_recipe_product_cost
 from .models import PriceTable, ProductPrice
 
-
 HEADER_FILL = '3A211A'
-ACCENT_FILL = 'E7C8B8'
-LIGHT_FILL = 'F7EEE7'
+MAX_XLSX_BYTES = 10 * 1024 * 1024
+MAX_UNCOMPRESSED_BYTES = 80 * 1024 * 1024
+MAX_ARCHIVE_ENTRIES = 5000
 
 
 def _norm(value):
@@ -40,7 +41,10 @@ def _decimal(value):
         return None
     try:
         if isinstance(value, str):
-            value = value.replace('R$', '').replace('%', '').strip().replace('.', '').replace(',', '.') if ',' in value else value
+            text = value.replace('\xa0', ' ').replace('R$', '').replace('%', '').strip().replace(' ', '')
+            if ',' in text:
+                text = text.replace('.', '').replace(',', '.')
+            value = text
         return Decimal(str(value))
     except (InvalidOperation, ValueError, TypeError):
         return None
@@ -50,18 +54,39 @@ def _yes(value):
     return _norm(value) in {'SIM', 'S', 'YES', 'ATIVO', 'TRUE', '1'}
 
 
-def _unit(value):
+def _ingredient_unit(value):
     normalized = _norm(value)
     return {
         'G': 'g', 'GRAMA': 'g', 'GRAMAS': 'g',
         'ML': 'ml', 'MILILITRO': 'ml', 'MILILITROS': 'ml',
         'UN': 'un', 'UNIDADE': 'un', 'UNIDADES': 'un',
-        'KG': 'kg', 'QUILOGRAMA': 'kg',
-        'L': 'l', 'LITRO': 'l',
-        'FATIA': 'slice', 'FATIAS': 'slice',
-        'GRAMA/PORCAO': 'portion', 'PORCAO': 'portion',
-        'CAIXA/KIT': 'box', 'CAIXA': 'box',
+        'KG': 'kg', 'QUILOGRAMA': 'kg', 'QUILOGRAMAS': 'kg',
+        'L': 'l', 'LITRO': 'l', 'LITROS': 'l',
     }.get(normalized, 'other')
+
+
+def _sale_unit(value):
+    normalized = _norm(value)
+    return {
+        'UN': 'unit', 'UNIDADE': 'unit', 'UNIDADES': 'unit',
+        'FATIA': 'slice', 'FATIAS': 'slice',
+        'GRAMA/PORCAO': 'portion', 'GRAMA / PORCAO': 'portion', 'PORCAO': 'portion',
+        'CAIXA/KIT': 'box', 'CAIXA / KIT': 'box', 'CAIXA': 'box', 'KIT': 'box',
+    }.get(normalized, 'other')
+
+
+def _date_value(value):
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if isinstance(value, str):
+        for pattern in ('%d/%m/%Y', '%Y-%m-%d'):
+            try:
+                return datetime.strptime(value.strip(), pattern).date()
+            except ValueError:
+                pass
+    return None
 
 
 def _find_header(ws, required, max_rows=80):
@@ -93,16 +118,42 @@ def _sheet(wb, name):
 
 def _read_bytes(uploaded_file):
     uploaded_file.seek(0)
-    data = uploaded_file.read()
+    data = uploaded_file.read(MAX_XLSX_BYTES + 1)
     uploaded_file.seek(0)
+    if len(data) > MAX_XLSX_BYTES:
+        raise ValueError('A planilha ultrapassa o limite de 10 MB.')
     return data
+
+
+def _validate_xlsx_archive(raw):
+    try:
+        with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+            entries = archive.infolist()
+            if len(entries) > MAX_ARCHIVE_ENTRIES:
+                raise ValueError('A planilha contém arquivos internos demais.')
+            names = {entry.filename for entry in entries}
+            if '[Content_Types].xml' not in names or 'xl/workbook.xml' not in names:
+                raise ValueError('O arquivo não possui uma estrutura .xlsx válida.')
+            total = 0
+            for entry in entries:
+                name = entry.filename.replace('\\', '/')
+                if name.startswith('/') or '..' in name.split('/'):
+                    raise ValueError('A planilha contém caminhos internos inválidos.')
+                total += entry.file_size
+                if total > MAX_UNCOMPRESSED_BYTES:
+                    raise ValueError('A planilha expandida é grande demais para processamento seguro.')
+                if entry.file_size > 2 * 1024 * 1024 and entry.compress_size and entry.file_size / entry.compress_size > 500:
+                    raise ValueError('A planilha possui compactação interna suspeita.')
+    except zipfile.BadZipFile as exc:
+        raise ValueError('O arquivo enviado não é uma planilha .xlsx válida.') from exc
 
 
 @transaction.atomic
 def import_management_workbook(uploaded_file, user=None):
     raw = _read_bytes(uploaded_file)
+    _validate_xlsx_archive(raw)
     checksum = hashlib.sha256(raw).hexdigest()
-    wb = load_workbook(io.BytesIO(raw), data_only=True, read_only=True)
+    wb = load_workbook(io.BytesIO(raw), data_only=True, read_only=True, keep_links=False)
     summary = {
         'ingredients_created': 0, 'ingredients_updated': 0,
         'recipes_created': 0, 'recipes_updated': 0,
@@ -122,19 +173,21 @@ def import_management_workbook(uploaded_file, user=None):
                     continue
                 price = _decimal(_cell(row, headers, 'Preço da embalagem')) or Decimal('0')
                 quantity = _decimal(_cell(row, headers, 'Qtd. da embalagem')) or Decimal('1')
-                if quantity <= 0:
+                if price < 0 or quantity <= 0:
                     summary['skipped_rows'] += 1
                     continue
+                last_update = _date_value(_cell(row, headers, 'Última atualização')) or date.today()
                 defaults = {
-                    'name': name,
+                    'name': name[:140],
                     'category': str(_cell(row, headers, 'Categoria') or '')[:100],
                     'package_price': price,
                     'package_quantity': quantity,
-                    'base_unit': _unit(_cell(row, headers, 'Unidade base')),
+                    'base_unit': _ingredient_unit(_cell(row, headers, 'Unidade base')),
                     'supplier': str(_cell(row, headers, 'Fornecedor') or '')[:140],
                     'notes': str(_cell(row, headers, 'Observações') or ''),
                     'aliases': str(_cell(row, headers, 'Nomes encontrados') or ''),
                     'active': _norm(_cell(row, headers, 'Status')) != 'INATIVO',
+                    'last_price_update': last_update,
                 }
                 ingredient = Ingredient.objects.filter(code=code).first()
                 old_price = ingredient.package_price if ingredient else None
@@ -158,7 +211,6 @@ def import_management_workbook(uploaded_file, user=None):
 
     pricing = _sheet(wb, 'PRECIFICAÇÃO')
     if pricing:
-        # Bring the desired-margin control from the spreadsheet when present.
         for row in pricing.iter_rows(min_row=1, max_row=min(pricing.max_row, 15), values_only=True):
             for index, value in enumerate(row):
                 if _norm(value) == 'MARGEM DESEJADA':
@@ -183,15 +235,18 @@ def import_management_workbook(uploaded_file, user=None):
                     continue
                 yield_quantity = _decimal(_cell(row, headers, 'Rendimento (qtd.)')) or Decimal('1')
                 production_cost = _decimal(_cell(row, headers, 'Custo total')) or Decimal('0')
+                if yield_quantity <= 0 or production_cost < 0:
+                    summary['skipped_rows'] += 1
+                    continue
                 profile = ProductCostProfile.objects.filter(sku=code).select_related('product').first()
                 recipe = Recipe.objects.filter(code=code).first()
                 product = profile.product if profile else (recipe.product if recipe else None)
                 defaults = {
-                    'name': name,
+                    'name': name[:180],
                     'category': str(_cell(row, headers, 'Categoria') or '')[:100],
-                    'sale_unit': _unit(_cell(row, headers, 'Unidade de venda')),
-                    'yield_quantity': max(yield_quantity, Decimal('0.001')),
-                    'imported_production_cost': max(production_cost, Decimal('0')),
+                    'sale_unit': _sale_unit(_cell(row, headers, 'Unidade de venda')),
+                    'yield_quantity': yield_quantity,
+                    'imported_production_cost': production_cost,
                     'product': product,
                     'active': _yes(_cell(row, headers, 'Venda ativa?')),
                     'source_reference': f'{getattr(uploaded_file, "name", "Planilha")} / {code}'[:160],
@@ -283,7 +338,7 @@ def build_management_workbook(start, end):
     ws.append(['Código', 'Categoria', 'Produto', 'Unidade de venda', 'Rendimento (qtd.)', 'Custo total', 'Custo unitário', 'Preço cafeteria', 'Preço cliente', 'Lucro/un. café', 'Margem café', 'Lucro/un. cliente', 'Margem cliente', 'Preço recomendado', 'Situação', 'Venda ativa?'])
     for row in health['rows']:
         recipe = row['recipe']
-        ws.append([recipe.code, recipe.category, recipe.name, recipe.sale_unit, float(recipe.yield_quantity), float(row['production_cost']), float(row['unit_cost']), None if row['cafe_price'] is None else float(row['cafe_price']), None if row['client_price'] is None else float(row['client_price']), None if row['cafe_profit'] is None else float(row['cafe_profit']), None if row['cafe_margin'] is None else float(row['cafe_margin']), None if row['client_profit'] is None else float(row['client_profit']), None if row['client_margin'] is None else float(row['client_margin']), None if row['recommended_price'] is None else float(row['recommended_price']), row['status'], 'SIM' if recipe.active else 'NÃO'])
+        ws.append([recipe.code, recipe.category, recipe.name, recipe.get_sale_unit_display(), float(recipe.yield_quantity), float(row['production_cost']), float(row['unit_cost']), None if row['cafe_price'] is None else float(row['cafe_price']), None if row['client_price'] is None else float(row['client_price']), None if row['cafe_profit'] is None else float(row['cafe_profit']), None if row['cafe_margin'] is None else float(row['cafe_margin']), None if row['client_profit'] is None else float(row['client_profit']), None if row['client_margin'] is None else float(row['client_margin']), None if row['recommended_price'] is None else float(row['recommended_price']), row['status'], 'SIM' if recipe.active else 'NÃO'])
     _style_sheet(ws)
 
     def sales_sheet(title, order_type=None):
@@ -315,19 +370,19 @@ def build_management_workbook(start, end):
     ws = wb.create_sheet('DESPESAS')
     ws.append(['Data', 'Categoria', 'Descrição', 'Fornecedor', 'Valor', 'Status', 'Pagamento', 'Observações'])
     for expense in BusinessExpense.objects.filter(date__range=(start, end)).order_by('date'):
-        ws.append([expense.date, expense.category, expense.description, expense.supplier, _append_money(expense.amount), expense.payment_status, expense.payment_method, expense.notes])
+        ws.append([expense.date, expense.get_category_display(), expense.description, expense.supplier, _append_money(expense.amount), expense.get_payment_status_display(), expense.payment_method, expense.notes])
     _style_sheet(ws)
 
     ws = wb.create_sheet('CUSTOS FIXOS')
     ws.append(['Nome', 'Categoria', 'Valor mensal', 'Dia vencimento', 'Ativo', 'Início', 'Fim', 'Observações'])
     for cost in FixedCost.objects.all():
-        ws.append([cost.name, cost.category, _append_money(cost.monthly_amount), cost.due_day, 'SIM' if cost.active else 'NÃO', cost.start_date, cost.end_date, cost.notes])
+        ws.append([cost.name, cost.get_category_display(), _append_money(cost.monthly_amount), cost.due_day, 'SIM' if cost.active else 'NÃO', cost.start_date, cost.end_date, cost.notes])
     _style_sheet(ws)
 
     ws = wb.create_sheet('ESTOQUE')
     ws.append(['Data', 'Código', 'Ingrediente', 'Tipo', 'Quantidade', 'Custo unitário', 'Referência', 'Observações'])
     for movement in InventoryMovement.objects.select_related('ingredient').filter(date__range=(start, end)).order_by('date', 'ingredient__name'):
-        ws.append([movement.date, movement.ingredient.code, movement.ingredient.name, movement.movement_type, float(movement.quantity_delta), float(movement.unit_cost_snapshot or 0), movement.reference, movement.notes])
+        ws.append([movement.date, movement.ingredient.code, movement.ingredient.name, movement.get_movement_type_display(), float(movement.quantity_delta), float(movement.unit_cost_snapshot or 0), movement.reference, movement.notes])
     _style_sheet(ws)
 
     ws = wb.create_sheet('FLUXO DE CAIXA')
