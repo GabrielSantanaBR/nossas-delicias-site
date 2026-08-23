@@ -65,6 +65,12 @@ class CommerceServiceTests(TestCase):
         self.assertIn("default-src 'self'", response.headers['Content-Security-Policy'])
         self.assertEqual(response.headers['X-Permitted-Cross-Domain-Policies'], 'none')
 
+    def test_secure_admin_login_template_renders(self):
+        response = self.client.get('/nd-admin/login/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Central Administrativa')
+        self.assertContains(response, 'admin-nd.css')
+
     def test_event_quote_rejects_past_date(self):
         form = EventQuoteForm(data={
             'event_type': 'birthday',
