@@ -46,10 +46,8 @@ jobs:
           test -f v6/v12-production.css
           test -f v6/v12-production.js
           test -f v6/v15-cinematic.css
-          test -f v6/v15-cinematic.js
-          test -f v6/v15-admin.css
-          test -f v6/v16-platform.css
-          test -f v6/v16-platform.js
+          test -f v6/v17-public.css
+          test -f v6/v17-public.js
           python -m json.tool manifest.webmanifest >/dev/null
           python - <<'PY'
           import pathlib, xml.etree.ElementTree as ET
@@ -60,22 +58,29 @@ jobs:
               'rel="canonical"',
               'og:title',
               'application/ld+json',
-              'manifest.webmanifest?v=16',
-              'script.js?v=16',
-              'v12-production.css?v=16',
-              'v15-cinematic.css?v=16',
-              'v16-platform.css?v=16',
-              'href="#sistema"',
+              'manifest.webmanifest?v=17',
+              'script.js?v=17',
+              'v17-public.css?v=17',
+              'href="#portfolio"',
           ]
           required_loader = [
-              'v6/v16-platform.css?v=16',
-              'v6/v16-platform.js?v=16',
+              'v6/v17-public.css?v=17',
+              'v6/v17-public.js?v=17',
+          ]
+          forbidden_public = [
+              'href="#sistema"',
+              'v6/v16-platform.js?v=17',
+              'v6/v6-admin-core.js?v=17',
+              'id="admin-fab"',
           ]
           missing = [item for item in required_html if item not in html]
           missing += [item for item in required_loader if item not in loader]
+          leaked = [item for item in forbidden_public if item in html or item in loader]
           if missing:
-              raise SystemExit(f'Missing v16 production assets/markers: {missing}')
-          print('v16 HTML and loader markers OK')
+              raise SystemExit(f'Missing v17 public assets/markers: {missing}')
+          if leaked:
+              raise SystemExit(f'Private-system markers leaked into public bundle: {leaked}')
+          print('v17 public/private separation markers OK')
           PY
 
   deploy:
