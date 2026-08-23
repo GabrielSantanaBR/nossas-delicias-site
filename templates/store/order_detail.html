@@ -1,1 +1,59 @@
-{% extends 'base.html' %}{% block title %}Pedido | Nossas Delícias{% endblock %}{% block content %}<section class="page-intro"><span class="eyebrow">Pedido #{{ order.public_id|stringformat:'s'|slice:':8' }}</span><h1>{{ order.get_status_display }}</h1><p>Total: R$ {{ order.total }}{% if order.delivery_date %} • Entrega {{ order.delivery_date|date:'d/m/Y' }}{% endif %}</p>{% if order.status == 'pending_payment' %}<form id="pay-form" method="post" action="{% url 'start_payment' order.public_id %}">{% csrf_token %}<button class="cta" type="submit">Pagar com Mercado Pago</button><small>Pix, cartão e demais meios disponíveis no checkout seguro do provedor.</small></form>{% endif %}</section><section class="dashboard"><div class="panel"><h2>Itens</h2>{% for item in order.items.all %}<div class="order-row"><div><b>{{ item.quantity }}× {{ item.product.name }}</b><small>{{ item.note }}</small></div><strong>R$ {{ item.total }}</strong></div>{% endfor %}<h2>Andamento</h2><div class="timeline">{% for step in order.status_history.all %}<div><b>{{ step.get_status_display }}</b><small>{{ step.created_at|date:'d/m/Y H:i' }} {{ step.note }}</small></div>{% empty %}<div><b>{{ order.get_status_display }}</b><small>{{ order.updated_at|date:'d/m/Y H:i' }}</small></div>{% endfor %}</div></div><aside class="panel chat"><h2>Conversa do pedido</h2><div id="messages">{% for m in conversation.messages.all %}<p class="{% if m.sender_id == user.id %}mine{% endif %}"><b>{{ m.sender.first_name|default:m.sender.username }}</b><span>{{ m.body }}</span></p>{% endfor %}</div>{% if not conversation.closed %}<form id="chat-form"><input id="chat-input" maxlength="4000" autocomplete="off" placeholder="Digite uma mensagem"><button class="cta">Enviar</button></form>{% else %}<p>Conversa encerrada.</p>{% endif %}</aside></section>{% endblock %}{% block scripts %}<script>{% if order.status == 'pending_payment' %}document.querySelector('#pay-form')?.addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget,btn=form.querySelector('button');btn.disabled=true;btn.textContent='Abrindo pagamento...';const r=await fetch(form.action,{method:'POST',body:new FormData(form)});const d=await r.json();if(r.ok&&d.checkout_url)location.href=d.checkout_url;else{alert(d.error||'Pagamento indisponível.');btn.disabled=false;btn.textContent='Pagar com Mercado Pago';}});{% endif %}{% if not conversation.closed %}(()=>{const scheme=location.protocol==='https:'?'wss':'ws';const ws=new WebSocket(`${scheme}://${location.host}/ws/pedidos/{{ order.public_id }}/chat/`);const box=document.querySelector('#messages');document.querySelector('#chat-form').addEventListener('submit',e=>{e.preventDefault();const i=document.querySelector('#chat-input');if(i.value.trim()&&ws.readyState===1){ws.send(JSON.stringify({message:i.value.trim()}));i.value='';}});ws.onmessage=e=>{const d=JSON.parse(e.data);if(d.error)return;const p=document.createElement('p');if(d.sender_id==={{ user.id }})p.className='mine';const span=document.createElement('span');span.textContent=d.message;p.append(span);box.append(p);box.scrollTop=box.scrollHeight;};})();{% endif %}</script>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Pedido | Nossas Delícias{% endblock %}
+{% block content %}
+<section class="page-intro" data-reveal>
+  <span class="eyebrow">Pedido #{{ order.public_id|stringformat:'s'|slice:':8'|upper }}</span>
+  <h1>{{ order.get_status_display }}</h1>
+  <p>R$ {{ order.total|floatformat:2 }}{% if order.delivery_date %} · Entrega {{ order.delivery_date|date:'d/m/Y' }}{% endif %}. Itens, andamento, pagamento e conversa ficam no mesmo lugar.</p>
+  {% if order.status == 'pending_payment' %}
+    <form id="pay-form" method="post" action="{% url 'start_payment' order.public_id %}" class="hero-actions">{% csrf_token %}
+      <button class="cta" type="submit">Pagar com Mercado Pago</button><small class="muted">Pix, cartão e demais meios disponíveis no checkout seguro.</small>
+    </form>
+  {% endif %}
+</section>
+
+<section class="dashboard">
+  <div class="panel" data-reveal>
+    <span class="eyebrow">Seu pedido</span><h2>Itens e andamento</h2>
+    {% for item in order.items.all %}
+      <div class="order-row"><div><b>{{ item.quantity }}× {{ item.product.name }}</b><small>{{ item.note|default:'Sem observação' }}</small></div><strong>R$ {{ item.total|floatformat:2 }}</strong></div>
+    {% endfor %}
+    <div style="height:22px"></div>
+    <span class="eyebrow">Linha do tempo</span><h2>O que já aconteceu</h2>
+    <div class="timeline">{% for step in order.status_history.all %}<div><b>{{ step.get_status_display }}</b><small>{{ step.created_at|date:'d/m/Y H:i' }}{% if step.note %} · {{ step.note }}{% endif %}</small></div>{% empty %}<div><b>{{ order.get_status_display }}</b><small>{{ order.updated_at|date:'d/m/Y H:i' }}</small></div>{% endfor %}</div>
+  </div>
+
+  <aside class="panel chat" data-reveal>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><span class="eyebrow">Atendimento</span><h2>Conversa do pedido</h2></div><span id="chat-status" class="tag">Conectando</span></div>
+    <p class="muted">A conversa fica vinculada a este pedido para você não precisar repetir informações.</p>
+    <div id="messages" aria-live="polite">{% for m in conversation.messages.all %}<p class="{% if m.sender_id == user.id %}mine{% endif %}"><b>{{ m.sender.first_name|default:m.sender.username }}</b><span>{{ m.body }}</span></p>{% endfor %}</div>
+    {% if not conversation.closed %}<form id="chat-form"><input id="chat-input" maxlength="4000" autocomplete="off" placeholder="Escreva uma mensagem" aria-label="Mensagem"><button class="cta" type="submit">Enviar</button></form>{% else %}<p class="locked-banner">Conversa encerrada.</p>{% endif %}
+  </aside>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+{% if order.status == 'pending_payment' %}
+document.querySelector('#pay-form')?.addEventListener('submit',async(event)=>{
+  event.preventDefault();const form=event.currentTarget,button=form.querySelector('button');button.disabled=true;button.textContent='Abrindo pagamento...';
+  try{const response=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{'X-Requested-With':'XMLHttpRequest'}});const data=await response.json();if(!response.ok||!data.checkout_url)throw new Error(data.error||'Pagamento indisponível.');location.href=data.checkout_url;}catch(error){alert(error.message);button.disabled=false;button.textContent='Pagar com Mercado Pago';}
+});
+{% endif %}
+{% if not conversation.closed %}
+(()=>{
+  const status=document.querySelector('#chat-status'),box=document.querySelector('#messages'),form=document.querySelector('#chat-form'),input=document.querySelector('#chat-input');
+  const scheme=location.protocol==='https:'?'wss':'ws';let socket;let retries=0;let timer;
+  const setStatus=(text)=>{status.textContent=text;};
+  const connect=()=>{
+    socket=new WebSocket(`${scheme}://${location.host}/ws/pedidos/{{ order.public_id }}/chat/`);
+    socket.onopen=()=>{retries=0;setStatus('Online');input.disabled=false;};
+    socket.onmessage=(event)=>{const data=JSON.parse(event.data);if(data.error){setStatus(data.error);return;}const p=document.createElement('p');if(data.sender_id==={{ user.id }})p.className='mine';const b=document.createElement('b');b.textContent=data.sender_id==={{ user.id }}?'Você':'Nossas Delícias';const span=document.createElement('span');span.textContent=data.message;p.append(b,span);box.append(p);box.scrollTop=box.scrollHeight;};
+    socket.onclose=()=>{input.disabled=true;if(retries>=5){setStatus('Offline');return;}setStatus('Reconectando');retries+=1;clearTimeout(timer);timer=setTimeout(connect,Math.min(1000*2**retries,12000));};
+    socket.onerror=()=>setStatus('Instável');
+  };
+  form.addEventListener('submit',(event)=>{event.preventDefault();const message=input.value.trim();if(!message||!socket||socket.readyState!==1)return;socket.send(JSON.stringify({message}));input.value='';});
+  connect();box.scrollTop=box.scrollHeight;
+})();
+{% endif %}
+</script>
+{% endblock %}
