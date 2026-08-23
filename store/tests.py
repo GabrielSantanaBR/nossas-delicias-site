@@ -3,7 +3,7 @@ from decimal import Decimal
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, TransactionTestCase
 from django.utils import timezone
 
 from .forms import EventQuoteForm
@@ -117,10 +117,15 @@ class CommerceServiceTests(TestCase):
         Order.objects.filter(pk=stale.pk).update(created_at=timezone.now() - timedelta(hours=2))
         self.assertTrue(can_schedule(self.region, delivery_date, lead_days=1))
 
+
+class TransactionBoundaryTests(TransactionTestCase):
+    reset_sequences = True
+
     def test_lock_delivery_slot_requires_atomic_transaction(self):
+        region = DeliveryRegion.objects.create(name='Teste', zip_prefixes='20000')
         delivery_date = timezone.localdate() + timedelta(days=1)
         with self.assertRaises(RuntimeError):
-            lock_delivery_slot(self.region, delivery_date, 1)
+            lock_delivery_slot(region, delivery_date, 1)
 
 
 class PaymentGatewayTests(TestCase):
