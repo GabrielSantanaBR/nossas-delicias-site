@@ -7,14 +7,8 @@ from django.utils import timezone
 
 from .financial_models import BusinessExpense, ProductCostProfile
 from .financial_services import business_financial_summary, money, sales_report
-from .management_models import (
-    FinancialSettings,
-    FixedCost,
-    Ingredient,
-    InventoryMovement,
-    Recipe,
-)
-from .models import Order, Payment, PriceTable, ProductPrice
+from .management_models import FinancialSettings, FixedCost, Ingredient, Recipe
+from .models import Order, Payment, ProductPrice
 
 CENT = Decimal('0.01')
 HUNDRED = Decimal('100')
@@ -31,11 +25,7 @@ def month_keys(start, end):
 def channel_price(product, kind):
     if not product:
         return None
-    row = ProductPrice.objects.filter(
-        product=product,
-        table__active=True,
-        table__kind=kind,
-    ).order_by('min_quantity', '-updated_at').first()
+    row = ProductPrice.objects.filter(product=product, table__active=True, table__kind=kind).order_by('min_quantity', '-updated_at').first()
     return row.unit_price if row else None
 
 
@@ -122,6 +112,11 @@ def pricing_health():
         'client_prices': sum(1 for row in active if row['client_price'] is not None),
         'desired_margin': FinancialSettings.current().desired_margin_percent,
         'statuses': dict(statuses),
+        'ok_count': statuses['OK'],
+        'fill_price_count': statuses['PREENCHER PREÇO'],
+        'below_target_count': statuses['ABAIXO DA META'],
+        'review_cost_count': statuses['REVISAR CUSTO/RENDIMENTO'],
+        'unlinked_count': statuses['SEM PRODUTO VINCULADO'],
         'highest_cost': sorted(active, key=lambda row: row['unit_cost'], reverse=True)[:10],
     }
 
