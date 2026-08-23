@@ -8,9 +8,9 @@ from django.utils import timezone
 from openpyxl import Workbook, load_workbook
 
 from .financial_models import ProductCostProfile
-from .management_models import FinancialSettings, Ingredient, InventoryMovement, Recipe, RecipeIngredient
+from .management_models import FinancialSettings, FixedCost, Ingredient, InventoryMovement, Recipe, RecipeIngredient
 from .management_services import simulate_price, sync_recipe_product_cost
-from .models import Category, PriceTable, Product, ProductPrice
+from .models import Category, Product, ProductPrice
 from .spreadsheet_io import build_management_workbook, import_management_workbook
 
 
@@ -51,13 +51,14 @@ class ManagementCalculationTests(TestCase):
         profile = ProductCostProfile.objects.get(product=self.product)
         self.assertEqual(profile.unit_cost, Decimal('3.5000'))
 
-    def test_price_simulator_matches_margin_rule(self):
+    def test_price_simulator_matches_margin_and_break_even_rules(self):
         settings = FinancialSettings.current()
         settings.desired_margin_percent = Decimal('30')
         settings.payment_fee_percent = Decimal('0')
         settings.tax_percent = Decimal('0')
         settings.contingency_percent = Decimal('0')
         settings.save()
+        FixedCost.objects.create(name='Estrutura', monthly_amount=Decimal('290.00'), due_day=1)
         recipe = Recipe.objects.create(
             code='REC-002', name='Teste', category='Brownies', sale_unit='unit',
             yield_quantity=Decimal('10'), imported_production_cost=Decimal('70.00'),
@@ -66,6 +67,8 @@ class ManagementCalculationTests(TestCase):
         self.assertEqual(result['recommended_price'], Decimal('10.00'))
         self.assertEqual(result['new_price'], Decimal('9.90'))
         self.assertEqual(result['extra_total'], Decimal('90.00'))
+        self.assertEqual(result['break_even_units'], 100)
+        self.assertEqual(result['break_even_revenue'], Decimal('990.00'))
 
 
 class SpreadsheetRoundTripTests(TestCase):
@@ -86,7 +89,7 @@ class SpreadsheetRoundTripTests(TestCase):
         base = wb.active
         base.title = 'BASE DE PREÇOS'
         base.append(['Código', 'Ingrediente padrão', 'Categoria', 'Preço da embalagem', 'Qtd. da embalagem', 'Unidade base', 'Status', 'Fornecedor', 'Observações', 'Nomes encontrados'])
-        base.append(['ING-001', 'CHOCOLATE 100%', 'Chocolates e cacau', 30, 500, 'g', 'ATIVO', 'Fornecedor teste', 'Base', 'CACAU | CACAU 100%'])
+        base.append(['ING-001', 'CHOCOLATE 100%', 'Chocolates e cacau', 'R$ 30,00', '500', 'g', 'ATIVO', 'Fornecedor teste', 'Base', 'CACAU | CACAU 100%'])
         pricing = wb.create_sheet('PRECIFICAÇÃO')
         pricing.append(['MARGEM DESEJADA', 0.30])
         pricing.append([])
@@ -100,13 +103,20 @@ class SpreadsheetRoundTripTests(TestCase):
         result = import_management_workbook(self._upload(), user=self.user)
         ingredient = Ingredient.objects.get(code='ING-001')
         recipe = Recipe.objects.get(code='REC-001')
+        self.assertEqual(ingredient.package_price, Decimal('30.00'))
         self.assertEqual(ingredient.unit_cost, Decimal('0.060000'))
         self.assertEqual(recipe.imported_production_cost, Decimal('50'))
+        self.assertEqual(recipe.sale_unit, 'unit')
         self.assertEqual(recipe.product, self.product)
         self.assertEqual(FinancialSettings.current().desired_margin_percent, Decimal('30.00'))
         self.assertEqual(ProductPrice.objects.get(product=self.product, table__kind='cafe').unit_price, Decimal('7'))
         self.assertEqual(ProductPrice.objects.get(product=self.product, table__kind='retail').unit_price, Decimal('10'))
         self.assertEqual(result['prices_updated'], 2)
+
+    def test_invalid_xlsx_is_rejected_before_openpyxl_processing(self):
+        invalid = SimpleUploadedFile('planilha.xlsx', b'not-a-zip', content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        with self.assertRaises(ValueError):
+            import_management_workbook(invalid, user=self.user)
 
     def test_export_contains_management_sheets(self):
         Ingredient.objects.create(code='ING-001', name='Chocolate', package_price=30, package_quantity=500, base_unit='g')
@@ -114,6 +124,11 @@ class SpreadsheetRoundTripTests(TestCase):
         workbook = load_workbook(stream, read_only=True, data_only=True)
         expected = {'PAINEL', 'BASE DE PREÇOS', 'PRECIFICAÇÃO', 'VENDAS CLIENTES', 'VENDAS CAFETERIAS', 'VENDAS EVENTOS', 'ANÁLISE DE VENDAS', 'DESPESAS', 'CUSTOS FIXOS', 'ESTOQUE', 'FLUXO DE CAIXA'}
         self.assertTrue(expected.issubset(set(workbook.sheetnames)))
+
+    def test_management_center_requires_verified_admin(self):
+        self.client.force_login(self.user)
+        response = self.client.get('/gestao/')
+        self.assertEqual(response.status_code, 403)
 
     def test_health_endpoint_checks_dependencies(self):
         response = self.client.get('/health/')
