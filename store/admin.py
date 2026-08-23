@@ -3,6 +3,11 @@ from .admin_site import secure_admin_site
 from .models import *
 from .financial_models import BusinessExpense, CafeDeliveryNote, OrderItemFinancialSnapshot, ProductCostProfile
 from .financial_services import cafe_order_editable, lock_cafe_note, maybe_lock_cafe_note
+from .management_models import (
+    FinancialSettings, FixedCost, Ingredient, IngredientPriceHistory,
+    InventoryMovement, Recipe, RecipeIngredient, SpreadsheetImportBatch,
+)
+from .management_services import sync_recipe_product_cost
 
 
 class ProductImageInline(admin.TabularInline):
@@ -57,6 +62,12 @@ class RecurringOrderItemInline(admin.TabularInline):
     extra = 1
 
 
+class RecipeIngredientInline(admin.TabularInline):
+    model = RecipeIngredient
+    extra = 1
+    autocomplete_fields = ('ingredient',)
+
+
 @admin.register(Category, site=secure_admin_site)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'active', 'sort_order')
@@ -88,6 +99,100 @@ class ProductCostProfileAdmin(admin.ModelAdmin):
         ('Custo de produção', {'fields': ('yield_quantity', 'production_cost', 'unit_cost', 'source_reference')}),
         ('Auditoria', {'fields': ('created_at', 'updated_at')}),
     )
+
+
+@admin.register(Ingredient, site=secure_admin_site)
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name', 'category', 'package_price', 'package_quantity', 'base_unit', 'unit_cost', 'stock', 'minimum_stock', 'active', 'supplier')
+    list_filter = ('category', 'base_unit', 'active')
+    list_editable = ('active',)
+    search_fields = ('code', 'name', 'aliases', 'supplier')
+    readonly_fields = ('unit_cost', 'created_at', 'updated_at')
+
+    @admin.display(description='Estoque')
+    def stock(self, obj):
+        return obj.stock_balance
+
+
+@admin.register(IngredientPriceHistory, site=secure_admin_site)
+class IngredientPriceHistoryAdmin(admin.ModelAdmin):
+    list_display = ('ingredient', 'effective_date', 'package_price', 'package_quantity', 'unit_cost', 'supplier', 'source')
+    list_filter = ('effective_date', 'ingredient__category')
+    search_fields = ('ingredient__code', 'ingredient__name', 'supplier', 'source')
+    readonly_fields = tuple(field.name for field in IngredientPriceHistory._meta.fields)
+    date_hierarchy = 'effective_date'
+
+    def has_add_permission(self, request):
+        return False
+
+
+@admin.register(InventoryMovement, site=secure_admin_site)
+class InventoryMovementAdmin(admin.ModelAdmin):
+    list_display = ('date', 'ingredient', 'movement_type', 'quantity_delta', 'unit_cost_snapshot', 'reference', 'created_by')
+    list_filter = ('movement_type', 'date', 'ingredient__category')
+    search_fields = ('ingredient__code', 'ingredient__name', 'reference', 'notes')
+    date_hierarchy = 'date'
+
+    def save_model(self, request, obj, form, change):
+        if not obj.created_by_id:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
+
+@admin.register(Recipe, site=secure_admin_site)
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name', 'category', 'sale_unit', 'yield_quantity', 'cost_total', 'cost_unit', 'product', 'active')
+    list_filter = ('category', 'sale_unit', 'active')
+    list_editable = ('active',)
+    search_fields = ('code', 'name', 'source_reference')
+    autocomplete_fields = ('product',)
+    inlines = (RecipeIngredientInline,)
+
+    @admin.display(description='Custo total')
+    def cost_total(self, obj):
+        return obj.production_cost
+
+    @admin.display(description='Custo unitário')
+    def cost_unit(self, obj):
+        return obj.unit_cost
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        sync_recipe_product_cost(obj)
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        sync_recipe_product_cost(form.instance)
+
+
+@admin.register(FinancialSettings, site=secure_admin_site)
+class FinancialSettingsAdmin(admin.ModelAdmin):
+    list_display = ('desired_margin_percent', 'payment_fee_percent', 'tax_percent', 'contingency_percent', 'updated_at')
+
+    def has_add_permission(self, request):
+        return not FinancialSettings.objects.exists()
+
+
+@admin.register(FixedCost, site=secure_admin_site)
+class FixedCostAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'monthly_amount', 'due_day', 'active', 'start_date', 'end_date')
+    list_filter = ('category', 'active')
+    list_editable = ('active',)
+    search_fields = ('name', 'notes')
+
+
+@admin.register(SpreadsheetImportBatch, site=secure_admin_site)
+class SpreadsheetImportBatchAdmin(admin.ModelAdmin):
+    list_display = ('created_at', 'filename', 'status', 'ingredients_created', 'ingredients_updated', 'recipes_created', 'recipes_updated', 'prices_updated', 'imported_by')
+    list_filter = ('status', 'created_at')
+    search_fields = ('filename', 'sha256')
+    readonly_fields = tuple(field.name for field in SpreadsheetImportBatch._meta.fields)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(PriceTable, site=secure_admin_site)
