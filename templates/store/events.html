@@ -1,1 +1,31 @@
-{% extends 'base.html' %}{% block title %}Eventos | Nossas Delícias{% endblock %}{% block content %}<section class="page-intro"><span class="eyebrow">Eventos e encomendas</span><h1>Conte o que você está planejando.</h1><p>Eventos começam como orçamento para que quantidade, prazo, logística e composição sejam validados antes do pagamento.</p></section><section class="dashboard"><div class="panel"><h2>Novo orçamento</h2>{% if user.is_authenticated %}<form method="post" action="{% url 'event_quote_create' %}" class="stack-form">{% csrf_token %}{{ form.as_p }}<button class="cta">Solicitar orçamento</button></form>{% else %}<p>Entre na sua conta para solicitar e acompanhar um orçamento.</p><a class="cta" href="{% url 'login' %}?next={% url 'event_portal' %}">Entrar</a>{% endif %}</div><aside class="panel"><h2>Seus orçamentos</h2>{% if user.is_authenticated %}{% for quote in quotes %}<div class="promo"><b>#{{ quote.public_id|stringformat:'s'|slice:':8' }} · {{ quote.get_event_type_display }}</b><p>{{ quote.event_date|date:'d/m/Y' }} · {{ quote.guest_count }} pessoas</p><small>{{ quote.get_status_display }}{% if quote.final_total %} · R$ {{ quote.final_total }}{% endif %}</small></div>{% empty %}<p>Nenhum orçamento ainda.</p>{% endfor %}{% else %}<p>Seus orçamentos ficam vinculados à sua conta.</p>{% endif %}</aside></section>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Eventos | Nossas Delícias{% endblock %}
+{% block content %}
+<section class="page-intro" data-reveal>
+  <span class="eyebrow">Eventos e encomendas especiais</span>
+  <h1>Conte a ocasião.<br>A gente organiza os detalhes.</h1>
+  <p>Eventos começam como orçamento porque quantidade, produção, data e logística precisam conversar entre si antes do pagamento.</p>
+  <div class="event-process"><div><span>01</span><b>Você conta a ideia</b></div><div><span>02</span><b>A equipe analisa e monta a proposta</b></div><div><span>03</span><b>O orçamento aprovado vira pedido</b></div></div>
+</section>
+
+<section class="dashboard">
+  <div class="panel" data-reveal>
+    <span class="eyebrow">Nova ocasião</span><h2>Solicitar orçamento</h2>
+    {% if user.is_authenticated %}
+      <p class="muted">Quanto melhor o contexto, melhor conseguimos avaliar quantidade, composição e logística.</p>
+      <form method="post" action="{% url 'event_quote_create' %}" class="stack-form">{% csrf_token %}{{ form.as_p }}<button class="cta">Enviar para análise</button></form>
+    {% else %}
+      <p class="muted">Entre na sua conta para solicitar e acompanhar um orçamento sem perder a conversa.</p><a class="cta" href="{% url 'login' %}?next={% url 'event_portal' %}">Entrar para solicitar</a>
+    {% endif %}
+  </div>
+
+  <aside class="panel" data-reveal>
+    <span class="eyebrow">Acompanhamento</span><h2>Seus orçamentos</h2>
+    {% if user.is_authenticated %}
+      {% for quote in quotes %}
+        <article class="quote-card"><header><b>#{{ quote.public_id|stringformat:'s'|slice:':8'|upper }} · {{ quote.get_event_type_display }}</b><span class="tag">{{ quote.get_status_display }}</span></header><p>{{ quote.event_date|date:'d/m/Y' }} · {{ quote.guest_count }} pessoas{% if quote.address %} · {{ quote.address|truncatechars:42 }}{% endif %}</p>{% if quote.final_total %}<strong>R$ {{ quote.final_total|floatformat:2 }}</strong>{% elif quote.estimated_total %}<strong>Estimativa R$ {{ quote.estimated_total|floatformat:2 }}</strong>{% else %}<small class="muted">Aguardando composição de valor.</small>{% endif %}</article>
+      {% empty %}<p class="muted">Nenhum orçamento ainda. Sua primeira solicitação aparecerá aqui automaticamente.</p>{% endfor %}
+    {% else %}<p class="muted">Seus orçamentos ficam vinculados à sua conta.</p>{% endif %}
+  </aside>
+</section>
+{% endblock %}
