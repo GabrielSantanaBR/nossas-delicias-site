@@ -1,1 +1,67 @@
-{% extends 'base.html' %}{% load store_tags %}{% block title %}Cardápio | Nossas Delícias{% endblock %}{% block content %}<section class="page-intro"><span class="eyebrow">Cardápio</span><h1>Monte seu pedido.</h1><p>Explore as categorias, escolha quantidades e deixe entrega e pagamento para o carrinho.</p></section><div class="category-tabs">{% for category in categories %}<a href="#cat-{{ category.slug }}">{{ category.name }}</a>{% endfor %}</div>{% for category in categories %}<section class="section category" id="cat-{{ category.slug }}"><div class="section-head"><span>{{ category.name }}</span><h2>{{ category.description|default:'Nossas opções' }}</h2></div><div class="grid">{% for product in category.products.all %}{% if product.active %}{% product_price product product.min_quantity as display_price %}<article class="product interactive">{% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" decoding="async">{% endif %}<small>{{ category.name }}</small><h3>{{ product.name }}</h3><p>{{ product.description }}</p><div class="product-meta"><span>mínimo {{ product.min_quantity }}</span><span>{{ product.lead_time_days }} dia{{ product.lead_time_days|pluralize }} de antecedência</span></div>{% if display_price %}<strong class="price">a partir de R$ {{ display_price }}</strong>{% else %}<strong class="price">Consulte valor</strong>{% endif %}{% if user.is_authenticated %}<form method="post" action="{% url 'add_to_cart' %}" class="add-cart">{% csrf_token %}<input type="hidden" name="product_id" value="{{ product.id }}"><label>Quantidade<input name="quantity" type="number" min="{{ product.min_quantity }}" value="{{ product.min_quantity }}"></label><button class="cta" type="submit">Adicionar ao carrinho</button><small class="form-status" aria-live="polite"></small></form>{% else %}<a class="cta" href="{% url 'login' %}?next={% url 'catalog' %}">Entrar para comprar</a>{% endif %}</article>{% endif %}{% endfor %}</div></section>{% endfor %}{% endblock %}{% block scripts %}<script>document.querySelectorAll('.add-cart').forEach(form=>form.addEventListener('submit',async e=>{e.preventDefault();const status=form.querySelector('.form-status'),btn=form.querySelector('button');btn.disabled=true;status.textContent='Adicionando...';try{const r=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{'X-Requested-With':'XMLHttpRequest'}});const d=await r.json();if(!r.ok)throw new Error(d.error||'Não foi possível adicionar.');status.innerHTML=`Adicionado. <a href="${d.redirect}">Ver carrinho</a>`;}catch(err){status.textContent=err.message;}finally{btn.disabled=false;}}));</script>{% endblock %}
+{% extends 'base.html' %}
+{% load store_tags %}
+{% block title %}Cardápio | Nossas Delícias{% endblock %}
+{% block content %}
+<section class="page-intro" data-reveal>
+  <span class="eyebrow">Cardápio</span>
+  <h1>Escolha com calma.<br>O resto a gente organiza.</h1>
+  <p>Busque por produto, navegue pelas categorias e veja o preço correto para o seu perfil. Entrega, disponibilidade e pagamento aparecem no momento certo.</p>
+</section>
+
+<div class="catalog-tools" data-reveal>
+  <label class="catalog-search"><span class="sr-only">Buscar no cardápio</span><input type="search" data-catalog-search placeholder="Buscar brownie, bolo, brigadeiro..." autocomplete="off"></label>
+  <nav class="category-tabs" aria-label="Categorias do cardápio">{% for category in categories %}<a href="#cat-{{ category.slug }}">{{ category.name }}</a>{% endfor %}</nav>
+</div>
+
+{% for category in categories %}
+<section class="section category" id="cat-{{ category.slug }}" data-category-section>
+  <div class="section-head" data-reveal>
+    <div><span class="eyebrow">{{ category.name }}</span><h2>{{ category.description|default:'Feito para entrar na sua escolha.' }}</h2></div>
+    <p>Os produtos ativos desta categoria aparecem automaticamente conforme a administração atualiza o cardápio.</p>
+  </div>
+  <div class="grid">
+    {% for product in category.products.all %}
+      {% if product.active %}
+        {% product_price product product.min_quantity as display_price %}
+        <article class="product interactive" data-product-card data-search="{{ product.name }} {{ product.description }} {{ category.name }}" data-reveal>
+          {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" decoding="async">{% else %}<div class="product-placeholder" style="aspect-ratio:4/3;border-radius:17px;margin-bottom:15px"><span>{{ product.name|slice:':1' }}</span></div>{% endif %}
+          <small class="eyebrow">{{ category.name }}</small>
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.description }}</p>
+          <div class="product-meta"><span>mínimo {{ product.min_quantity }}</span><span>{{ product.lead_time_days }} dia{{ product.lead_time_days|pluralize }} de antecedência</span></div>
+          {% if display_price %}<strong class="price">a partir de R$ {{ display_price|floatformat:2 }}</strong>{% else %}<strong class="price">Consulte valor</strong>{% endif %}
+          {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_to_cart' %}" class="add-cart">{% csrf_token %}
+              <input type="hidden" name="product_id" value="{{ product.id }}">
+              <label>Quantidade<input name="quantity" type="number" min="{{ product.min_quantity }}" max="9999" value="{{ product.min_quantity }}" inputmode="numeric"></label>
+              <button class="cta" type="submit">Adicionar à sacola</button>
+              <small class="form-status" aria-live="polite"></small>
+            </form>
+          {% else %}
+            <a class="cta" href="{% url 'login' %}?next={% url 'catalog' %}">Entrar para pedir</a>
+          {% endif %}
+        </article>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+{% endfor %}
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('.add-cart').forEach((form)=>form.addEventListener('submit',async(event)=>{
+  event.preventDefault();
+  const status=form.querySelector('.form-status');
+  const button=form.querySelector('button');
+  button.disabled=true;
+  status.textContent='Adicionando...';
+  try{
+    const response=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{'X-Requested-With':'XMLHttpRequest'}});
+    const data=await response.json();
+    if(!response.ok) throw new Error(data.error||'Não foi possível adicionar.');
+    status.textContent='Adicionado à sacola.';
+    setTimeout(()=>{status.textContent='';},2600);
+  }catch(error){status.textContent=error.message;}finally{button.disabled=false;}
+}));
+</script>
+{% endblock %}
