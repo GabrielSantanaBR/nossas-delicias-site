@@ -1,36 +1,103 @@
 {% extends 'base.html' %}
-{% block title %}Nossas Delícias | Confeitaria e central de pedidos{% endblock %}
+{% block title %}Nossas Delícias | Confeitaria artesanal{% endblock %}
 {% block content %}
-<section class="hero">
-  <div>
+<section class="hero-stage">
+  <div class="hero-copy" data-reveal>
     <span class="eyebrow">Confeitaria artesanal · Rio de Janeiro</span>
-    <h1>Seu momento merece uma delícia.</h1>
-    <p>Uma experiência para escolher, pedir e acompanhar — com atendimento próprio para clientes, cafeterias e eventos.</p>
-    <div class="hero-actions"><a class="cta" href="{% url 'catalog' %}">Montar meu pedido</a><a class="cta-secondary" href="{% url 'event_portal' %}">Planejar um evento</a></div>
-    <div class="trust-row"><span>Cardápio por perfil</span><span>Agenda por região</span><span>Atendimento por pedido</span><span>Histórico na conta</span></div>
+    <h1>Do desejo à entrega, <em>tudo mais bonito.</em></h1>
+    <p class="hero-lead">Doces feitos com cuidado e uma experiência pensada para você escolher, pedir, conversar e acompanhar sem perder nenhum detalhe.</p>
+    <div class="hero-actions">
+      <a class="button button-primary" href="{% url 'catalog' %}">Explorar cardápio <span>↗</span></a>
+      <a class="button button-ghost" href="#experiencia" data-scroll-to="#experiencia">Conhecer a experiência</a>
+    </div>
+    <div class="hero-proof">
+      <div><strong>01</strong><span>Pedido organizado</span></div>
+      <div><strong>02</strong><span>Entrega planejada</span></div>
+      <div><strong>03</strong><span>Atendimento próximo</span></div>
+    </div>
   </div>
-  <div class="hero-card"><span class="eyebrow" style="color:#e8c8b6">Uma central para tudo</span><b>Do cardápio à entrega, sem perder o contexto.</b><p>Pedido, região, data, pagamento e conversa ficam conectados à mesma operação.</p></div>
+
+  <div class="hero-visual" data-reveal data-parallax="0.045" aria-label="Resumo da experiência Nossas Delícias">
+    <div class="hero-visual-glow"></div>
+    <div class="floating-card floating-card-top"><span>Hoje</span><b>Fornada em produção</b><small>Pedidos organizados por entrega</small></div>
+    <div class="signature-card">
+      <span class="signature-kicker">Nossas Delícias</span>
+      <strong>Uma experiência que começa antes da primeira mordida.</strong>
+      <div class="signature-line"></div>
+      <div class="signature-meta"><span>feito à mão</span><span>pedido digital</span><span>atendimento humano</span></div>
+    </div>
+    <div class="floating-card floating-card-bottom"><span>Seu pedido</span><b>Contexto em um só lugar</b><small>Itens · entrega · pagamento · conversa</small></div>
+  </div>
 </section>
 
-<section class="section">
-  <div class="section-head"><div><span class="eyebrow">Em destaque</span><h2>Delícias para cada momento.</h2></div><p>O cardápio é administrável pela equipe e pode mostrar preços diferentes conforme o perfil aprovado.</p></div>
-  <div class="grid">{% for product in featured %}<article class="product interactive">{% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" decoding="async">{% endif %}<small class="eyebrow">{{ product.category.name }}</small><h3>{{ product.name }}</h3><p>{{ product.description|truncatechars:120 }}</p><a class="cta-secondary" href="{% url 'catalog' %}#cat-{{ product.category.slug }}">Ver no cardápio</a></article>{% empty %}<div class="panel"><h2>Cardápio em preparação</h2><p>Os produtos aparecem aqui assim que forem publicados pela administração.</p></div>{% endfor %}</div>
-</section>
+<div class="marquee-strip" aria-hidden="true"><div><span>Confeitaria artesanal</span><i>✦</i><span>Encomendas</span><i>✦</i><span>Cafeterias</span><i>✦</i><span>Eventos</span><i>✦</i><span>Confeitaria artesanal</span><i>✦</i><span>Encomendas</span><i>✦</i><span>Cafeterias</span><i>✦</i><span>Eventos</span></div></div>
 
-<section class="platform-section">
-  <div class="section-head"><div><span class="eyebrow">Três formas de atender</span><h2>Uma marca, fluxos diferentes.</h2></div><p>Cada público vê as regras e condições que fazem sentido para ele, sem misturar varejo, B2B e orçamento de evento.</p></div>
-  <div class="platform-grid">
-    <article class="metric-card"><span>Para você</span><b>Encomendas</b><small>Cardápio, sacola, região, data, pagamento e acompanhamento pela conta.</small></article>
-    <article class="metric-card"><span>Cafeterias</span><b>Canal B2B</b><small>Tabela própria, pedidos recorrentes, notas por entrega e histórico comercial.</small></article>
-    <article class="metric-card"><span>Eventos</span><b>Orçamento</b><small>Solicitação personalizada, negociação, aprovação e conversão em pedido.</small></article>
-    <article class="metric-card"><span>Atendimento</span><b>Conversa por pedido</b><small>Mensagens ficam ligadas ao contexto correto, sem informações soltas.</small></article>
+<section class="section-shell featured-section" id="cardapio">
+  <div class="section-heading" data-reveal>
+    <div><span class="eyebrow">Escolhas que dão vontade</span><h2>O cardápio entra em cena sem pressa.</h2></div>
+    <p>Fotos, descrições e preços podem mudar conforme o perfil da conta. Você vê o que realmente pode pedir.</p>
+  </div>
+  <div class="featured-grid">
+    {% for product in featured %}
+      <article class="featured-product" data-reveal>
+        <div class="featured-media">{% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" decoding="async">{% else %}<div class="product-placeholder"><span>{{ product.category.name|slice:':1' }}</span></div>{% endif %}<span class="product-category">{{ product.category.name }}</span></div>
+        <div class="featured-content"><h3>{{ product.name }}</h3><p>{{ product.description|truncatechars:126 }}</p><a href="{% url 'catalog' %}#cat-{{ product.category.slug }}">Ver detalhes <span>→</span></a></div>
+      </article>
+    {% empty %}
+      <article class="empty-showcase" data-reveal><span class="eyebrow">Cardápio em preparação</span><h3>Quando a equipe publicar os produtos, eles aparecem aqui automaticamente.</h3><a class="button button-ghost" href="{% url 'catalog' %}">Abrir cardápio</a></article>
+    {% endfor %}
   </div>
 </section>
 
-<section class="platform-section">
-  <div class="note-grid">
-    <div class="note-card"><span class="eyebrow">Entrega inteligente</span><h2 class="platform-title">A agenda respeita a operação.</h2><p>CEP, região, rota, dia disponível, antecedência e capacidade são verificados antes da confirmação. Isso evita prometer uma data que a produção não consegue cumprir.</p><a class="cta" href="{% url 'cart' %}">Consultar pelo pedido</a></div>
-    <div class="note-card"><span class="eyebrow">Relacionamento</span><h2>Voltar fica mais fácil.</h2><p>O cliente mantém histórico de pedidos e benefícios; cafeterias mantêm uma rotina comercial; eventos têm o próprio fluxo de orçamento.</p><a class="cta-secondary" href="{% url 'account' %}">Minha conta</a></div>
+<section class="story-shell" id="experiencia" data-story data-active="taste">
+  <div class="story-intro" data-reveal><span class="eyebrow">Uma plataforma que acompanha o negócio</span><h2>Role a página.<br><em>A experiência muda com você.</em></h2></div>
+  <div class="story-layout">
+    <div class="story-copy-column">
+      <article class="story-step" data-story-step="taste">
+        <span class="story-index">01 · Descobrir</span><h3>Primeiro vem a vontade.</h3><p>O site funciona como portfólio e cardápio. A marca aparece antes do sistema: fotos, produtos, categorias e histórias sem transformar a confeitaria em um painel técnico.</p><a href="{% url 'catalog' %}">Explorar o cardápio →</a>
+      </article>
+      <article class="story-step" data-story-step="order">
+        <span class="story-index">02 · Pedir</span><h3>Depois, tudo fica organizado.</h3><p>Pedido, endereço, região, data, disponibilidade, pagamento e conversa ficam conectados. O cliente não precisa repetir a história toda vez que falar com a equipe.</p><a href="{% url 'account' %}">Acompanhar pedidos →</a>
+      </article>
+      <article class="story-step" data-story-step="partner">
+        <span class="story-index">03 · Operar</span><h3>Cafeteria não é cliente comum.</h3><p>Parceiros B2B recebem tabela própria, histórico comercial, pedidos recorrentes e notas editáveis até o corte operacional. Eventos seguem um fluxo separado de orçamento.</p><a href="{% url 'cafe_portal' %}">Conhecer o canal B2B →</a>
+      </article>
+      <article class="story-step" data-story-step="data">
+        <span class="story-index">04 · Entender</span><h3>O negócio passa a enxergar o que vende.</h3><p>Custos, faturamento, lucro, margem, pagamentos e desempenho por produto ou cafeteria deixam de ficar espalhados. A operação gera informação enquanto trabalha.</p>{% if user.is_staff %}<a href="{% url 'finance_dashboard' %}">Abrir central financeira →</a>{% else %}<a href="{% url 'event_portal' %}">Planejar um evento →</a>{% endif %}
+      </article>
+    </div>
+
+    <div class="story-visual-column" aria-live="polite">
+      <div class="story-sticky">
+        <div class="story-scene scene-taste is-active" data-story-scene="taste" aria-hidden="false">
+          <span class="scene-label">Cardápio vivo</span><div class="scene-stack"><div class="mini-product large"><span>bolo</span><b>Camadas, textura e afeto.</b></div><div class="mini-product"><span>doce</span><b>Pequenos detalhes.</b></div><div class="mini-product"><span>evento</span><b>Feito para a ocasião.</b></div></div>
+        </div>
+        <div class="story-scene scene-order" data-story-scene="order" aria-hidden="true">
+          <span class="scene-label">Pedido conectado</span><div class="order-map"><div><small>01</small><b>Escolha</b></div><i></i><div><small>02</small><b>Entrega</b></div><i></i><div><small>03</small><b>Pagamento</b></div><i></i><div><small>04</small><b>Conversa</b></div></div><div class="scene-note">Tudo ligado ao mesmo número de pedido.</div>
+        </div>
+        <div class="story-scene scene-partner" data-story-scene="partner" aria-hidden="true">
+          <span class="scene-label">Canal profissional</span><div class="partner-card"><span>Cafeteria parceira</span><b>Pedido da semana</b><div class="partner-row"><span>12 × Brownie</span><strong>B2B</strong></div><div class="partner-row"><span>8 × Fatia de bolo</span><strong>B2B</strong></div><small>Nota editável até 16h do dia da entrega</small></div>
+        </div>
+        <div class="story-scene scene-data" data-story-scene="data" aria-hidden="true">
+          <span class="scene-label">Visão do negócio</span><div class="data-grid"><div><small>Faturamento</small><b>R$ ···</b></div><div><small>Margem</small><b>··%</b></div><div><small>Pedidos</small><b>··</b></div><div><small>Ticket</small><b>R$ ··</b></div></div><div class="fake-chart"><span style="height:32%"></span><span style="height:46%"></span><span style="height:41%"></span><span style="height:68%"></span><span style="height:61%"></span><span style="height:82%"></span></div>
+        </div>
+      </div>
+    </div>
   </div>
+</section>
+
+<section class="section-shell service-section">
+  <div class="section-heading" data-reveal><div><span class="eyebrow">Cada pedido tem seu ritmo</span><h2>Três públicos. Uma mesma qualidade.</h2></div><p>A experiência muda sem perder a identidade da Nossas Delícias.</p></div>
+  <div class="service-grid">
+    <a class="service-card" href="{% url 'catalog' %}" data-reveal><span>01</span><h3>Clientes</h3><p>Encomendas, entrega, histórico, promoções e acompanhamento.</p><b>Escolher agora →</b></a>
+    <a class="service-card service-card-dark" href="{% url 'cafe_portal' %}" data-reveal><span>02</span><h3>Cafeterias</h3><p>Preços B2B, rotina de fornecimento, notas e histórico comercial.</p><b>Acessar parceria →</b></a>
+    <a class="service-card" href="{% url 'event_portal' %}" data-reveal><span>03</span><h3>Eventos</h3><p>Orçamento, negociação e pedido pensado para cada ocasião.</p><b>Planejar evento →</b></a>
+  </div>
+</section>
+
+<section class="final-cta" data-reveal>
+  <span class="eyebrow">Doce por fora. Organizado por dentro.</span>
+  <h2>Escolha o que vai fazer parte do seu próximo momento.</h2>
+  <div class="hero-actions"><a class="button button-light" href="{% url 'catalog' %}">Ver cardápio</a><a class="button button-outline-light" href="{% url 'event_portal' %}">Falar sobre um evento</a></div>
 </section>
 {% endblock %}
