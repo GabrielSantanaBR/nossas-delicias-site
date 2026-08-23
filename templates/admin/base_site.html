@@ -15,12 +15,19 @@
 {% block branding %}
   <div class="nd-admin-brand">
     <a href="{% url 'admin:index' %}" aria-label="Nossas Delícias — Central Administrativa">
-      <span class="nd-admin-logo"><img src="{% static 'logo-nossas-delicias.svg' %}" alt=""></span>
-      <span><b>Central Administrativa</b><small>catálogo · pedidos · logística · financeiro</small></span>
+      <span class="nd-admin-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 32.5h24M14.5 32.5V27h19v5.5M17 27v-6h14v6M20 21v-5h8v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M18 27c1.1 1.2 2.2 1.2 3.3 0 1.1 1.2 2.2 1.2 3.3 0 1.1 1.2 2.2 1.2 3.3 0 1.1 1.2 2.2 1.2 3.3 0" stroke="currentColor" stroke-width="1.45" stroke-linecap="round"/>
+          <path d="M21.5 16c0-1.7 1.1-3 2.5-4 1.4 1 2.5 2.3 2.5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M10 35.5h28" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="nd-admin-wordmark"><strong>Nossas Delícias</strong><small>Central administrativa</small></span>
     </a>
   </div>
 {% endblock %}
 
 {% block nav-global %}
-  <div class="nd-admin-shortcuts"><a href="{% url 'home' %}">Ver site</a><a href="{% url 'finance_dashboard' %}">Financeiro</a></div>
+  <div class="nd-admin-shortcuts"><a href="{% url 'home' %}">Ver site</a><a href="{% url 'management_center' %}">Gestão</a><a href="{% url 'finance_dashboard' %}">Financeiro</a></div>
 {% endblock %}
