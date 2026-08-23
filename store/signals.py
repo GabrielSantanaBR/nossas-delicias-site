@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from .models import CustomerProfile, Order, OrderItem, Payment
 from .financial_models import OrderItemFinancialSnapshot
 from .financial_services import ensure_cafe_note, recalculate_note_totals, refresh_item_financial_snapshot, sync_note_payment
+from .management_models import Ingredient, Recipe, RecipeIngredient
 
 
 @receiver(post_save, sender=Order)
@@ -42,3 +43,24 @@ def refresh_note_after_item_delete(sender, instance, **kwargs):
 def refresh_cafe_note_payment(sender, instance, **kwargs):
     if instance.order.order_type == 'cafe':
         sync_note_payment(instance.order)
+
+
+@receiver(post_save, sender=Ingredient)
+def sync_costs_after_ingredient_change(sender, instance, **kwargs):
+    from .management_services import sync_recipe_product_cost
+    for recipe in Recipe.objects.filter(ingredients__ingredient=instance).distinct():
+        sync_recipe_product_cost(recipe)
+
+
+@receiver(post_save, sender=RecipeIngredient)
+@receiver(post_delete, sender=RecipeIngredient)
+def sync_cost_after_recipe_component_change(sender, instance, **kwargs):
+    from .management_services import sync_recipe_product_cost
+    if instance.recipe_id:
+        sync_recipe_product_cost(instance.recipe)
+
+
+@receiver(post_save, sender=Recipe)
+def sync_cost_after_recipe_change(sender, instance, **kwargs):
+    from .management_services import sync_recipe_product_cost
+    sync_recipe_product_cost(instance)
