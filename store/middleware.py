@@ -23,7 +23,7 @@ class SecurityHeadersMiddleware:
                 "connect-src 'self' ws: wss: https://api.mercadopago.com",
                 "upgrade-insecure-requests" if not settings.DEBUG else "block-all-mixed-content",
             ])
-        response.setdefault('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(self)')
-        response.setdefault('Cross-Origin-Opener-Policy', 'same-origin')
-        response.setdefault('X-Permitted-Cross-Domain-Policies', 'none')
+        response.headers.setdefault('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(self)')
+        response.headers.setdefault('Cross-Origin-Opener-Policy', 'same-origin')
+        response.headers.setdefault('X-Permitted-Cross-Domain-Policies', 'none')
         return response
