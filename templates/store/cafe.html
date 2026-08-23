@@ -1,40 +1,41 @@
 {% extends 'base.html' %}{% load store_tags %}
 {% block title %}Cafeterias | Nossas Delícias{% endblock %}
 {% block content %}
-<section class="page-intro">
+<section class="page-intro" data-reveal>
   <span class="eyebrow">Parcerias B2B</span>
-  <h1>Área de cafeterias.</h1>
-  <p>Cardápio e preço próprios, pedidos recorrentes, notas editáveis até o corte e histórico comercial em uma conta aprovada.</p>
+  <h1>Uma rotina de fornecimento que parece simples porque o sistema cuida do resto.</h1>
+  <p>Preço próprio, pedido recorrente, nota por entrega, histórico comercial e comunicação no mesmo fluxo.</p>
 </section>
 
 <section class="dashboard">
-  <div class="panel">
+  <div class="panel" data-reveal>
     {% if account %}
-      <span class="eyebrow">Sua operação</span>
-      <h2>{{ account.business_name }}</h2>
+      <span class="eyebrow">Sua operação</span><h2>{{ account.business_name }}</h2>
       {% if account.approved and account.active %}
-        <p class="status-ok">Conta aprovada. O cardápio utiliza automaticamente a tabela de preços vinculada à sua cafeteria.</p>
-        <div class="hero-actions">
-          <a class="cta" href="{% url 'catalog' %}">Fazer novo pedido</a>
-          <a class="cta-secondary" href="#notas">Ver notas e pedidos</a>
+        <p class="status-ok">Conta aprovada. Seu cardápio já utiliza a tabela B2B vinculada à cafeteria.</p>
+        <div class="platform-grid" style="margin-top:18px">
+          <div class="metric-card"><span>Perfil</span><b>B2B</b><small>Preço exclusivo por quantidade e tabela.</small></div>
+          <div class="metric-card"><span>Pedido mínimo</span><b>R$ {{ account.minimum_order|floatformat:2 }}</b><small>Regra específica da parceria.</small></div>
+          <div class="metric-card"><span>Nota</span><b>16h</b><small>Corte de edição no dia da entrega.</small></div>
+          <div class="metric-card"><span>Histórico</span><b>Completo</b><small>Pedidos e notas ficam vinculados à conta.</small></div>
         </div>
+        <div class="hero-actions"><a class="cta" href="{% url 'catalog' %}">Fazer novo pedido</a><a class="cta-secondary" href="#notas">Ver notas e pedidos</a></div>
       {% else %}
         <p class="status-warning">Seu cadastro está em análise. A tabela B2B será liberada depois da aprovação administrativa.</p>
       {% endif %}
     {% else %}
-      <span class="eyebrow">Primeiro acesso B2B</span>
-      <h2>Solicitar acesso de cafeteria</h2>
-      <p>Depois da aprovação, os preços, pedido mínimo e condições B2B passam a valer automaticamente.</p>
+      <span class="eyebrow">Primeiro acesso B2B</span><h2>Solicitar acesso de cafeteria</h2>
+      <p class="muted">A equipe revisa o cadastro antes de liberar preços, pedido mínimo e condições comerciais exclusivas.</p>
       <form method="post" action="{% url 'cafe_apply' %}" class="stack-form">{% csrf_token %}{{ form.as_p }}<button class="cta">Enviar cadastro</button></form>
     {% endif %}
   </div>
 
-  <aside class="panel">
+  <aside class="panel" data-reveal>
     <span class="eyebrow">Rotina</span><h2>Pedidos recorrentes</h2>
     {% if account.approved %}
       {% for recurring_order in recurring %}
         <div class="promo"><b>{{ recurring_order.name }}</b><p>Dia da semana: {{ recurring_order.weekday }} · {% if recurring_order.active %}ativo{% else %}pausado{% endif %}</p>{% for item in recurring_order.items.all %}<small>{{ item.quantity }}× {{ item.product.name }}</small>{% endfor %}</div>
-      {% empty %}<p class="muted">Nenhum pedido recorrente configurado. A equipe pode criar uma rotina fixa depois de combinar o fornecimento.</p>{% endfor %}
+      {% empty %}<p class="muted">Nenhuma rotina fixa configurada. A equipe pode criar pedidos recorrentes depois de combinar o fornecimento.</p>{% endfor %}
     {% else %}<p class="muted">Pedidos recorrentes ficam disponíveis depois da aprovação.</p>{% endif %}
   </aside>
 </section>
@@ -42,22 +43,14 @@
 {% if account.approved and account.active %}
 {% cafe_orders 20 as orders %}
 <section class="platform-section" id="notas">
-  <div class="section-head"><div><span class="eyebrow">Pedidos e notas</span><h2>O histórico da cafeteria.</h2></div><p>Cada pedido gera uma nota operacional. Ela pode ser ajustada até <b>16h do dia da entrega</b>; depois disso os itens e valores ficam congelados para preservar o histórico financeiro.</p></div>
-  <div class="table-wrap">
+  <div class="section-head" data-reveal><div><span class="eyebrow">Pedidos e notas</span><h2>O histórico da cafeteria.</h2></div><p>Cada pedido gera uma nota operacional. Ela pode ser ajustada até <b>16h do dia da entrega</b>; depois disso os itens e valores ficam congelados para preservar o histórico financeiro.</p></div>
+  <div class="table-wrap" data-reveal>
     <table class="data-table">
       <thead><tr><th>Entrega</th><th>Pedido</th><th>Status</th><th>Nota</th><th class="number">Itens</th><th class="number">Total</th><th>Ações</th></tr></thead>
       <tbody>
       {% for order in orders %}
         {% cafe_note_for order as note %}{% cafe_order_can_edit order as editable %}
-        <tr>
-          <td>{{ order.delivery_date|date:'d/m/Y'|default:'A definir' }}</td>
-          <td>#{{ order.public_id|stringformat:'s'|slice:':8'|upper }}</td>
-          <td>{{ order.get_status_display }}</td>
-          <td>{% if note %}{{ note.note_number }}{% else %}—{% endif %}</td>
-          <td class="number">{{ order.items.all|length }}</td>
-          <td class="number"><b>R$ {{ order.total|floatformat:2 }}</b></td>
-          <td><div class="hero-actions">{% if note %}<a class="ghost-button" href="{% url 'cafe_note' order.public_id %}">Ver nota</a>{% endif %}{% if editable %}<a class="cta-secondary" href="{% url 'cafe_order_edit' order.public_id %}">Editar</a>{% endif %}</div></td>
-        </tr>
+        <tr><td>{{ order.delivery_date|date:'d/m/Y'|default:'A definir' }}</td><td>#{{ order.public_id|stringformat:'s'|slice:':8'|upper }}</td><td>{{ order.get_status_display }}</td><td>{% if note %}{{ note.note_number }}{% else %}—{% endif %}</td><td class="number">{{ order.items.all|length }}</td><td class="number"><b>R$ {{ order.total|floatformat:2 }}</b></td><td><div class="hero-actions" style="margin-top:0">{% if note %}<a class="ghost-button" href="{% url 'cafe_note' order.public_id %}">Ver nota</a>{% endif %}{% if editable %}<a class="cta-secondary" href="{% url 'cafe_order_edit' order.public_id %}">Editar</a>{% endif %}</div></td></tr>
       {% empty %}<tr><td colspan="7">Nenhum pedido da cafeteria ainda.</td></tr>{% endfor %}
       </tbody>
     </table>
