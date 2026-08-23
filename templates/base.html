@@ -33,7 +33,7 @@
         <a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}">Cafeterias</a>
         {% if user.is_authenticated %}
           {% cart_count as cart_total %}<a href="{% url 'cart' %}">Sacola{% if cart_total %}<span class="nav-count">{{ cart_total }}</span>{% endif %}</a><a href="{% url 'account' %}">Minha conta</a>
-          {% if user.is_staff %}<a href="{% url 'finance_dashboard' %}">Financeiro</a><a href="/nd-admin/">Admin</a>{% endif %}
+          {% if user.is_staff %}<a href="{% url 'management_center' %}">Gestão</a><a href="{% url 'finance_dashboard' %}">Financeiro</a><a href="/nd-admin/">Admin</a>{% endif %}
           <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sair</button></form>
         {% else %}
           <a href="{% url 'login' %}">Entrar</a><a class="nav-cta" href="{% url 'register' %}">Criar conta</a>
