@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Pedido ND-{{ order.pk }} | Nossas Delícias{% endblock %}
+{% block content %}<section class="section"><div class="wrap"><a class="muted" href="{% url 'account' %}">← Voltar aos pedidos</a><h1>Pedido ND-{{ order.pk }}</h1><div class="grid"><div class="card"><h3>{{ order.get_status_display }}</h3><p>Total: <strong>R$ {{ order.total }}</strong></p>{% if order.delivery_region %}<p>{{ order.delivery_region.name }} • {{ order.delivery_address }}</p>{% endif %}<h3>Itens</h3>{% for item in order.items.all %}<p>{{ item.quantity }}× {{ item.product.name }} — R$ {{ item.total }}</p>{% endfor %}</div><div class="card"><h3>Histórico</h3>{% for entry in order.status_history.all %}<p><strong>{{ entry.get_status_display }}</strong><br><span class="muted">{{ entry.created_at|date:'d/m/Y H:i' }}</span></p>{% empty %}<p class="muted">O histórico será atualizado conforme o pedido avançar.</p>{% endfor %}</div><div><h3>Conversa</h3><div class="chat" id="chat">{% if order.conversation %}{% for message in order.conversation.messages.all %}<div class="msg {% if message.sender_id == user.id %}me{% endif %}"><strong>{{ message.sender.get_full_name|default:message.sender.username }}</strong><br>{{ message.body }}</div>{% endfor %}{% endif %}</div><form class="chat-form" id="chat-form"><input id="chat-input" maxlength="3000" autocomplete="off" placeholder="Escreva uma mensagem"><button class="btn" type="submit">Enviar</button></form></div></div></div></section>{% endblock %}
+{% block scripts %}<script>
+(() => {
+ const scheme = location.protocol === 'https:' ? 'wss' : 'ws';
+ const socket = new WebSocket(`${scheme}://${location.host}/ws/pedidos/{{ order.pk }}/chat/`);
+ const chat = document.querySelector('#chat');
+ const form = document.querySelector('#chat-form');
+ const input = document.querySelector('#chat-input');
+ socket.addEventListener('message', e => { const data=JSON.parse(e.data); const el=document.createElement('div'); el.className='msg'; el.textContent=`${data.sender}: ${data.message}`; chat.appendChild(el); chat.scrollTop=chat.scrollHeight; });
+ form.addEventListener('submit', e => { e.preventDefault(); const message=input.value.trim(); if(!message || socket.readyState!==WebSocket.OPEN) return; socket.send(JSON.stringify({message})); input.value=''; });
+})();
+</script>{% endblock %}

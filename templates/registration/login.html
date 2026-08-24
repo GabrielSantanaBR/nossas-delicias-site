@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block title %}Entrar | Nossas Delícias{% endblock %}
+{% block content %}<section class="section"><div class="wrap"><div class="form"><h1>Entrar</h1><p class="muted">Acesse histórico de pedidos, preços de cafeteria e conversas.</p><form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn" type="submit">Entrar</button></form></div></div></section>{% endblock %}
