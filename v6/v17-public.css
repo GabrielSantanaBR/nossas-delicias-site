@@ -4,6 +4,10 @@
 /* The internal system is not part of the public experience. */
 #admin,#admin-fab,.nd-system-showcase{display:none!important}
 
+/* The three-channel selector was visually redundant with the dedicated
+   customer, cafe and event sections below. Keep the storefront direct. */
+.audiences{display:none!important}
+
 /* Stable motion: never transform sticky/layout containers. */
 .hero-media{transform:none!important;transition:box-shadow .35s ease!important;will-change:auto!important}
 .hero-media>img{transform:translate3d(0,var(--v17-hero-image-y,0px),0) scale(1.07)!important;transition:filter .45s ease!important;will-change:transform}
