@@ -194,7 +194,7 @@ def delivery_availability(request):
         return JsonResponse({'available': False, 'error': 'Região ainda não atendida.'}, status=404)
     snapshot = cart_snapshot(request.user)
     lead = snapshot['max_lead'] if snapshot['rows'] else 1
-    dates = available_dates(region, lead_days=lead)
+    dates = available_dates(region, lead_days=lead, order_type=snapshot['order_type'])
     return JsonResponse({
         'available': bool(dates),
         'region': region.name,
@@ -227,8 +227,8 @@ def checkout_cart(request):
     if not initial_snapshot['rows']:
         form.add_error(None, 'Sua sacola está vazia ou contém produtos indisponíveis.')
         return render(request, 'store/cart.html', _cart_context(request, form), status=400)
-    if not can_schedule(region, chosen, initial_snapshot['max_lead']):
-        form.add_error('delivery_date', 'Esta data não está mais disponível.')
+    if not can_schedule(region, chosen, initial_snapshot['max_lead'], order_type=initial_snapshot['order_type']):
+        form.add_error('delivery_date', 'Esta data não está mais disponível para este tipo de conta.')
         return render(request, 'store/cart.html', _cart_context(request, form), status=409)
 
     with transaction.atomic():
@@ -246,11 +246,10 @@ def checkout_cart(request):
             form.add_error(None, f'Pedido mínimo para este perfil/região: R$ {minimum:.2f}')
             return render(request, 'store/cart.html', _cart_context(request, form), status=422)
 
-        if not lock_delivery_slot(region, chosen, snapshot['max_lead']):
+        if not lock_delivery_slot(region, chosen, snapshot['max_lead'], order_type=snapshot['order_type']):
             form.add_error('delivery_date', 'A última vaga desta data acabou de ser ocupada.')
             return render(request, 'store/cart.html', _cart_context(request, form), status=409)
 
-        # Validate stock limits again after locking the cart.
         for row in snapshot['rows']:
             limit = row['product'].stock_limit
             if limit is not None and row['quantity'] > limit:
@@ -336,7 +335,7 @@ def cafe_apply(request):
             profile, _ = CustomerProfile.objects.get_or_create(user=request.user)
             profile.customer_type = 'cafe'
             profile.save(update_fields=['customer_type', 'updated_at'])
-        messages.success(request, 'Cadastro de cafeteria enviado para aprovação.')
+        messages.success(request, 'Cadastro de cafeteria enviado para aprovação. Preços e rotas B2B só são liberados após a autorização da equipe.')
         return redirect('cafe_portal')
     return render(request, 'store/cafe.html', {'form': form, 'account': None}, status=400)
 
