@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="{% static 'public-v17.css' %}">
   {% block head %}{% endblock %}
   <link rel="stylesheet" href="{% static 'v18-polish.css' %}">
+  <link rel="stylesheet" href="{% static 'v18-media-fallback.css' %}">
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -69,6 +70,7 @@
 
   <script src="{% static 'app.js' %}" defer></script>
   <script src="{% static 'public-v17.js' %}" defer></script>
+  <script src="{% static 'v18-media-fallback.js' %}" defer></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
