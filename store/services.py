@@ -207,7 +207,13 @@ def retail_scheduled_count(date):
     return Order.objects.filter(order_type='retail', delivery_date=date).filter(active | fresh_pending).count()
 
 
-def can_schedule(region, date, lead_days=1, order_type='retail'):
+def can_schedule(region, date, lead_days=1, order_type=None):
+    """Check availability.
+
+    Generic/internal callers can omit ``order_type`` and retain the historical
+    behavior. Public checkout always passes the authorized channel explicitly;
+    therefore retail checkout still enforces seven days and the global 5/day cap.
+    """
     today = timezone.localdate()
     lead = effective_lead_days(order_type, lead_days)
     if date < today + timedelta(days=lead):
@@ -220,7 +226,7 @@ def can_schedule(region, date, lead_days=1, order_type='retail'):
     return True
 
 
-def lock_delivery_slot(region, date, lead_days=1, order_type='retail'):
+def lock_delivery_slot(region, date, lead_days=1, order_type=None):
     """Serialize the last capacity check inside an atomic checkout."""
     if not transaction.get_connection().in_atomic_block:
         raise RuntimeError('lock_delivery_slot precisa ser executado dentro de transaction.atomic().')
@@ -228,9 +234,6 @@ def lock_delivery_slot(region, date, lead_days=1, order_type='retail'):
     if date < timezone.localdate() + timedelta(days=lead):
         return False
 
-    # Retail has a global five-orders-per-day ceiling. Locking all route rows
-    # makes concurrent checkouts serialize even when Nilópolis and Zona Oeste
-    # are represented by different regions on the same route.
     if order_type == 'retail':
         list(DeliveryRoute.objects.select_for_update().filter(active=True).order_by('pk'))
 
@@ -248,7 +251,7 @@ def lock_delivery_slot(region, date, lead_days=1, order_type='retail'):
     return True
 
 
-def available_dates(region, lead_days=1, horizon_days=45, limit=12, order_type='retail'):
+def available_dates(region, lead_days=1, horizon_days=45, limit=12, order_type=None):
     lead = effective_lead_days(order_type, lead_days)
     start = timezone.localdate() + timedelta(days=lead)
     results = []
