@@ -1,47 +1,129 @@
-# Nossas Delícias — Site
+# Nossas Delícias — Plataforma de Confeitaria
 
-Site institucional da **Nossas Delícias**, criado como uma base visual e técnica para evoluir junto com a marca.
+Aplicação completa da **Nossas Delícias**, com vitrine pública para clientes e uma área privada de operação para a equipe.
 
-## Primeira versão
+> Para ChatGPT Work, Codex, Claude Code ou outro agente que continuar este projeto, leia primeiro [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md).
 
-A versão inicial foi construída como uma landing page responsiva, com inspiração na organização editorial e comercial de sites de cafeteria/confeitaria modernos, especialmente na referência da Coffee Five, mas com identidade própria.
+## Branches
 
-### Estrutura atual
+- `main` — demonstração pública estática/GitHub Pages.
+- `feature/full-commerce-platform` — aplicação Django real e branch principal do desenvolvimento completo.
 
-- Hero com chamada principal e CTA para pedidos;
-- apresentação da marca;
-- seção de produtos/categorias;
-- bloco para encomendas e eventos;
-- vitrine visual inspirada no Instagram;
-- contato e CTA final;
-- menu responsivo;
-- animações leves de entrada;
-- layout adaptado para desktop, tablet e celular.
+Não trate a `main` como backend de produção.
 
-## Tecnologias
+## O produto
 
-- HTML5
-- CSS3
-- JavaScript puro
-- Google Fonts
+### Área pública
 
-A primeira versão foi propositalmente mantida sem framework para facilitar validações rápidas de layout, conteúdo e identidade antes de adicionarmos complexidade.
+- portfólio da confeitaria;
+- cardápio administrável;
+- clientes e contas;
+- sacola e pedidos;
+- regiões e datas de entrega;
+- cafeterias B2B;
+- eventos/orçamentos;
+- acompanhamento de pedidos;
+- mensagens ligadas ao contexto do pedido.
 
-## Rodando localmente
+A vitrine pública deve parecer uma confeitaria profissional. Financeiro, estoque, BI, planilha e controles internos ficam privados.
 
-Você pode abrir o `index.html` diretamente no navegador ou usar uma extensão como **Live Server** no VS Code.
+### Área privada
 
-## Próximos passos
+A Central de Gestão concentra, conforme o módulo:
 
-1. Substituir as imagens provisórias pelas fotos oficiais da Nossas Delícias.
-2. Aplicar a logo oficial e fechar a paleta definitiva da marca.
-3. Cadastrar o cardápio real com produtos, sabores, tamanhos e valores.
-4. Definir o canal principal de pedido: WhatsApp, Instagram ou sistema próprio.
-5. Adicionar informações reais de contato, localização e formas de entrega/retirada.
-6. Definir se haverá cardápio administrável e painel interno.
-7. Preparar SEO, favicon, Open Graph e analytics.
-8. Publicar a primeira versão em produção.
+- pedidos;
+- mensagens;
+- clientes;
+- cafeterias;
+- eventos;
+- logística;
+- produtos e catálogo;
+- precificação;
+- ingredientes e fichas técnicas;
+- estoque;
+- despesas e custos fixos;
+- contas a receber/pagar;
+- fluxo de caixa;
+- relatórios financeiros;
+- dados/BI;
+- importação/exportação da Planilha Automatizada 4.0;
+- auditoria e configurações.
 
-## Instagram
+O Django Admin em `/nd-admin/` funciona como retaguarda técnica. A operação diária deve preferir a Central de Gestão própria.
 
-[@nossas___delicias](https://www.instagram.com/nossas___delicias/)
+## Stack
+
+- Django 5.x
+- PostgreSQL
+- Redis
+- Django Channels / WebSockets
+- ASGI / Daphne
+- `openpyxl`
+- Mercado Pago
+- WhiteNoise
+- storage S3/R2 opcional para mídia
+
+## Desenvolvimento local
+
+```bash
+python -m venv .venv
+```
+
+### Windows
+
+```powershell
+.venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+```
+
+### Linux/macOS
+
+```bash
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+Depois:
+
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+## Validação antes de concluir alterações
+
+```bash
+python -m compileall -q config store
+python manage.py makemigrations --check --dry-run
+python manage.py check
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput --clear
+python manage.py test
+```
+
+JavaScript:
+
+```bash
+find static -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+```
+
+A CI também valida migrations, Django, arquivos estáticos, JavaScript e testes.
+
+## Produção
+
+Destino inicial planejado: **Railway**.
+
+Arquitetura mínima:
+
+1. Django/ASGI
+2. PostgreSQL
+3. Redis
+
+Mídia pode usar R2/object storage e CDN. Consulte [`DEPLOYMENT.md`](./DEPLOYMENT.md), [`SECURITY.md`](./SECURITY.md) e [`.env.example`](./.env.example).
+
+## Regra importante
+
+Não fazer merge em `main` nem habilitar pagamentos/domínio de produção sem validação e autorização explícita.
