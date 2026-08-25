@@ -26,6 +26,11 @@ class CafeAuthorizationTests(TestCase):
         self.assertEqual(customer_order_type(self.user), 'retail')
         self.assertEqual(price_for(self.user, self.product), Decimal('10.00'))
 
+    def test_manually_assigned_b2b_table_does_not_bypass_pending_approval(self):
+        self.cafe_table.assigned_users.add(self.user)
+        self.assertEqual(customer_order_type(self.user), 'retail')
+        self.assertEqual(price_for(self.user, self.product), Decimal('10.00'))
+
     def test_approved_cafe_receives_b2b_channel_and_price(self):
         self.account.approved = True
         self.account.price_table = self.cafe_table
