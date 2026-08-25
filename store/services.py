@@ -47,8 +47,13 @@ def customer_order_type(user):
 def price_for(user, product, quantity=1, order_type=None):
     quantity = max(int(quantity or 1), 1)
     order_type = order_type or customer_order_type(user)
+    cafe = getattr(user, 'cafe_account', None)
+    cafe_authorized = bool(cafe and cafe.approved and cafe.active)
 
     assigned = PriceTable.objects.filter(active=True, assigned_users=user)
+    if not cafe_authorized:
+        # A manual table assignment must not bypass the cafeteria approval flow.
+        assigned = assigned.exclude(kind='cafe')
     price = ProductPrice.objects.filter(
         product=product,
         table__in=assigned,
@@ -57,9 +62,8 @@ def price_for(user, product, quantity=1, order_type=None):
     if price:
         return price.unit_price
 
-    cafe = getattr(user, 'cafe_account', None)
     if order_type == 'cafe':
-        if not cafe or not cafe.approved or not cafe.active:
+        if not cafe_authorized:
             order_type = 'retail'
         elif cafe.price_table_id:
             price = ProductPrice.objects.filter(
