@@ -4,21 +4,23 @@ A branch `feature/full-commerce-platform` possui um seed determinístico para vi
 
 ## Executar
 
+Para montar **dados + calendário** em um único comando:
+
 ```bash
 python manage.py migrate
-python manage.py seed_nossas_delicias_demo --year 2026
+python manage.py seed_nossas_delicias_full_demo --year 2026
 ```
 
 Para permitir login nas contas fictícias durante um ambiente de teste:
 
 ```bash
-python manage.py seed_nossas_delicias_demo \
+python manage.py seed_nossas_delicias_full_demo \
   --year 2026 \
   --demo-password "UMA-SENHA-TEMPORARIA" \
   --admin-password "OUTRA-SENHA-TEMPORARIA"
 ```
 
-Nunca versione essas senhas e não use credenciais de demonstração em produção real.
+Nunca versione essas senhas e não use credenciais de demonstração em produção real. A Central de Gestão e o Admin avançado exigem o fluxo administrativo/OTP configurado no ambiente.
 
 ## O que é criado
 
@@ -31,6 +33,7 @@ Nunca versione essas senhas e não use credenciais de demonstração em produç�
 - entregas B2B nas terças, quintas e sextas;
 - regiões de clientes em Nilópolis e Zona Oeste;
 - regiões B2B em Centro e Zona Sul;
+- calendário de agosto explicitamente preenchido e janela futura de agendamento;
 - estoque, insumos, custos fixos e despesas;
 - pagamentos e snapshots financeiros;
 - conversas ligadas aos pedidos;
@@ -44,7 +47,8 @@ Nunca versione essas senhas e não use credenciais de demonstração em produç�
 - antecedência mínima: 7 dias;
 - máximo global: 5 agendamentos por dia;
 - rota: Nilópolis + Zona Oeste;
-- preços de cliente.
+- preços de cliente;
+- domingo fechado no calendário demo.
 
 ### Cafeterias
 
