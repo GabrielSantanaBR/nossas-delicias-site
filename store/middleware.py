@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 
 
@@ -8,6 +10,14 @@ class SecurityHeadersMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        # Disposable demo environments may opt into an explicit staff OTP bypass.
+        # Production remains protected because this requires DEBUG=1 as well as
+        # DEMO_ALLOW_ADMIN_WITHOUT_OTP=1.
+        if settings.DEBUG and os.environ.get('DEMO_ALLOW_ADMIN_WITHOUT_OTP') == '1':
+            user = getattr(request, 'user', None)
+            if user is not None and getattr(user, 'is_authenticated', False) and getattr(user, 'is_staff', False):
+                user.otp_device = 'demo-bypass'
+
         response = self.get_response(request)
         if not response.has_header('Content-Security-Policy'):
             response['Content-Security-Policy'] = '; '.join([
