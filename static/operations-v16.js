@@ -84,18 +84,98 @@
       rows.forEach(row=>row.hidden=Boolean(q&&!normalize(row.textContent).includes(q)));
     });
   });
+  document.querySelectorAll('[data-recipe-filter]').forEach(input=>{
+    const cards=[...document.querySelectorAll('[data-recipe-card]')];
+    input.addEventListener('input',()=>{
+      const q=normalize(input.value.trim());
+      cards.forEach(card=>card.hidden=Boolean(q&&!normalize(card.textContent).includes(q)));
+    });
+  });
 
   const threadButtons=[...document.querySelectorAll('[data-thread-target]')];
   const threadPanels=[...document.querySelectorAll('[data-thread-panel]')];
+  const createMessageNode=message=>{
+    const item=document.createElement('div');
+    item.className=`ops-chat-msg ${message.from_team?'from-team':'from-client'}`;
+    item.dataset.messageId=message.id;
+    const meta=document.createElement('small');
+    meta.textContent=`${message.author} · ${message.created_at}`;
+    const body=document.createElement('p');
+    body.textContent=message.body;
+    item.append(meta,body);
+    return item;
+  };
+  const renderThread=(panel,messages,{preserveScroll=false}={})=>{
+    const box=panel?.querySelector('.ops-chat-box');
+    if(!box)return;
+    const nearBottom=box.scrollHeight-box.scrollTop-box.clientHeight<90;
+    const known=new Set([...box.querySelectorAll('[data-message-id]')].map(node=>node.dataset.messageId));
+    if(!panel.dataset.loaded){
+      box.replaceChildren();
+      messages.forEach(message=>box.append(createMessageNode(message)));
+      if(!messages.length){
+        const empty=document.createElement('div');empty.className='ops-empty';empty.textContent='A conversa começa quando alguém envia a primeira mensagem.';box.append(empty);
+      }
+    }else{
+      const fresh=messages.filter(message=>!known.has(String(message.id)));
+      if(fresh.length)box.querySelector('.ops-empty')?.remove();
+      fresh.forEach(message=>box.append(createMessageNode(message)));
+    }
+    panel.dataset.loaded='1';
+    if(!preserveScroll||nearBottom)box.scrollTop=box.scrollHeight;
+  };
+  const loadThread=async(panel,{quiet=false}={})=>{
+    if(!panel?.dataset.threadUrl||panel.dataset.loading==='1'||document.hidden)return;
+    panel.dataset.loading='1';
+    try{
+      const response=await fetch(panel.dataset.threadUrl,{headers:{'X-Requested-With':'XMLHttpRequest'},credentials:'same-origin'});
+      if(!response.ok)throw new Error('Não foi possível carregar a conversa.');
+      const data=await response.json();
+      renderThread(panel,data.messages,{preserveScroll:quiet});
+      const button=threadButtons.find(item=>item.dataset.threadTarget===panel.id);
+      button?.classList.remove('has-unread');
+      button?.querySelector(':scope > i')?.remove();
+    }catch(error){
+      if(!quiet){const box=panel.querySelector('.ops-chat-box');if(box){box.textContent='';const warning=document.createElement('div');warning.className='ops-empty is-error';warning.textContent=error.message;box.append(warning);}}
+    }finally{delete panel.dataset.loading;}
+  };
   const openThread=id=>{
     threadButtons.forEach(button=>button.classList.toggle('is-active',button.dataset.threadTarget===id));
     threadPanels.forEach(panel=>panel.classList.toggle('is-active',panel.id===id));
     const panel=document.getElementById(id);
-    const box=panel?.querySelector('.ops-chat-box');
-    if(box)box.scrollTop=box.scrollHeight;
+    loadThread(panel);
   };
   threadButtons.forEach(button=>button.addEventListener('click',()=>openThread(button.dataset.threadTarget)));
   if(threadButtons[0])openThread(threadButtons[0].dataset.threadTarget);
+
+  document.querySelectorAll('[data-conversation-compose]').forEach(form=>{
+    const textarea=form.querySelector('textarea');
+    const button=form.querySelector('button');
+    const feedback=form.querySelector('[data-chat-feedback]');
+    const submit=async event=>{
+      event.preventDefault();
+      if(form.dataset.sending==='1'||!textarea.value.trim())return;
+      form.dataset.sending='1';button.disabled=true;feedback.textContent='Enviando…';
+      try{
+        const response=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{'X-Requested-With':'XMLHttpRequest'},credentials:'same-origin'});
+        const data=await response.json();
+        if(!response.ok)throw new Error(data.error||'Não foi possível enviar.');
+        const panel=form.closest('[data-thread-panel]');
+        renderThread(panel,[data.message],{preserveScroll:false});
+        const preview=threadButtons.find(item=>item.dataset.threadTarget===panel.id)?.querySelector('[data-thread-preview]');
+        if(preview)preview.textContent=data.message.body;
+        textarea.value='';feedback.textContent='Mensagem enviada';textarea.focus();
+        setTimeout(()=>{if(document.contains(feedback))feedback.textContent='Ctrl + Enter para enviar';},1800);
+      }catch(error){feedback.textContent=error.message;feedback.classList.add('is-error');}
+      finally{delete form.dataset.sending;button.disabled=false;}
+    };
+    form.addEventListener('submit',submit);
+    textarea.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){event.preventDefault();form.requestSubmit();}});
+  });
+  setInterval(()=>{
+    const messagesActive=document.querySelector('[data-module="messages"]')?.classList.contains('is-active');
+    if(messagesActive&&!document.hidden)loadThread(document.querySelector('[data-thread-panel].is-active'),{quiet:true});
+  },15000);
 
   document.querySelectorAll('.ops-inline-form').forEach(form=>{
     const select=form.querySelector('select');
@@ -111,7 +191,7 @@
   const commandOpen=document.querySelector('[data-command-open]');
   const commandClose=document.querySelector('[data-command-close]');
   const labels={
-    overview:['Visão geral','Resumo do negócio e operação'],portfolio:['Portfólio & site','Vitrine, produtos e presença pública'],orders:['Pedidos','Fila, status e entregas'],messages:['Mensagens','Atendimento de clientes e parceiros'],cafes:['Cafeterias','Parcerias B2B e faturamento'],events:['Eventos','Orçamentos e pipeline'],logistics:['Logística','Rotas, capacidade e calendário'],data:['Dados & planilha','Importação, exportação e inteligência'],finance:['Financeiro','Caixa, recebíveis, despesas e lucro'],pricing:['Precificação','Custos, margem e simulador'],production:['Produção & estoque','Ingredientes, fichas e movimentações']
+    overview:['Visão geral','Resumo do negócio e operação'],portfolio:['Portfólio & site','Vitrine, produtos e presença pública'],orders:['Pedidos','Fila, status e entregas'],messages:['Mensagens','Atendimento de clientes e parceiros'],cafes:['Cafeterias','Parcerias B2B e faturamento'],events:['Eventos','Orçamentos e pipeline'],logistics:['Logística','Rotas, capacidade e calendário'],data:['Dados & relatórios','Exportação e inteligência'],finance:['Financeiro','Caixa, recebíveis, despesas e lucro'],pricing:['Precificação','Custos, margem e simulador'],production:['Produção & estoque','Ingredientes, fichas e movimentações']
   };
   let visibleKeys=[];
   let selected=0;
@@ -145,7 +225,7 @@
     document.querySelectorAll('.ops-panel,.ops-kpis article,.ops-module-card,.ops-business-card,.ops-event-card,.ops-day').forEach(node=>reveal.observe(node));
   }else document.querySelectorAll('.ops-panel,.ops-kpis article,.ops-module-card,.ops-business-card,.ops-event-card,.ops-day').forEach(node=>node.classList.add('ops-in'));
 
-  document.querySelectorAll('form').forEach(form=>form.addEventListener('submit',()=>{
+  document.querySelectorAll('form:not([data-conversation-compose])').forEach(form=>form.addEventListener('submit',()=>{
     const button=form.querySelector('button[type="submit"],button:not([type])');
     if(!button||button.dataset.loading==='1')return;
     button.dataset.loading='1';

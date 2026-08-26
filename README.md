@@ -51,7 +51,7 @@ A Central de Gestão concentra, conforme o módulo:
 - fluxo de caixa;
 - relatórios financeiros;
 - dados/BI;
-- importação/exportação da Planilha Automatizada 4.0;
+- base nativa com ingredientes e fichas técnicas da Planilha 4.0, além de exportação Excel por cafeteria;
 - auditoria e configurações.
 
 O simulador privado de precificação calcula custo unitário, preço recomendado, margem, impacto por lote e ponto de equilíbrio sem alterar o cardápio real.

@@ -8,13 +8,13 @@ from channels.layers import get_channel_layer
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.db.models import Count, Q, Sum
-from django.http import HttpResponse, HttpResponseRedirect
+from django.db.models import Count, OuterRef, Q, Subquery, Sum
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from django_ratelimit.decorators import ratelimit
 
 from .financial_models import BusinessExpense, ProductCostProfile
@@ -30,7 +30,6 @@ from .management_forms import (
     PriceSimulatorForm,
     RecipeForm,
     RecipeIngredientForm,
-    SpreadsheetUploadForm,
 )
 from .management_models import (
     FinancialSettings,
@@ -40,7 +39,6 @@ from .management_models import (
     InventoryMovement,
     Recipe,
     RecipeIngredient,
-    SpreadsheetImportBatch,
 )
 from .management_services import management_dashboard, simulate_price, sync_recipe_product_cost
 from .models import (
@@ -60,7 +58,7 @@ from .models import (
     ProductPrice,
     PriceTable,
 )
-from .spreadsheet_io import build_management_workbook, import_management_workbook
+from .spreadsheet_io import build_management_workbook
 from .views_finance import _parse_date, _staff_otp_guard
 
 logger = logging.getLogger(__name__)
@@ -91,23 +89,27 @@ def _operations_context(start, end):
     for row in period_orders.values('status').annotate(total=Count('id')):
         order_status[row['status']] = row['total']
 
-    conversations = (
+    latest_message = Message.objects.filter(conversation=OuterRef('pk')).order_by('-created_at', '-pk')
+    conversations = list(
         Conversation.objects.select_related('order__customer', 'order__delivery_region', 'customer')
-        .prefetch_related('messages__sender')
-        .order_by('-updated_at')[:28]
+        .annotate(
+            incoming_unread=Count(
+                'messages',
+                filter=Q(messages__read_at__isnull=True, messages__sender__is_staff=False),
+                distinct=True,
+            ),
+            last_message_body=Subquery(latest_message.values('body')[:1]),
+            last_message_at=Subquery(latest_message.values('created_at')[:1]),
+        )
+        .order_by('-last_message_at', '-updated_at')[:40]
     )
     conversation_rows = []
     total_unread = 0
     for conversation in conversations:
-        thread = list(conversation.messages.all())
-        incoming_unread = sum(
-            1 for msg in thread if msg.read_at is None and not msg.sender.is_staff
-        )
+        incoming_unread = conversation.incoming_unread
         total_unread += incoming_unread
         conversation_rows.append({
             'conversation': conversation,
-            'messages': thread[-8:],
-            'last_message': thread[-1] if thread else None,
             'unread': incoming_unread,
         })
 
@@ -226,12 +228,10 @@ def management_center(request):
         'dashboard': dashboard,
         'operations': _operations_context(start, end),
         'ingredients': Ingredient.objects.all()[:250],
-        'recipes': Recipe.objects.select_related('product').all()[:250],
-        'recipe_ingredients': RecipeIngredient.objects.select_related('recipe', 'ingredient').all()[:400],
+        'recipes': Recipe.objects.select_related('product').prefetch_related('ingredients__ingredient').all()[:250],
         'fixed_costs': FixedCost.objects.all()[:100],
         'recent_expenses': BusinessExpense.objects.order_by('-date', '-created_at')[:80],
         'recent_movements': InventoryMovement.objects.select_related('ingredient').order_by('-date', '-created_at')[:100],
-        'recent_imports': SpreadsheetImportBatch.objects.select_related('imported_by')[:12],
         'ingredient_form': IngredientForm(),
         'movement_form': InventoryMovementForm(initial={'date': timezone.localdate()}),
         'recipe_form': RecipeForm(),
@@ -239,7 +239,6 @@ def management_center(request):
         'fixed_cost_form': FixedCostForm(initial={'start_date': timezone.localdate()}),
         'expense_form': ExpenseForm(initial={'date': timezone.localdate()}),
         'settings_form': FinancialSettingsForm(instance=FinancialSettings.current()),
-        'upload_form': SpreadsheetUploadForm(),
         'catalog_product_form': CatalogProductForm(),
         'direct_sale_form': DirectSaleForm(initial={'sale_date': timezone.localdate()}),
     })
@@ -430,16 +429,23 @@ def management_order_status(request):
 
 @_staff_otp_guard
 @require_POST
+@ratelimit(key='user', rate='30/m', method='POST', block=True)
 def management_conversation_send(request):
     conversation = get_object_or_404(Conversation.objects.select_related('order'), pk=request.POST.get('conversation_id'))
     body = (request.POST.get('body') or '').strip()
     if conversation.closed:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'Esta conversa está encerrada.'}, status=409)
         messages.error(request, 'Esta conversa está encerrada.')
         return _management_redirect('messages')
     if not body:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'Escreva uma mensagem antes de enviar.'}, status=400)
         messages.error(request, 'Escreva uma mensagem antes de enviar.')
         return _management_redirect('messages')
     if len(body) > 4000:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'A mensagem pode ter no máximo 4.000 caracteres.'}, status=400)
         messages.error(request, 'A mensagem pode ter no máximo 4.000 caracteres.')
         return _management_redirect('messages')
 
@@ -461,8 +467,45 @@ def management_conversation_send(request):
     except Exception:
         # The message is already safely persisted; websocket delivery can recover on reconnect.
         logger.warning('Falha ao publicar resposta administrativa no WebSocket da conversa %s.', conversation.pk, exc_info=True)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'message': {
+            'id': msg.pk,
+            'body': msg.body,
+            'from_team': True,
+            'author': 'Nossas Delícias',
+            'created_at': timezone.localtime(msg.created_at).strftime('%d/%m %H:%M'),
+        }})
     messages.success(request, 'Mensagem enviada e salva no histórico do pedido.')
     return _management_redirect('messages')
+
+
+@_staff_otp_guard
+@require_GET
+def management_conversation_thread(request, conversation_id):
+    conversation = get_object_or_404(
+        Conversation.objects.select_related('order', 'customer'),
+        pk=conversation_id,
+    )
+    thread = list(
+        conversation.messages.select_related('sender')
+        .order_by('-created_at', '-pk')[:80]
+    )
+    thread.reverse()
+    conversation.messages.filter(
+        read_at__isnull=True,
+        sender__is_staff=False,
+    ).update(read_at=timezone.now())
+    return JsonResponse({
+        'conversation_id': conversation.pk,
+        'closed': conversation.closed,
+        'messages': [{
+            'id': msg.pk,
+            'body': msg.body,
+            'from_team': msg.sender.is_staff,
+            'author': 'Nossas Delícias' if msg.sender.is_staff else (msg.sender.first_name or msg.sender.username),
+            'created_at': timezone.localtime(msg.created_at).strftime('%d/%m %H:%M'),
+        } for msg in thread],
+    })
 
 
 @_staff_otp_guard
@@ -716,29 +759,6 @@ def financial_settings_save(request):
     else:
         messages.error(request, 'Configuração financeira inválida.')
     return _management_redirect('pricing')
-
-
-@_staff_otp_guard
-@require_POST
-def spreadsheet_import(request):
-    form = SpreadsheetUploadForm(request.POST, request.FILES)
-    if not form.is_valid():
-        messages.error(request, 'Envie uma planilha .xlsx válida de até 10 MB.')
-        return _management_redirect('data')
-    try:
-        result = import_management_workbook(form.cleaned_data['file'], user=request.user)
-    except Exception:
-        logger.exception('Falha na importação da planilha de gestão enviada pelo usuário %s.', request.user.pk)
-        messages.error(request, 'A planilha não pôde ser importada. Nenhuma alteração parcial foi mantida.')
-        return _management_redirect('data')
-    warning = f" Avisos: {'; '.join(result['warnings'])}" if result['warnings'] else ''
-    messages.success(
-        request,
-        f"Planilha importada: {result['ingredients_created']} ingredientes criados, "
-        f"{result['ingredients_updated']} atualizados, {result['recipes_created']} receitas criadas, "
-        f"{result['recipes_updated']} atualizadas e {result['prices_updated']} preços sincronizados.{warning}",
-    )
-    return _management_redirect('data')
 
 
 @_staff_otp_guard

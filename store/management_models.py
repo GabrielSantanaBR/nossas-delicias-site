@@ -167,6 +167,11 @@ class RecipeIngredient(models.Model):
         verbose_name = 'Ingrediente da receita'
         verbose_name_plural = 'Ingredientes das receitas'
 
+    @property
+    def total_cost(self):
+        multiplier = Decimal('1') + (Decimal(self.waste_percent or 0) / Decimal('100'))
+        return (Decimal(self.quantity_used) * Decimal(self.ingredient.unit_cost) * multiplier).quantize(FOUR, rounding=ROUND_HALF_UP)
+
 
 class FinancialSettings(models.Model):
     desired_margin_percent = models.DecimalField(max_digits=6, decimal_places=2, default=30, validators=[MinValueValidator(Decimal('0')), MaxValueValidator(Decimal('95'))])

@@ -1,0 +1,3969 @@
+{
+  "ingredients": [
+    {
+      "code": "ING-001",
+      "name": "CHOCOLATE 100%",
+      "category": "Chocolates e cacau",
+      "package_price": 30,
+      "package_quantity": 500,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Unifica CACAU, CACAU 100%, CACAU EM PÓ e CHOCOLATE EM PÓ, conforme orientação.",
+      "aliases": "CACAU 100% | CACAU | CACAU EM PÓ | CACAU EM PO | CHOCOLATE EM PO",
+      "active": true
+    },
+    {
+      "code": "ING-002",
+      "name": "CHOCOLATE BRANCO",
+      "category": "Chocolates e cacau",
+      "package_price": 100,
+      "package_quantity": 2000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "CHOCOLATE BRANCO | CHOC. BRANCO",
+      "active": true
+    },
+    {
+      "code": "ING-003",
+      "name": "CHOCOLATE EM BARRA",
+      "category": "Chocolates e cacau",
+      "package_price": 100,
+      "package_quantity": 2000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Mantido separado de chocolate 100%; somente linhas explicitamente identificadas como barra usam este item.",
+      "aliases": "CHOCOLATE EM BARRA | CHOCOLATE | chocolate em barra",
+      "active": true
+    },
+    {
+      "code": "ING-004",
+      "name": "GRANULADO",
+      "category": "Chocolates e cacau",
+      "package_price": 35.9,
+      "package_quantity": 400,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "GRANULADO",
+      "active": true
+    },
+    {
+      "code": "ING-005",
+      "name": "NUTELA",
+      "category": "Chocolates e cacau",
+      "package_price": 37,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "NUTELA",
+      "active": true
+    },
+    {
+      "code": "ING-006",
+      "name": "BEIJINHO",
+      "category": "Componente produzido",
+      "package_price": 28,
+      "package_quantity": 1,
+      "base_unit": "receita",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "BEIJINHO",
+      "active": true
+    },
+    {
+      "code": "ING-007",
+      "name": "BRIGADEIRO",
+      "category": "Componente produzido",
+      "package_price": 94.6,
+      "package_quantity": 4,
+      "base_unit": "porção",
+      "supplier": "Receita interna",
+      "notes": "Valor calculado automaticamente pela receita de produção indicada.",
+      "aliases": "BRIGADEIRO",
+      "active": true
+    },
+    {
+      "code": "ING-008",
+      "name": "BRIGADEIRO BRANCO",
+      "category": "Componente produzido",
+      "package_price": 24.3,
+      "package_quantity": 1,
+      "base_unit": "receita",
+      "supplier": "Receita interna",
+      "notes": "Valor calculado automaticamente pela receita de produção indicada.",
+      "aliases": "BRIGADEIRO BRANCO | BRIG. BRANCO",
+      "active": true
+    },
+    {
+      "code": "ING-009",
+      "name": "CHANTINHO",
+      "category": "Componente produzido",
+      "package_price": 22,
+      "package_quantity": 1,
+      "base_unit": "receita",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "CHANTINHO",
+      "active": true
+    },
+    {
+      "code": "ING-010",
+      "name": "GANACHE MEIO AMARGO",
+      "category": "Componente produzido",
+      "package_price": 15.700000000000001,
+      "package_quantity": 1,
+      "base_unit": "receita",
+      "supplier": "Receita interna",
+      "notes": "Valor calculado automaticamente pela receita de produção indicada.",
+      "aliases": "GANACHE MEIO AMARGO | GANACHE | RECH. GANACHE",
+      "active": true
+    },
+    {
+      "code": "ING-011",
+      "name": "GELEIA",
+      "category": "Componente produzido",
+      "package_price": 57.44,
+      "package_quantity": 4,
+      "base_unit": "porção",
+      "supplier": "Receita interna",
+      "notes": "Valor calculado automaticamente pela receita de produção indicada.",
+      "aliases": "GELEIA",
+      "active": true
+    },
+    {
+      "code": "ING-012",
+      "name": "MASSA CHOCOLATE COM IOGURTE",
+      "category": "Componente produzido",
+      "package_price": 24.154988505747127,
+      "package_quantity": 1,
+      "base_unit": "receita",
+      "supplier": "Receita interna",
+      "notes": "Valor calculado automaticamente pela receita de produção indicada.",
+      "aliases": "MASSA CHOCO/YOGURT | MASSA CHOCO/YORGUT | MASSA | CHOCOLATE",
+      "active": true
+    },
+    {
+      "code": "ING-013",
+      "name": "MASSA DE BAUNILHA",
+      "category": "Componente produzido",
+      "package_price": 18.840766283524907,
+      "package_quantity": 1,
+      "base_unit": "receita",
+      "supplier": "Receita interna",
+      "notes": "Valor calculado automaticamente pela receita de produção indicada.",
+      "aliases": "MASSA BAUNILHA | MASSA DE BAUNILHA | MASSA | AMANTEIGADA | MASSA LARANJA",
+      "active": true
+    },
+    {
+      "code": "ING-014",
+      "name": "MASSA DE BEM-CASADO",
+      "category": "Componente produzido",
+      "package_price": 22.773551724137935,
+      "package_quantity": 17,
+      "base_unit": "un",
+      "supplier": "Receita interna",
+      "notes": "Valor calculado automaticamente pela receita de produção indicada.",
+      "aliases": "MASSA",
+      "active": true
+    },
+    {
+      "code": "ING-015",
+      "name": "MASSA DE BISCOITO (PORÇÃO)",
+      "category": "Componente produzido",
+      "package_price": 56.85,
+      "package_quantity": 6,
+      "base_unit": "porção",
+      "supplier": "Receita interna",
+      "notes": "Valor calculado automaticamente pela receita de produção indicada.",
+      "aliases": "BASE DE BISCOITO",
+      "active": true
+    },
+    {
+      "code": "ING-016",
+      "name": "MASSA DE CENOURA",
+      "category": "Componente produzido",
+      "package_price": 26.16379961685824,
+      "package_quantity": 1,
+      "base_unit": "receita",
+      "supplier": "Receita interna",
+      "notes": "Valor calculado automaticamente pela receita de produção indicada.",
+      "aliases": "MASSA DE CARROT | MASSA",
+      "active": true
+    },
+    {
+      "code": "ING-017",
+      "name": "PRALINE",
+      "category": "Componente produzido",
+      "package_price": 9.648,
+      "package_quantity": 1,
+      "base_unit": "receita",
+      "supplier": "Receita interna",
+      "notes": "Valor calculado automaticamente pela receita de produção indicada.",
+      "aliases": "PRALINE",
+      "active": true
+    },
+    {
+      "code": "ING-018",
+      "name": "GÁS",
+      "category": "Custos indiretos",
+      "package_price": 130,
+      "package_quantity": 13,
+      "base_unit": "kg",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "GÁS | GAS",
+      "active": true
+    },
+    {
+      "code": "ING-019",
+      "name": "GASTO EXTRA",
+      "category": "Custos indiretos",
+      "package_price": 5,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "GASTO EXTRA | GASTOS EXTRAS | GASTO EXTRTA | GASTOS EXTRA | gasto extra",
+      "active": true
+    },
+    {
+      "code": "ING-020",
+      "name": "MATERIAL EXTRA",
+      "category": "Custos indiretos",
+      "package_price": 5,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "MATERIAL EXTRA",
+      "active": true
+    },
+    {
+      "code": "ING-021",
+      "name": "ACETATO",
+      "category": "Embalagens",
+      "package_price": 5.4,
+      "package_quantity": 5,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "ACETATO",
+      "active": true
+    },
+    {
+      "code": "ING-022",
+      "name": "ADESIVO COSTA",
+      "category": "Embalagens",
+      "package_price": 12.5,
+      "package_quantity": 70,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "ADESIVO COSTA | ADEVSIVO COSTA",
+      "active": true
+    },
+    {
+      "code": "ING-023",
+      "name": "ADESIVO FRENTE",
+      "category": "Embalagens",
+      "package_price": 12.5,
+      "package_quantity": 54,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "ADESIVO FRENTE",
+      "active": true
+    },
+    {
+      "code": "ING-024",
+      "name": "BERÇO",
+      "category": "Embalagens",
+      "package_price": 3,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "BERÇO",
+      "active": true
+    },
+    {
+      "code": "ING-025",
+      "name": "CAIXA",
+      "category": "Embalagens",
+      "package_price": 5,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "CAIXA",
+      "active": true
+    },
+    {
+      "code": "ING-026",
+      "name": "CAIXA BPC",
+      "category": "Embalagens",
+      "package_price": 4.2,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Embalagem específica preservada da versão automatizada enviada.",
+      "aliases": "Caixa BPC | CAIXA",
+      "active": true
+    },
+    {
+      "code": "ING-027",
+      "name": "CELOFONE",
+      "category": "Embalagens",
+      "package_price": 78,
+      "package_quantity": 2000,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Embalagem específica preservada da versão automatizada enviada.",
+      "aliases": "CELOFONE | EMBALAGEM | EMALAGEM",
+      "active": true
+    },
+    {
+      "code": "ING-028",
+      "name": "CONJUNTO BANOFFEE",
+      "category": "Embalagens",
+      "package_price": 7.5,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Embalagem específica preservada da versão automatizada enviada.",
+      "aliases": "CONJUNTO BANOFFEE | Prato",
+      "active": true
+    },
+    {
+      "code": "ING-029",
+      "name": "CONJUNTO EMBALAGEM",
+      "category": "Embalagens",
+      "package_price": 11.5,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Embalagem específica preservada da versão automatizada enviada.",
+      "aliases": "CONJUNTO EMBALAGEM | EMBALAGEM",
+      "active": true
+    },
+    {
+      "code": "ING-030",
+      "name": "FITA",
+      "category": "Embalagens",
+      "package_price": 5.5,
+      "package_quantity": 23,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "FITA",
+      "active": true
+    },
+    {
+      "code": "ING-031",
+      "name": "FORMINHA",
+      "category": "Embalagens",
+      "package_price": 4.5,
+      "package_quantity": 50,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Embalagem específica preservada da versão automatizada enviada.",
+      "aliases": "FORMINHA | EMBALAGEM | embalagem",
+      "active": true
+    },
+    {
+      "code": "ING-032",
+      "name": "PAPEL MANTEIGA",
+      "category": "Embalagens",
+      "package_price": 2.8,
+      "package_quantity": 29,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "PAPEL MANTEIGA",
+      "active": true
+    },
+    {
+      "code": "ING-033",
+      "name": "ABACAXI",
+      "category": "Frutas e derivados",
+      "package_price": 10,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "ABACAXI",
+      "active": true
+    },
+    {
+      "code": "ING-034",
+      "name": "AMEIXA",
+      "category": "Frutas e derivados",
+      "package_price": 45,
+      "package_quantity": 5,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "AMEIXA",
+      "active": true
+    },
+    {
+      "code": "ING-035",
+      "name": "AMORA",
+      "category": "Frutas e derivados",
+      "package_price": 28,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "AMORA",
+      "active": true
+    },
+    {
+      "code": "ING-036",
+      "name": "BANANA",
+      "category": "Frutas e derivados",
+      "package_price": 10,
+      "package_quantity": 12,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "BANANA",
+      "active": true
+    },
+    {
+      "code": "ING-037",
+      "name": "CENOURA",
+      "category": "Frutas e derivados",
+      "package_price": 10,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "CENOURA",
+      "active": true
+    },
+    {
+      "code": "ING-038",
+      "name": "COCO",
+      "category": "Frutas e derivados",
+      "package_price": 38,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "COCO",
+      "active": true
+    },
+    {
+      "code": "ING-039",
+      "name": "GOIABADA",
+      "category": "Frutas e derivados",
+      "package_price": 3,
+      "package_quantity": 200,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "GOIABADA",
+      "active": true
+    },
+    {
+      "code": "ING-040",
+      "name": "LARANJA",
+      "category": "Frutas e derivados",
+      "package_price": 16,
+      "package_quantity": 12,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "LARANJA",
+      "active": true
+    },
+    {
+      "code": "ING-041",
+      "name": "LIMÃO (GRAMA)",
+      "category": "Frutas e derivados",
+      "package_price": 5,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "LIMÃO",
+      "active": true
+    },
+    {
+      "code": "ING-042",
+      "name": "LIMÃO (UNIDADE)",
+      "category": "Frutas e derivados",
+      "package_price": 2,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "LIMÃO",
+      "active": true
+    },
+    {
+      "code": "ING-043",
+      "name": "MARACUJÁ",
+      "category": "Frutas e derivados",
+      "package_price": 15,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "MARACUJÁ | maracujá | MARACUJA",
+      "active": true
+    },
+    {
+      "code": "ING-044",
+      "name": "MIRTILO",
+      "category": "Frutas e derivados",
+      "package_price": 33,
+      "package_quantity": 900,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "MIRTILO",
+      "active": true
+    },
+    {
+      "code": "ING-045",
+      "name": "MORANGO",
+      "category": "Frutas e derivados",
+      "package_price": 12,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "MORANGO",
+      "active": true
+    },
+    {
+      "code": "ING-046",
+      "name": "CHANTILLY",
+      "category": "Laticínios e gorduras",
+      "package_price": 14,
+      "package_quantity": 1000,
+      "base_unit": "ml",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "CHANTILLY | CHANTILY",
+      "active": true
+    },
+    {
+      "code": "ING-047",
+      "name": "CHANTILLY (CAIXINHA)",
+      "category": "Laticínios e gorduras",
+      "package_price": 7,
+      "package_quantity": 1,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "CHANTILLY",
+      "active": true
+    },
+    {
+      "code": "ING-048",
+      "name": "CREAM CHEESE",
+      "category": "Laticínios e gorduras",
+      "package_price": 60,
+      "package_quantity": 1500,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "CREAM CHEESE | CREEM CHEESE",
+      "active": true
+    },
+    {
+      "code": "ING-049",
+      "name": "CREME DE LEITE",
+      "category": "Laticínios e gorduras",
+      "package_price": 3,
+      "package_quantity": 200,
+      "base_unit": "ml",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "CREME DE LEITE | CEME DE LEITE | creme de leite | CREMEDE LEITE",
+      "active": true
+    },
+    {
+      "code": "ING-050",
+      "name": "DOCE DE LEITE",
+      "category": "Laticínios e gorduras",
+      "package_price": 22,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "DOCE DE LEITE | DOCE CE LEITE | BRIG. DOCE DE LEITE",
+      "active": true
+    },
+    {
+      "code": "ING-051",
+      "name": "IOGURTE",
+      "category": "Laticínios e gorduras",
+      "package_price": 4,
+      "package_quantity": 170,
+      "base_unit": "ml",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "YOUGURT | IOGURTE | YOGURT",
+      "active": true
+    },
+    {
+      "code": "ING-052",
+      "name": "LEITE",
+      "category": "Laticínios e gorduras",
+      "package_price": 6,
+      "package_quantity": 1000,
+      "base_unit": "ml",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "LEITE",
+      "active": true
+    },
+    {
+      "code": "ING-053",
+      "name": "LEITE CONDENSADO",
+      "category": "Laticínios e gorduras",
+      "package_price": 4.6,
+      "package_quantity": 395,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "LEITE CONDENSADO | LEITE COND. MOLHAR | LEITECONDENSADO | LEITE COND.",
+      "active": true
+    },
+    {
+      "code": "ING-054",
+      "name": "LEITE EM PÓ",
+      "category": "Laticínios e gorduras",
+      "package_price": 17,
+      "package_quantity": 380,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "LEITE EM PÓ | LEITE EM PO",
+      "active": true
+    },
+    {
+      "code": "ING-055",
+      "name": "LEITE NINHO EM PÓ",
+      "category": "Laticínios e gorduras",
+      "package_price": 15,
+      "package_quantity": 380,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "LEITE NINHO EM PÓ",
+      "active": true
+    },
+    {
+      "code": "ING-056",
+      "name": "MANTEIGA",
+      "category": "Laticínios e gorduras",
+      "package_price": 14,
+      "package_quantity": 200,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "MANTEIGA | MANTEIGA SEM SAL | manteiga",
+      "active": true
+    },
+    {
+      "code": "ING-057",
+      "name": "MARGARINA",
+      "category": "Laticínios e gorduras",
+      "package_price": 14.5,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "MARGARINA | MARG/MANT",
+      "active": true
+    },
+    {
+      "code": "ING-058",
+      "name": "QUEIJO PARMESÃO",
+      "category": "Laticínios e gorduras",
+      "package_price": 25,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "QUEIJO PARMESÃO",
+      "active": true
+    },
+    {
+      "code": "ING-059",
+      "name": "AÇÚCAR",
+      "category": "Mercearia",
+      "package_price": 4.8,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "AÇÚCAR | AÇUCAR | ACÚCAR | acucar | ACUCAR",
+      "active": true
+    },
+    {
+      "code": "ING-060",
+      "name": "AÇÚCAR CRISTAL",
+      "category": "Mercearia",
+      "package_price": 5,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "AÇÚCAR CRISTAL | AÇUCAR CRISTAL",
+      "active": true
+    },
+    {
+      "code": "ING-061",
+      "name": "AÇÚCAR IMPALPÁVEL",
+      "category": "Mercearia",
+      "package_price": 12.5,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "AÇÚCAR IMPALPÁVEL | açucar em palpavel | AÇUCAR IMPALPAVEL | ACUCAR IMPALPAVEL",
+      "active": true
+    },
+    {
+      "code": "ING-062",
+      "name": "AÇÚCAR MASCAVO",
+      "category": "Mercearia",
+      "package_price": 12,
+      "package_quantity": 500,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "AÇUCAR MASCAVO | AÇÚCAR MASCAVO",
+      "active": true
+    },
+    {
+      "code": "ING-063",
+      "name": "AMENDOIM",
+      "category": "Mercearia",
+      "package_price": 24,
+      "package_quantity": 500,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "AMENDOIN",
+      "active": true
+    },
+    {
+      "code": "ING-064",
+      "name": "AMIDO DE MILHO",
+      "category": "Mercearia",
+      "package_price": 12,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "AMIDO DE MILHO",
+      "active": true
+    },
+    {
+      "code": "ING-065",
+      "name": "BASE DE BISCOITO",
+      "category": "Mercearia",
+      "package_price": 3.7,
+      "package_quantity": 640,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "MASSA DE BISCOITO | BASE DE BISCOITO",
+      "active": true
+    },
+    {
+      "code": "ING-066",
+      "name": "BICARBONATO",
+      "category": "Mercearia",
+      "package_price": 11,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "BICARBONATO",
+      "active": true
+    },
+    {
+      "code": "ING-067",
+      "name": "BISCOITO",
+      "category": "Mercearia",
+      "package_price": 3.5,
+      "package_quantity": 1,
+      "base_unit": "pacote",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "BISCOITO | BICOITO",
+      "active": true
+    },
+    {
+      "code": "ING-068",
+      "name": "CAFÉ",
+      "category": "Mercearia",
+      "package_price": 30,
+      "package_quantity": 500,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "CAFÉ",
+      "active": true
+    },
+    {
+      "code": "ING-069",
+      "name": "CANELA",
+      "category": "Mercearia",
+      "package_price": 64.9,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "CANELA",
+      "active": true
+    },
+    {
+      "code": "ING-070",
+      "name": "CORANTE VERMELHO",
+      "category": "Mercearia",
+      "package_price": 40,
+      "package_quantity": 30,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "CORANTE | CORANTE VERMELHO",
+      "active": true
+    },
+    {
+      "code": "ING-071",
+      "name": "ESSÊNCIA DE BAUNILHA",
+      "category": "Mercearia",
+      "package_price": 16,
+      "package_quantity": 900,
+      "base_unit": "ml",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "BAUNILHA | ESSÊNCIA",
+      "active": true
+    },
+    {
+      "code": "ING-072",
+      "name": "EXTRATO DE BAUNILHA",
+      "category": "Mercearia",
+      "package_price": 42,
+      "package_quantity": 200,
+      "base_unit": "ml",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "BAUNILHA | EXTRATO DE BAUNILHA",
+      "active": true
+    },
+    {
+      "code": "ING-073",
+      "name": "FARINHA DE TRIGO",
+      "category": "Mercearia",
+      "package_price": 4.9,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "FARINHA DE TRIGO",
+      "active": true
+    },
+    {
+      "code": "ING-074",
+      "name": "FERMENTO EM PÓ",
+      "category": "Mercearia",
+      "package_price": 9.5,
+      "package_quantity": 250,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "FERMENTO EM PÓ",
+      "active": true
+    },
+    {
+      "code": "ING-075",
+      "name": "GLACUCAR",
+      "category": "Mercearia",
+      "package_price": 4,
+      "package_quantity": 500,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "GLACUCAR",
+      "active": true
+    },
+    {
+      "code": "ING-076",
+      "name": "NOZES",
+      "category": "Mercearia",
+      "package_price": 90,
+      "package_quantity": 1000,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "NOZES | MIX NOZES | NUTS",
+      "active": true
+    },
+    {
+      "code": "ING-077",
+      "name": "ÓLEO",
+      "category": "Mercearia",
+      "package_price": 7.5,
+      "package_quantity": 900,
+      "base_unit": "ml",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "ÓLEO | OLEO",
+      "active": true
+    },
+    {
+      "code": "ING-078",
+      "name": "SAL",
+      "category": "Mercearia",
+      "package_price": 3,
+      "package_quantity": 500,
+      "base_unit": "g",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "SAL",
+      "active": true
+    },
+    {
+      "code": "ING-079",
+      "name": "VINAGRE",
+      "category": "Mercearia",
+      "package_price": 3,
+      "package_quantity": 900,
+      "base_unit": "ml",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor trazido da planilha de preço 3.",
+      "aliases": "VINAGRE",
+      "active": true
+    },
+    {
+      "code": "ING-080",
+      "name": "OVO",
+      "category": "Ovos",
+      "package_price": 24,
+      "package_quantity": 30,
+      "base_unit": "un",
+      "supplier": "Planilha de preço 3",
+      "notes": "Valor vigente consolidado a partir da planilha de preço 3; variações antigas foram retiradas da base ativa.",
+      "aliases": "OVO | ovo | 0V0",
+      "active": true
+    }
+  ],
+  "recipes": [
+    {
+      "code": "REC-001",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO MASSA AMANTEIGADA C/ MANTEIGA OU MARGARINA",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 18.840766283524907,
+      "unit_cost": 1.5700638569604088,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "2:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MARGARINA",
+          "ingredient_code": "ING-057",
+          "quantity_used": 180
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 350
+        },
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 6
+        },
+        {
+          "ingredient_name": "LEITE",
+          "ingredient_code": "ING-052",
+          "quantity_used": 220
+        },
+        {
+          "ingredient_name": "ÓLEO",
+          "ingredient_code": "ING-077",
+          "quantity_used": 50
+        },
+        {
+          "ingredient_name": "FARINHA DE TRIGO",
+          "ingredient_code": "ING-073",
+          "quantity_used": 400
+        },
+        {
+          "ingredient_name": "AMIDO DE MILHO",
+          "ingredient_code": "ING-064",
+          "quantity_used": 30
+        },
+        {
+          "ingredient_name": "FERMENTO EM PÓ",
+          "ingredient_code": "ING-074",
+          "quantity_used": 16
+        },
+        {
+          "ingredient_name": "SAL",
+          "ingredient_code": "ING-078",
+          "quantity_used": 2
+        },
+        {
+          "ingredient_name": "ESSÊNCIA DE BAUNILHA",
+          "ingredient_code": "ING-071",
+          "quantity_used": 16
+        },
+        {
+          "ingredient_name": "PAPEL MANTEIGA",
+          "ingredient_code": "ING-032",
+          "quantity_used": 3
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-002",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO MASSA AMANTEIGADA DE CHOCOLATE/ MANTEIGA OU MARGARina",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 21.565321839080458,
+      "unit_cost": 1.7971101532567049,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "2:9",
+      "ingredients": [
+        {
+          "ingredient_name": "MARGARINA",
+          "ingredient_code": "ING-057",
+          "quantity_used": 180
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 350
+        },
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 6
+        },
+        {
+          "ingredient_name": "LEITE",
+          "ingredient_code": "ING-052",
+          "quantity_used": 230
+        },
+        {
+          "ingredient_name": "ÓLEO",
+          "ingredient_code": "ING-077",
+          "quantity_used": 50
+        },
+        {
+          "ingredient_name": "FARINHA DE TRIGO",
+          "ingredient_code": "ING-073",
+          "quantity_used": 310
+        },
+        {
+          "ingredient_name": "AMIDO DE MILHO",
+          "ingredient_code": "ING-064",
+          "quantity_used": 30
+        },
+        {
+          "ingredient_name": "CHOCOLATE 100%",
+          "ingredient_code": "ING-001",
+          "quantity_used": 60
+        },
+        {
+          "ingredient_name": "BICARBONATO",
+          "ingredient_code": "ING-066",
+          "quantity_used": 8
+        },
+        {
+          "ingredient_name": "FERMENTO EM PÓ",
+          "ingredient_code": "ING-074",
+          "quantity_used": 8
+        },
+        {
+          "ingredient_name": "SAL",
+          "ingredient_code": "ING-078",
+          "quantity_used": 3
+        },
+        {
+          "ingredient_name": "PAPEL MANTEIGA",
+          "ingredient_code": "ING-032",
+          "quantity_used": 3
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-003",
+      "category": "BOLOS",
+      "name": "CARROT CAKE",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 26.16379961685824,
+      "unit_cost": 2.1803166347381864,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "2:15",
+      "ingredients": [
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 6
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 170
+        },
+        {
+          "ingredient_name": "ÓLEO",
+          "ingredient_code": "ING-077",
+          "quantity_used": 150
+        },
+        {
+          "ingredient_name": "AÇÚCAR MASCAVO",
+          "ingredient_code": "ING-062",
+          "quantity_used": 130
+        },
+        {
+          "ingredient_name": "ESSÊNCIA DE BAUNILHA",
+          "ingredient_code": "ING-071",
+          "quantity_used": 16
+        },
+        {
+          "ingredient_name": "FARINHA DE TRIGO",
+          "ingredient_code": "ING-073",
+          "quantity_used": 300
+        },
+        {
+          "ingredient_name": "BICARBONATO",
+          "ingredient_code": "ING-066",
+          "quantity_used": 10
+        },
+        {
+          "ingredient_name": "CANELA",
+          "ingredient_code": "ING-069",
+          "quantity_used": 13
+        },
+        {
+          "ingredient_name": "CENOURA",
+          "ingredient_code": "ING-037",
+          "quantity_used": 250
+        },
+        {
+          "ingredient_name": "IOGURTE",
+          "ingredient_code": "ING-051",
+          "quantity_used": 170
+        },
+        {
+          "ingredient_name": "NOZES",
+          "ingredient_code": "ING-076",
+          "quantity_used": 70
+        },
+        {
+          "ingredient_name": "FERMENTO EM PÓ",
+          "ingredient_code": "ING-074",
+          "quantity_used": 10
+        },
+        {
+          "ingredient_name": "PAPEL MANTEIGA",
+          "ingredient_code": "ING-032",
+          "quantity_used": 3
+        }
+      ]
+    },
+    {
+      "code": "REC-004",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO MASSA CHOCOLATE COM YOGURT",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 24.154988505747127,
+      "unit_cost": 2.0129157088122605,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "26:3",
+      "ingredients": [
+        {
+          "ingredient_name": "AÇÚCAR MASCAVO",
+          "ingredient_code": "ING-062",
+          "quantity_used": 175
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 160
+        },
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 3
+        },
+        {
+          "ingredient_name": "IOGURTE",
+          "ingredient_code": "ING-051",
+          "quantity_used": 170
+        },
+        {
+          "ingredient_name": "ÓLEO",
+          "ingredient_code": "ING-077",
+          "quantity_used": 100
+        },
+        {
+          "ingredient_name": "FARINHA DE TRIGO",
+          "ingredient_code": "ING-073",
+          "quantity_used": 340
+        },
+        {
+          "ingredient_name": "CHOCOLATE 100%",
+          "ingredient_code": "ING-001",
+          "quantity_used": 80
+        },
+        {
+          "ingredient_name": "BICARBONATO",
+          "ingredient_code": "ING-066",
+          "quantity_used": 10
+        },
+        {
+          "ingredient_name": "FERMENTO EM PÓ",
+          "ingredient_code": "ING-074",
+          "quantity_used": 15
+        },
+        {
+          "ingredient_name": "SAL",
+          "ingredient_code": "ING-078",
+          "quantity_used": 3
+        },
+        {
+          "ingredient_name": "PAPEL MANTEIGA",
+          "ingredient_code": "ING-032",
+          "quantity_used": 3
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-005",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO MASSA DE red velvet",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 16.421766283524903,
+      "unit_cost": 1.3684805236270752,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "26:9",
+      "ingredients": [
+        {
+          "ingredient_name": "FARINHA DE TRIGO",
+          "ingredient_code": "ING-073",
+          "quantity_used": 330
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 330
+        },
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 4
+        },
+        {
+          "ingredient_name": "LEITE",
+          "ingredient_code": "ING-052",
+          "quantity_used": 175
+        },
+        {
+          "ingredient_name": "VINAGRE",
+          "ingredient_code": "ING-079",
+          "quantity_used": 25
+        },
+        {
+          "ingredient_name": "PAPEL MANTEIGA",
+          "ingredient_code": "ING-032",
+          "quantity_used": 3
+        },
+        {
+          "ingredient_name": "FERMENTO EM PÓ",
+          "ingredient_code": "ING-074",
+          "quantity_used": 10
+        },
+        {
+          "ingredient_name": "ESSÊNCIA DE BAUNILHA",
+          "ingredient_code": "ING-071",
+          "quantity_used": 16
+        },
+        {
+          "ingredient_name": "CHOCOLATE 100%",
+          "ingredient_code": "ING-001",
+          "quantity_used": 6
+        },
+        {
+          "ingredient_name": "MARGARINA",
+          "ingredient_code": "ING-057",
+          "quantity_used": 120
+        },
+        {
+          "ingredient_name": "CORANTE VERMELHO",
+          "ingredient_code": "ING-070",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-006",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO BOLO DE CAFÉ",
+      "sale_unit": "FATIA",
+      "yield_quantity": 14,
+      "production_cost": 95.60498850574713,
+      "unit_cost": 6.828927750410509,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "50:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA CHOCOLATE COM IOGURTE",
+          "ingredient_code": "ING-012",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GANACHE MEIO AMARGO",
+          "ingredient_code": "ING-010",
+          "quantity_used": 3.5
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "MATERIAL EXTRA",
+          "ingredient_code": "ING-020",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-007",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO DE BOLO DE LIMÃO COM MIRTILO",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 93.67409961685811,
+      "unit_cost": 7.80617496807151,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "68:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA DE BAUNILHA",
+          "ingredient_code": "ING-013",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "MIRTILO",
+          "ingredient_code": "ING-044",
+          "quantity_used": 300
+        },
+        {
+          "ingredient_name": "LIMÃO (UNIDADE)",
+          "ingredient_code": "ING-042",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "CREAM CHEESE",
+          "ingredient_code": "ING-048",
+          "quantity_used": 1133.33333333333
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-008",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO BOLO DE NOZES COM DOCE DE LEITE",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 89.38760172656288,
+      "unit_cost": 7.4489668105469065,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "88:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA DE BAUNILHA",
+          "ingredient_code": "ING-013",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 150
+        },
+        {
+          "ingredient_name": "NOZES",
+          "ingredient_code": "ING-076",
+          "quantity_used": 70
+        },
+        {
+          "ingredient_name": "DOCE DE LEITE",
+          "ingredient_code": "ING-050",
+          "quantity_used": 1000
+        },
+        {
+          "ingredient_name": "CREAM CHEESE",
+          "ingredient_code": "ING-048",
+          "quantity_used": 600
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-009",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO BOLO DE LARANJA",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 97.40743295019158,
+      "unit_cost": 8.117286079182632,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "111:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA DE BAUNILHA",
+          "ingredient_code": "ING-013",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "LARANJA",
+          "ingredient_code": "ING-040",
+          "quantity_used": 5
+        },
+        {
+          "ingredient_name": "CREAM CHEESE",
+          "ingredient_code": "ING-048",
+          "quantity_used": 600
+        },
+        {
+          "ingredient_name": "GANACHE MEIO AMARGO",
+          "ingredient_code": "ING-010",
+          "quantity_used": 2
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "MATERIAL EXTRA",
+          "ingredient_code": "ING-020",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-010",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO BOLO DE AMORA",
+      "sale_unit": "FATIA",
+      "yield_quantity": 14,
+      "production_cost": 95.03409961685811,
+      "unit_cost": 6.788149972632723,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "133:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA DE BAUNILHA",
+          "ingredient_code": "ING-013",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "CREAM CHEESE",
+          "ingredient_code": "ING-048",
+          "quantity_used": 1133.33333333333
+        },
+        {
+          "ingredient_name": "GELEIA",
+          "ingredient_code": "ING-011",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-011",
+      "category": "BOLOS",
+      "name": "CARROT",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 87.99713295019157,
+      "unit_cost": 7.3330944125159645,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "152:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA DE CENOURA",
+          "ingredient_code": "ING-016",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "CREAM CHEESE",
+          "ingredient_code": "ING-048",
+          "quantity_used": 1133.3333333333333
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "MATERIAL EXTRA",
+          "ingredient_code": "ING-020",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-012",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO BOLO DE OREO",
+      "sale_unit": "FATIA",
+      "yield_quantity": 14,
+      "production_cost": 60.71549885057472,
+      "unit_cost": 4.336821346469622,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "170:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA CHOCOLATE COM IOGURTE",
+          "ingredient_code": "ING-012",
+          "quantity_used": 0.1
+        },
+        {
+          "ingredient_name": "BRIGADEIRO BRANCO",
+          "ingredient_code": "ING-008",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "CHANTILLY",
+          "ingredient_code": "ING-046",
+          "quantity_used": 1000
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "BISCOITO",
+          "ingredient_code": "ING-067",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "MATERIAL EXTRA",
+          "ingredient_code": "ING-020",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-013",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO MASSA CHOCOLATE COM DOCE DE LEITE",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 94.05498850574713,
+      "unit_cost": 7.837915708812261,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "192:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA CHOCOLATE COM IOGURTE",
+          "ingredient_code": "ING-012",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "DOCE DE LEITE",
+          "ingredient_code": "ING-050",
+          "quantity_used": 1000
+        },
+        {
+          "ingredient_name": "GANACHE MEIO AMARGO",
+          "ingredient_code": "ING-010",
+          "quantity_used": 2
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-014",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO TORTA BANOFFEE 24CM",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 59.224,
+      "unit_cost": 4.935333333333333,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "214:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA DE BISCOITO (PORÇÃO)",
+          "ingredient_code": "ING-015",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "DOCE DE LEITE",
+          "ingredient_code": "ING-050",
+          "quantity_used": 660
+        },
+        {
+          "ingredient_name": "BANANA",
+          "ingredient_code": "ING-036",
+          "quantity_used": 12
+        },
+        {
+          "ingredient_name": "CHANTILLY (CAIXINHA)",
+          "ingredient_code": "ING-047",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "CANELA",
+          "ingredient_code": "ING-069",
+          "quantity_used": 10
+        },
+        {
+          "ingredient_name": "ACETATO",
+          "ingredient_code": "ING-021",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-015",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO MASSA CHOCOLATE COM PRILENE DE AMENDOIN",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 102.0998239487851,
+      "unit_cost": 8.508318662398759,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "235:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA CHOCOLATE COM IOGURTE",
+          "ingredient_code": "ING-012",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "BRIGADEIRO",
+          "ingredient_code": "ING-007",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 150
+        },
+        {
+          "ingredient_name": "PRALINE",
+          "ingredient_code": "ING-017",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GANACHE MEIO AMARGO",
+          "ingredient_code": "ING-010",
+          "quantity_used": 2
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-016",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO BOLO BRIG. BRANCO COM MARACUJÁ",
+      "sale_unit": "FATIA",
+      "yield_quantity": 14,
+      "production_cost": 111.35498850574713,
+      "unit_cost": 7.953927750410509,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "255:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA CHOCOLATE COM IOGURTE",
+          "ingredient_code": "ING-012",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "BRIGADEIRO BRANCO",
+          "ingredient_code": "ING-008",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "MARACUJÁ",
+          "ingredient_code": "ING-043",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GANACHE MEIO AMARGO",
+          "ingredient_code": "ING-010",
+          "quantity_used": 2
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-017",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO BOLO DE PRESTIGIO",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 101.8018239487851,
+      "unit_cost": 8.483485329065426,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "277:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA CHOCOLATE COM IOGURTE",
+          "ingredient_code": "ING-012",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "BEIJINHO",
+          "ingredient_code": "ING-006",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 150
+        },
+        {
+          "ingredient_name": "GANACHE MEIO AMARGO",
+          "ingredient_code": "ING-010",
+          "quantity_used": 2
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-018",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO MASSA AMANTEIGADA DOCE DE LEITE COM AMEIXA",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 92.08760172656288,
+      "unit_cost": 7.673966810546907,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "320:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA DE BAUNILHA",
+          "ingredient_code": "ING-013",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "DOCE DE LEITE",
+          "ingredient_code": "ING-050",
+          "quantity_used": 1000
+        },
+        {
+          "ingredient_name": "AMEIXA",
+          "ingredient_code": "ING-034",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 150
+        },
+        {
+          "ingredient_name": "CREAM CHEESE",
+          "ingredient_code": "ING-048",
+          "quantity_used": 600
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-019",
+      "category": "BOLOS",
+      "name": "CUSTO DE PRODUÇÃO BOLO DE ABACAXI",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 97.56760172656288,
+      "unit_cost": 8.130633477213573,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BOLOS",
+      "source_cell": "410:3",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA DE BAUNILHA",
+          "ingredient_code": "ING-013",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "BEIJINHO",
+          "ingredient_code": "ING-006",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "ABACAXI",
+          "ingredient_code": "ING-033",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 100
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 150
+        },
+        {
+          "ingredient_name": "CHANTINHO",
+          "ingredient_code": "ING-009",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "CONJUNTO EMBALAGEM",
+          "ingredient_code": "ING-029",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-020",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO DE BRIGADEIRO DE CACAU 30 gr",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 94,
+      "production_cost": 97.56000000000002,
+      "unit_cost": 1.0378723404255321,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "3:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 640
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 1580
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 1000
+        },
+        {
+          "ingredient_name": "FORMINHA",
+          "ingredient_code": "ING-031",
+          "quantity_used": 94
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        },
+        {
+          "ingredient_name": "CHOCOLATE 100%",
+          "ingredient_code": "ING-001",
+          "quantity_used": 320
+        }
+      ]
+    },
+    {
+      "code": "REC-021",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO DE BRIGADEIRO DE CACAU 20GR",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 34,
+      "production_cost": 0,
+      "unit_cost": 0,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "3:8",
+      "ingredients": []
+    },
+    {
+      "code": "REC-022",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO DE BRIGADEIRO DE CACAU AO LEITE 30GR (1630gr)",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 65,
+      "production_cost": 0,
+      "unit_cost": 0,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "23:2",
+      "ingredients": []
+    },
+    {
+      "code": "REC-023",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO DE BRIGADEIRO DE CACAU AO LEITE 20GR (1630gr)",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 108,
+      "production_cost": 0,
+      "unit_cost": 0,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "23:8",
+      "ingredients": []
+    },
+    {
+      "code": "REC-024",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO BRIGADEIRO DE LIMÃO 30gr (1785gr)",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 63,
+      "production_cost": 66.47,
+      "unit_cost": 1.055079365079365,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "42:2",
+      "ingredients": [
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 1185
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 800
+        },
+        {
+          "ingredient_name": "CHOCOLATE BRANCO",
+          "ingredient_code": "ING-002",
+          "quantity_used": 480
+        },
+        {
+          "ingredient_name": "AÇÚCAR CRISTAL",
+          "ingredient_code": "ING-060",
+          "quantity_used": 300
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        },
+        {
+          "ingredient_name": "LIMÃO (GRAMA)",
+          "ingredient_code": "ING-041",
+          "quantity_used": 1000
+        },
+        {
+          "ingredient_name": "FORMINHA",
+          "ingredient_code": "ING-031",
+          "quantity_used": 63
+        }
+      ]
+    },
+    {
+      "code": "REC-025",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO BRIGADEIRO DE LIMÃO",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 99,
+      "production_cost": 0,
+      "unit_cost": 0,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "42:8",
+      "ingredients": []
+    },
+    {
+      "code": "REC-026",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO BRIGADEIRO DE CAFÉ 20GR",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 36,
+      "production_cost": 0,
+      "unit_cost": 0,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "62:2",
+      "ingredients": []
+    },
+    {
+      "code": "REC-027",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO DE BRIGADEIRO DE ROMEU E JULIETA 30gr (400gr)",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 16,
+      "production_cost": 35.09,
+      "unit_cost": 2.193125,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "82:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 200
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 395
+        },
+        {
+          "ingredient_name": "GOIABADA",
+          "ingredient_code": "ING-039",
+          "quantity_used": 80
+        },
+        {
+          "ingredient_name": "CREAM CHEESE",
+          "ingredient_code": "ING-048",
+          "quantity_used": 300
+        },
+        {
+          "ingredient_name": "QUEIJO PARMESÃO",
+          "ingredient_code": "ING-058",
+          "quantity_used": 50
+        },
+        {
+          "ingredient_name": "FORMINHA",
+          "ingredient_code": "ING-031",
+          "quantity_used": 16
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 30
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        },
+        {
+          "ingredient_name": "CHOCOLATE BRANCO",
+          "ingredient_code": "ING-002",
+          "quantity_used": 100
+        }
+      ]
+    },
+    {
+      "code": "REC-028",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO DE BRIGADEIRO DE ROMEU E JULIETA 20gr (400gr)",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 26,
+      "production_cost": 36.290000000000006,
+      "unit_cost": 1.395769230769231,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "82:8",
+      "ingredients": [
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 200
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 395
+        },
+        {
+          "ingredient_name": "GOIABADA",
+          "ingredient_code": "ING-039",
+          "quantity_used": 100
+        },
+        {
+          "ingredient_name": "CREAM CHEESE",
+          "ingredient_code": "ING-048",
+          "quantity_used": 300
+        },
+        {
+          "ingredient_name": "QUEIJO PARMESÃO",
+          "ingredient_code": "ING-058",
+          "quantity_used": 50
+        },
+        {
+          "ingredient_name": "FORMINHA",
+          "ingredient_code": "ING-031",
+          "quantity_used": 26
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 30
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        },
+        {
+          "ingredient_name": "CHOCOLATE BRANCO",
+          "ingredient_code": "ING-002",
+          "quantity_used": 100
+        }
+      ]
+    },
+    {
+      "code": "REC-029",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO BRIGADEIRO DE NINHO COM NUTELLA/20GR",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 37,
+      "production_cost": 31.203684210526315,
+      "unit_cost": 0.8433428165007112,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "102:2",
+      "ingredients": [
+        {
+          "ingredient_name": "NUTELA",
+          "ingredient_code": "ING-005",
+          "quantity_used": 100
+        },
+        {
+          "ingredient_name": "LEITE NINHO EM PÓ",
+          "ingredient_code": "ING-055",
+          "quantity_used": 50
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 395
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 200
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 30
+        },
+        {
+          "ingredient_name": "FORMINHA",
+          "ingredient_code": "ING-031",
+          "quantity_used": 37
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        },
+        {
+          "ingredient_name": "CHOCOLATE BRANCO",
+          "ingredient_code": "ING-002",
+          "quantity_used": 160
+        }
+      ]
+    },
+    {
+      "code": "REC-030",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO BRIGADEIRO DE BRÛLLÉE 30GR (1750GR)",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 62,
+      "production_cost": 68.23222222222222,
+      "unit_cost": 1.1005197132616487,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "122:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 200
+        },
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 480
+        },
+        {
+          "ingredient_name": "FORMINHA",
+          "ingredient_code": "ING-031",
+          "quantity_used": 63
+        },
+        {
+          "ingredient_name": "ESSÊNCIA DE BAUNILHA",
+          "ingredient_code": "ING-071",
+          "quantity_used": 350
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 300
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 1580
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-031",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO BRIGADEIRO DE BRÛLLÉE",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 30,
+      "production_cost": 28.224444444444444,
+      "unit_cost": 0.9408148148148148,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "122:8",
+      "ingredients": [
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 200
+        },
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 150
+        },
+        {
+          "ingredient_name": "FORMINHA",
+          "ingredient_code": "ING-031",
+          "quantity_used": 30
+        },
+        {
+          "ingredient_name": "ESSÊNCIA DE BAUNILHA",
+          "ingredient_code": "ING-071",
+          "quantity_used": 25
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 100
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 395
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-032",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO BRIGADEIRO beijinho",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 20,
+      "production_cost": 47.519999999999996,
+      "unit_cost": 2.376,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "140:2",
+      "ingredients": [
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 1580
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 800
+        },
+        {
+          "ingredient_name": "COCO",
+          "ingredient_code": "ING-038",
+          "quantity_used": 140
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 40
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        },
+        {
+          "ingredient_name": "FORMINHA",
+          "ingredient_code": "ING-031",
+          "quantity_used": 50
+        }
+      ]
+    },
+    {
+      "code": "REC-033",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO RECHEIO DE BOLO CROCANTE",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 4,
+      "production_cost": 94.6,
+      "unit_cost": 23.65,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "180:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 400
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 2370
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 1600
+        },
+        {
+          "ingredient_name": "CHOCOLATE 100%",
+          "ingredient_code": "ING-001",
+          "quantity_used": 250
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 50
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-034",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO BRIGADEIRO NOZES 20GR",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 24,
+      "production_cost": 42.6,
+      "unit_cost": 1.7750000000000001,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "198:2",
+      "ingredients": [
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 395
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 200
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 20
+        },
+        {
+          "ingredient_name": "NOZES",
+          "ingredient_code": "ING-076",
+          "quantity_used": 100
+        },
+        {
+          "ingredient_name": "FORMINHA",
+          "ingredient_code": "ING-031",
+          "quantity_used": 25
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        },
+        {
+          "ingredient_name": "BERÇO",
+          "ingredient_code": "ING-024",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "CAIXA",
+          "ingredient_code": "ING-025",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "AÇÚCAR IMPALPÁVEL",
+          "ingredient_code": "ING-061",
+          "quantity_used": 500
+        },
+        {
+          "ingredient_name": "NOZES",
+          "ingredient_code": "ING-076",
+          "quantity_used": 40
+        }
+      ]
+    },
+    {
+      "code": "REC-035",
+      "category": "BRIGADEIRO",
+      "name": "CUSTO DE PRODUÇÃO BRIGADEIRO MARACUJÁ",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 20,
+      "production_cost": 51.3,
+      "unit_cost": 2.565,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BRIGADEIRO",
+      "source_cell": "218:2",
+      "ingredients": [
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 1580
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 800
+        },
+        {
+          "ingredient_name": "MARACUJÁ",
+          "ingredient_code": "ING-043",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 20
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-036",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO CALDA DE CARAMELO",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 400,
+      "production_cost": 11.92,
+      "unit_cost": 0.0298,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "3:2",
+      "ingredients": [
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 400
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 100
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 200
+        }
+      ]
+    },
+    {
+      "code": "REC-037",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO CREME CREAM CHEESE",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 3400,
+      "production_cost": 122.56888888888889,
+      "unit_cost": 0.03604967320261438,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "16:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CREAM CHEESE",
+          "ingredient_code": "ING-048",
+          "quantity_used": 1800
+        },
+        {
+          "ingredient_name": "GLACUCAR",
+          "ingredient_code": "ING-075",
+          "quantity_used": 1000
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 600
+        },
+        {
+          "ingredient_name": "ESSÊNCIA DE BAUNILHA",
+          "ingredient_code": "ING-071",
+          "quantity_used": 32
+        }
+      ]
+    },
+    {
+      "code": "REC-038",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO GANACHE MEIO AMARGO",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 410,
+      "production_cost": 15.700000000000001,
+      "unit_cost": 0.03829268292682927,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "31:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 250
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 120
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 20
+        }
+      ]
+    },
+    {
+      "code": "REC-039",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO MASSA DE BISCOITO",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 900,
+      "production_cost": 56.85,
+      "unit_cost": 0.06316666666666666,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "46:2",
+      "ingredients": [
+        {
+          "ingredient_name": "BISCOITO",
+          "ingredient_code": "ING-067",
+          "quantity_used": 9
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 300
+        },
+        {
+          "ingredient_name": "MARGARINA",
+          "ingredient_code": "ING-057",
+          "quantity_used": 300
+        }
+      ]
+    },
+    {
+      "code": "REC-040",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO CHANTYNINHO",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 1335,
+      "production_cost": 16.039640239840104,
+      "unit_cost": 0.0120147117901424,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "59:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CHANTILLY",
+          "ingredient_code": "ING-046",
+          "quantity_used": 500
+        },
+        {
+          "ingredient_name": "LEITE EM PÓ",
+          "ingredient_code": "ING-054",
+          "quantity_used": 150
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 200
+        }
+      ]
+    },
+    {
+      "code": "REC-041",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO CHANTYNINHO",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 1335,
+      "production_cost": 13.802798134576948,
+      "unit_cost": 0.010339174632641909,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "74:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CHANTILLY",
+          "ingredient_code": "ING-046",
+          "quantity_used": 500
+        },
+        {
+          "ingredient_name": "LEITE EM PÓ",
+          "ingredient_code": "ING-054",
+          "quantity_used": 100
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 200
+        }
+      ]
+    },
+    {
+      "code": "REC-042",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO RECHEIO BRIG. BRANCO",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 900,
+      "production_cost": 24.3,
+      "unit_cost": 0.027,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "88:2",
+      "ingredients": [
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 790
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 400
+        },
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 50
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 30
+        }
+      ]
+    },
+    {
+      "code": "REC-043",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO BUTTERCREAN",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 1200,
+      "production_cost": 36.96,
+      "unit_cost": 0.0308,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "104:2",
+      "ingredients": [
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 10
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 200
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 400
+        }
+      ]
+    },
+    {
+      "code": "REC-044",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO GELEIA DE AMORA",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 390,
+      "production_cost": 57.44,
+      "unit_cost": 0.14728205128205127,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "119:2",
+      "ingredients": [
+        {
+          "ingredient_name": "AMORA",
+          "ingredient_code": "ING-035",
+          "quantity_used": 2
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 300
+        }
+      ]
+    },
+    {
+      "code": "REC-045",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO GELEIA DE MORANGO",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 390,
+      "production_cost": 24.72,
+      "unit_cost": 0.06338461538461539,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "132:2",
+      "ingredients": [
+        {
+          "ingredient_name": "MORANGO",
+          "ingredient_code": "ING-045",
+          "quantity_used": 2
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 150
+        }
+      ]
+    },
+    {
+      "code": "REC-046",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO PRALINE DE AMENDOIN",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 1,
+      "production_cost": 9.648,
+      "unit_cost": 9.648,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "145:2",
+      "ingredients": [
+        {
+          "ingredient_name": "AMENDOIM",
+          "ingredient_code": "ING-063",
+          "quantity_used": 180
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 210
+        }
+      ]
+    },
+    {
+      "code": "REC-047",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO RECHEIO DE BOLO CROCANTE",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 3200,
+      "production_cost": 93.6,
+      "unit_cost": 0.029249999999999998,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "159:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 350
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 2370
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 1400
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.9
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 50
+        },
+        {
+          "ingredient_name": "CHOCOLATE 100%",
+          "ingredient_code": "ING-001",
+          "quantity_used": 250
+        }
+      ]
+    },
+    {
+      "code": "REC-048",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO BRIGADEIRO DOCE DE LEITE",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 26,
+      "production_cost": 30.1,
+      "unit_cost": 1.1576923076923078,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "176:2",
+      "ingredients": [
+        {
+          "ingredient_name": "DOCE DE LEITE",
+          "ingredient_code": "ING-050",
+          "quantity_used": 1000
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 400
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 30
+        }
+      ]
+    },
+    {
+      "code": "REC-049",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO BRIGADEIRO NOZES",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 24,
+      "production_cost": 69.5,
+      "unit_cost": 2.8958333333333335,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "190:2",
+      "ingredients": [
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 2370
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 1200
+        },
+        {
+          "ingredient_name": "NOZES",
+          "ingredient_code": "ING-076",
+          "quantity_used": 200
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 20
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-050",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO AO LEITE",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 24,
+      "production_cost": 22,
+      "unit_cost": 0.9166666666666666,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "208:2",
+      "ingredients": [
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 395
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 200
+        },
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 170
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 20
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-051",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO COBERTURA DE GANACHE BRANCA",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 24,
+      "production_cost": 55.6,
+      "unit_cost": 2.316666666666667,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "226:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CHOCOLATE BRANCO",
+          "ingredient_code": "ING-002",
+          "quantity_used": 1000
+        },
+        {
+          "ingredient_name": "CHANTILLY",
+          "ingredient_code": "ING-046",
+          "quantity_used": 400
+        }
+      ]
+    },
+    {
+      "code": "REC-052",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO CHANTYNINHO BANOFFE",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 1335,
+      "production_cost": 3.984210526315789,
+      "unit_cost": 0.0029844273605361717,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "239:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CHANTILLY",
+          "ingredient_code": "ING-046",
+          "quantity_used": 200
+        },
+        {
+          "ingredient_name": "LEITE NINHO EM PÓ",
+          "ingredient_code": "ING-055",
+          "quantity_used": 30
+        }
+      ]
+    },
+    {
+      "code": "REC-053",
+      "category": "CREMES E RECHEIOS",
+      "name": "CUSTO DE PRODUÇÃO GANACHE BRANCO",
+      "sale_unit": "GRAMA/PORÇÃO",
+      "yield_quantity": 410,
+      "production_cost": 20.549999999999997,
+      "unit_cost": 0.05012195121951219,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "CREMES E RECHEIOS",
+      "source_cell": "252:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CHOCOLATE BRANCO",
+          "ingredient_code": "ING-002",
+          "quantity_used": 350
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 110
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 20
+        }
+      ]
+    },
+    {
+      "code": "REC-054",
+      "category": "BROWNIE, PALHA, COOKIE",
+      "name": "CUSTO DE PRODUÇÃO / BROWNIE TRADICIONAL 5X5",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 12,
+      "production_cost": 45.662186644772866,
+      "unit_cost": 3.805182220397739,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BROWNIE, PALHA, COOKIE",
+      "source_cell": "3:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 250
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 240
+        },
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 4
+        },
+        {
+          "ingredient_name": "FARINHA DE TRIGO",
+          "ingredient_code": "ING-073",
+          "quantity_used": 250
+        },
+        {
+          "ingredient_name": "CHOCOLATE 100%",
+          "ingredient_code": "ING-001",
+          "quantity_used": 80
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 140
+        },
+        {
+          "ingredient_name": "CELOFONE",
+          "ingredient_code": "ING-027",
+          "quantity_used": 12
+        },
+        {
+          "ingredient_name": "PAPEL MANTEIGA",
+          "ingredient_code": "ING-032",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.25
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "ADESIVO FRENTE",
+          "ingredient_code": "ING-023",
+          "quantity_used": 12
+        },
+        {
+          "ingredient_name": "ADESIVO COSTA",
+          "ingredient_code": "ING-022",
+          "quantity_used": 12
+        }
+      ]
+    },
+    {
+      "code": "REC-055",
+      "category": "BROWNIE, PALHA, COOKIE",
+      "name": "CUSTO DE PRODUÇÃO DO BROWNIE RECHEADO 6X6",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 12,
+      "production_cost": 53.00673836891079,
+      "unit_cost": 4.417228197409233,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BROWNIE, PALHA, COOKIE",
+      "source_cell": "3:8",
+      "ingredients": [
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 250
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 250
+        },
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 3
+        },
+        {
+          "ingredient_name": "FARINHA DE TRIGO",
+          "ingredient_code": "ING-073",
+          "quantity_used": 250
+        },
+        {
+          "ingredient_name": "CHOCOLATE 100%",
+          "ingredient_code": "ING-001",
+          "quantity_used": 80
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 140
+        },
+        {
+          "ingredient_name": "CELOFONE",
+          "ingredient_code": "ING-027",
+          "quantity_used": 12
+        },
+        {
+          "ingredient_name": "PAPEL MANTEIGA",
+          "ingredient_code": "ING-032",
+          "quantity_used": 2
+        },
+        {
+          "ingredient_name": "DOCE DE LEITE",
+          "ingredient_code": "ING-050",
+          "quantity_used": 500
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        },
+        {
+          "ingredient_name": "ADESIVO FRENTE",
+          "ingredient_code": "ING-023",
+          "quantity_used": 12
+        },
+        {
+          "ingredient_name": "ADESIVO COSTA",
+          "ingredient_code": "ING-022",
+          "quantity_used": 12
+        }
+      ]
+    },
+    {
+      "code": "REC-056",
+      "category": "BROWNIE, PALHA, COOKIE",
+      "name": "PALHA ITALIANA",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 24,
+      "production_cost": 75.57726984126985,
+      "unit_cost": 3.1490529100529105,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BROWNIE, PALHA, COOKIE",
+      "source_cell": "26:2",
+      "ingredients": [
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 30
+        },
+        {
+          "ingredient_name": "LEITE CONDENSADO",
+          "ingredient_code": "ING-053",
+          "quantity_used": 1185
+        },
+        {
+          "ingredient_name": "CREME DE LEITE",
+          "ingredient_code": "ING-049",
+          "quantity_used": 600
+        },
+        {
+          "ingredient_name": "CHOCOLATE 100%",
+          "ingredient_code": "ING-001",
+          "quantity_used": 140
+        },
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 300
+        },
+        {
+          "ingredient_name": "BISCOITO",
+          "ingredient_code": "ING-067",
+          "quantity_used": 2
+        },
+        {
+          "ingredient_name": "ADESIVO FRENTE",
+          "ingredient_code": "ING-023",
+          "quantity_used": 24
+        },
+        {
+          "ingredient_name": "ADESIVO COSTA",
+          "ingredient_code": "ING-022",
+          "quantity_used": 24
+        },
+        {
+          "ingredient_name": "AÇÚCAR IMPALPÁVEL",
+          "ingredient_code": "ING-061",
+          "quantity_used": 400
+        },
+        {
+          "ingredient_name": "CELOFONE",
+          "ingredient_code": "ING-027",
+          "quantity_used": 24
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-057",
+      "category": "BROWNIE, PALHA, COOKIE",
+      "name": "COOKIE GOTAS DE CHOCOLATE MESCLADO",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 15,
+      "production_cost": 44.73979365079366,
+      "unit_cost": 2.9826529100529107,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BROWNIE, PALHA, COOKIE",
+      "source_cell": "49:2",
+      "ingredients": [
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 125
+        },
+        {
+          "ingredient_name": "FARINHA DE TRIGO",
+          "ingredient_code": "ING-073",
+          "quantity_used": 260
+        },
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 75
+        },
+        {
+          "ingredient_name": "AÇÚCAR MASCAVO",
+          "ingredient_code": "ING-062",
+          "quantity_used": 130
+        },
+        {
+          "ingredient_name": "CHOCOLATE BRANCO",
+          "ingredient_code": "ING-002",
+          "quantity_used": 200
+        },
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 100
+        },
+        {
+          "ingredient_name": "CELOFONE",
+          "ingredient_code": "ING-027",
+          "quantity_used": 15
+        },
+        {
+          "ingredient_name": "ADESIVO FRENTE",
+          "ingredient_code": "ING-023",
+          "quantity_used": 15
+        },
+        {
+          "ingredient_name": "ADESIVO COSTA",
+          "ingredient_code": "ING-022",
+          "quantity_used": 15
+        },
+        {
+          "ingredient_name": "EXTRATO DE BAUNILHA",
+          "ingredient_code": "ING-072",
+          "quantity_used": 20
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-058",
+      "category": "BROWNIE, PALHA, COOKIE",
+      "name": "COOKIE RED VELVET",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 15,
+      "production_cost": 46.37312698412699,
+      "unit_cost": 3.0915417989417993,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BROWNIE, PALHA, COOKIE",
+      "source_cell": "49:8",
+      "ingredients": [
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 125
+        },
+        {
+          "ingredient_name": "FARINHA DE TRIGO",
+          "ingredient_code": "ING-073",
+          "quantity_used": 260
+        },
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 75
+        },
+        {
+          "ingredient_name": "AÇÚCAR MASCAVO",
+          "ingredient_code": "ING-062",
+          "quantity_used": 130
+        },
+        {
+          "ingredient_name": "CHOCOLATE BRANCO",
+          "ingredient_code": "ING-002",
+          "quantity_used": 300
+        },
+        {
+          "ingredient_name": "CELOFONE",
+          "ingredient_code": "ING-027",
+          "quantity_used": 15
+        },
+        {
+          "ingredient_name": "CHOCOLATE 100%",
+          "ingredient_code": "ING-001",
+          "quantity_used": 5
+        },
+        {
+          "ingredient_name": "CORANTE VERMELHO",
+          "ingredient_code": "ING-070",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "ADESIVO FRENTE",
+          "ingredient_code": "ING-023",
+          "quantity_used": 15
+        },
+        {
+          "ingredient_name": "ADESIVO COSTA",
+          "ingredient_code": "ING-022",
+          "quantity_used": 15
+        },
+        {
+          "ingredient_name": "EXTRATO DE BAUNILHA",
+          "ingredient_code": "ING-072",
+          "quantity_used": 20
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-059",
+      "category": "BROWNIE, PALHA, COOKIE",
+      "name": "COOKIE GOTAS DE CHOCOLATE",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 15,
+      "production_cost": 40.89534920634921,
+      "unit_cost": 2.726356613756614,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BROWNIE, PALHA, COOKIE",
+      "source_cell": "49:14",
+      "ingredients": [
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 125
+        },
+        {
+          "ingredient_name": "FARINHA DE TRIGO",
+          "ingredient_code": "ING-073",
+          "quantity_used": 260
+        },
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 75
+        },
+        {
+          "ingredient_name": "AÇÚCAR MASCAVO",
+          "ingredient_code": "ING-062",
+          "quantity_used": 130
+        },
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 300
+        },
+        {
+          "ingredient_name": "CELOFONE",
+          "ingredient_code": "ING-027",
+          "quantity_used": 15
+        },
+        {
+          "ingredient_name": "ADESIVO FRENTE",
+          "ingredient_code": "ING-023",
+          "quantity_used": 15
+        },
+        {
+          "ingredient_name": "ADESIVO COSTA",
+          "ingredient_code": "ING-022",
+          "quantity_used": 15
+        },
+        {
+          "ingredient_name": "ESSÊNCIA DE BAUNILHA",
+          "ingredient_code": "ING-071",
+          "quantity_used": 20
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-060",
+      "category": "BROWNIE, PALHA, COOKIE",
+      "name": "CUSTO DE PRODUÇÃO BEM CASADO",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 17,
+      "production_cost": 22.773551724137935,
+      "unit_cost": 1.3396206896551726,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BROWNIE, PALHA, COOKIE",
+      "source_cell": "72:2",
+      "ingredients": [
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 160
+        },
+        {
+          "ingredient_name": "MARGARINA",
+          "ingredient_code": "ING-057",
+          "quantity_used": 250
+        },
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 5
+        },
+        {
+          "ingredient_name": "FARINHA DE TRIGO",
+          "ingredient_code": "ING-073",
+          "quantity_used": 160
+        },
+        {
+          "ingredient_name": "EXTRATO DE BAUNILHA",
+          "ingredient_code": "ING-072",
+          "quantity_used": 5
+        },
+        {
+          "ingredient_name": "PAPEL MANTEIGA",
+          "ingredient_code": "ING-032",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "AÇÚCAR IMPALPÁVEL",
+          "ingredient_code": "ING-061",
+          "quantity_used": 300
+        },
+        {
+          "ingredient_name": "CAIXA BPC",
+          "ingredient_code": "ING-026",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-061",
+      "category": "BROWNIE, PALHA, COOKIE",
+      "name": "CUSTO DE PRODUÇÃO BEM CASADO",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 17,
+      "production_cost": 93.5507676161919,
+      "unit_cost": 5.50298633036423,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "BROWNIE, PALHA, COOKIE",
+      "source_cell": "95:2",
+      "ingredients": [
+        {
+          "ingredient_name": "MASSA DE BEM-CASADO",
+          "ingredient_code": "ING-014",
+          "quantity_used": 6
+        },
+        {
+          "ingredient_name": "DOCE DE LEITE",
+          "ingredient_code": "ING-050",
+          "quantity_used": 2000
+        },
+        {
+          "ingredient_name": "CELOFONE",
+          "ingredient_code": "ING-027",
+          "quantity_used": 100
+        },
+        {
+          "ingredient_name": "FITA",
+          "ingredient_code": "ING-030",
+          "quantity_used": 100
+        },
+        {
+          "ingredient_name": "CAIXA BPC",
+          "ingredient_code": "ING-026",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-062",
+      "category": "BROWNIE, PALHA, COOKIE",
+      "name": "CUSTO DE PRODUÇÃO / MASSA BROWNIE",
+      "sale_unit": "UNIDADE",
+      "yield_quantity": 12,
+      "production_cost": 37.88610344827587,
+      "unit_cost": 3.1571752873563224,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "BROWNIE, PALHA, COOKIE",
+      "source_cell": "113:2",
+      "ingredients": [
+        {
+          "ingredient_name": "CHOCOLATE EM BARRA",
+          "ingredient_code": "ING-003",
+          "quantity_used": 250
+        },
+        {
+          "ingredient_name": "AÇÚCAR",
+          "ingredient_code": "ING-059",
+          "quantity_used": 250
+        },
+        {
+          "ingredient_name": "OVO",
+          "ingredient_code": "ING-080",
+          "quantity_used": 4
+        },
+        {
+          "ingredient_name": "FARINHA DE TRIGO",
+          "ingredient_code": "ING-073",
+          "quantity_used": 250
+        },
+        {
+          "ingredient_name": "CHOCOLATE 100%",
+          "ingredient_code": "ING-001",
+          "quantity_used": 80
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 140
+        },
+        {
+          "ingredient_name": "CELOFONE",
+          "ingredient_code": "ING-027",
+          "quantity_used": 12
+        },
+        {
+          "ingredient_name": "PAPEL MANTEIGA",
+          "ingredient_code": "ING-032",
+          "quantity_used": 2
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.45
+        }
+      ]
+    },
+    {
+      "code": "REC-063",
+      "category": "TORTAS",
+      "name": "CUSTO DE PRODUÇÃO TORTA BANOFFEE 24CM",
+      "sale_unit": "FATIA",
+      "yield_quantity": 12,
+      "production_cost": 55.42291447368421,
+      "unit_cost": 4.618576206140351,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": true,
+      "source_sheet": "TORTAS",
+      "source_cell": "72:2",
+      "ingredients": [
+        {
+          "ingredient_name": "BASE DE BISCOITO",
+          "ingredient_code": "ING-065",
+          "quantity_used": 420
+        },
+        {
+          "ingredient_name": "DOCE DE LEITE",
+          "ingredient_code": "ING-050",
+          "quantity_used": 700
+        },
+        {
+          "ingredient_name": "GÁS",
+          "ingredient_code": "ING-018",
+          "quantity_used": 0.9
+        },
+        {
+          "ingredient_name": "BANANA",
+          "ingredient_code": "ING-036",
+          "quantity_used": 12
+        },
+        {
+          "ingredient_name": "CHANTILLY",
+          "ingredient_code": "ING-046",
+          "quantity_used": 200
+        },
+        {
+          "ingredient_name": "CANELA",
+          "ingredient_code": "ING-069",
+          "quantity_used": 10
+        },
+        {
+          "ingredient_name": "LEITE EM PÓ",
+          "ingredient_code": "ING-054",
+          "quantity_used": 35
+        },
+        {
+          "ingredient_name": "ACETATO",
+          "ingredient_code": "ING-021",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "GASTO EXTRA",
+          "ingredient_code": "ING-019",
+          "quantity_used": 1
+        },
+        {
+          "ingredient_name": "CONJUNTO BANOFFEE",
+          "ingredient_code": "ING-028",
+          "quantity_used": 1
+        }
+      ]
+    },
+    {
+      "code": "REC-064",
+      "category": "TORTAS",
+      "name": "CUSTO DE PRODUÇÃO MASSA DE BISCOITO",
+      "sale_unit": "FATIA",
+      "yield_quantity": 6,
+      "production_cost": 56.85,
+      "unit_cost": 9.475,
+      "cafe_price": null,
+      "retail_price": null,
+      "active": false,
+      "source_sheet": "TORTAS",
+      "source_cell": "139:2",
+      "ingredients": [
+        {
+          "ingredient_name": "BISCOITO",
+          "ingredient_code": "ING-067",
+          "quantity_used": 9
+        },
+        {
+          "ingredient_name": "MANTEIGA",
+          "ingredient_code": "ING-056",
+          "quantity_used": 300
+        },
+        {
+          "ingredient_name": "MARGARINA",
+          "ingredient_code": "ING-057",
+          "quantity_used": 300
+        }
+      ]
+    }
+  ],
+  "audit": {
+    "unresolvedLines": [],
+    "ambiguousLines": []
+  }
+}

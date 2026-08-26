@@ -1,17 +1,16 @@
-import io
 from decimal import Decimal
 
 from django.contrib.auth.models import User
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
 from django.test import TestCase
 from django.utils import timezone
-from openpyxl import Workbook, load_workbook
+from openpyxl import load_workbook
 
 from .financial_models import ProductCostProfile
 from .management_models import FinancialSettings, FixedCost, Ingredient, InventoryMovement, Recipe, RecipeIngredient
 from .management_services import simulate_price, sync_recipe_product_cost
-from .models import Category, Product, ProductPrice
-from .spreadsheet_io import build_management_workbook, import_management_workbook
+from .models import CafeAccount, Category, Order, Product
+from .spreadsheet_io import build_management_workbook
 
 
 class ManagementCalculationTests(TestCase):
@@ -84,46 +83,30 @@ class SpreadsheetRoundTripTests(TestCase):
             production_cost=Decimal('40.00'), source_reference='Teste',
         )
 
-    def _upload(self):
-        wb = Workbook()
-        base = wb.active
-        base.title = 'BASE DE PREÇOS'
-        base.append(['Código', 'Ingrediente padrão', 'Categoria', 'Preço da embalagem', 'Qtd. da embalagem', 'Unidade base', 'Status', 'Fornecedor', 'Observações', 'Nomes encontrados'])
-        base.append(['ING-001', 'CHOCOLATE 100%', 'Chocolates e cacau', 'R$ 30,00', '500', 'g', 'ATIVO', 'Fornecedor teste', 'Base', 'CACAU | CACAU 100%'])
-        pricing = wb.create_sheet('PRECIFICAÇÃO')
-        pricing.append(['MARGEM DESEJADA', 0.30])
-        pricing.append([])
-        pricing.append(['Código', 'Categoria', 'Produto', 'Unidade de venda', 'Rendimento (qtd.)', 'Custo total', 'Custo unitário', 'Preço cafeteria', 'Preço cliente', 'Preço recomendado', 'Situação', 'Venda ativa?'])
-        pricing.append(['REC-001', 'BROWNIE', 'Brownie Tradicional', 'UNIDADE', 10, 50, 5, 7, 10, 8, 'OK', 'SIM'])
-        stream = io.BytesIO()
-        wb.save(stream)
-        return SimpleUploadedFile('Planilha Automatizada 4.0.xlsx', stream.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-
-    def test_import_updates_ingredient_recipe_margin_and_linked_prices(self):
-        result = import_management_workbook(self._upload(), user=self.user)
-        ingredient = Ingredient.objects.get(code='ING-001')
-        recipe = Recipe.objects.get(code='REC-001')
-        self.assertEqual(ingredient.package_price, Decimal('30.00'))
-        self.assertEqual(ingredient.unit_cost, Decimal('0.060000'))
-        self.assertEqual(recipe.imported_production_cost, Decimal('50'))
-        self.assertEqual(recipe.sale_unit, 'unit')
-        self.assertEqual(recipe.product, self.product)
-        self.assertEqual(FinancialSettings.current().desired_margin_percent, Decimal('30.00'))
-        self.assertEqual(ProductPrice.objects.get(product=self.product, table__kind='cafe').unit_price, Decimal('7'))
-        self.assertEqual(ProductPrice.objects.get(product=self.product, table__kind='retail').unit_price, Decimal('10'))
-        self.assertEqual(result['prices_updated'], 2)
-
-    def test_invalid_xlsx_is_rejected_before_openpyxl_processing(self):
-        invalid = SimpleUploadedFile('planilha.xlsx', b'not-a-zip', content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        with self.assertRaises(ValueError):
-            import_management_workbook(invalid, user=self.user)
-
     def test_export_contains_management_sheets(self):
         Ingredient.objects.create(code='ING-001', name='Chocolate', package_price=30, package_quantity=500, base_unit='g')
         stream = build_management_workbook(timezone.localdate().replace(day=1), timezone.localdate())
         workbook = load_workbook(stream, read_only=True, data_only=True)
-        expected = {'PAINEL', 'BASE DE PREÇOS', 'PRECIFICAÇÃO', 'VENDAS CLIENTES', 'VENDAS CAFETERIAS', 'VENDAS EVENTOS', 'ANÁLISE DE VENDAS', 'DESPESAS', 'CUSTOS FIXOS', 'ESTOQUE', 'FLUXO DE CAIXA'}
+        expected = {'PAINEL', 'BASE DE PREÇOS', 'PRECIFICAÇÃO', 'RECEITAS', 'VENDAS CLIENTES', 'VENDAS CAFETERIAS', 'VENDAS EVENTOS', 'ANÁLISE DE VENDAS', 'DESPESAS', 'CUSTOS FIXOS', 'ESTOQUE', 'FLUXO DE CAIXA'}
         self.assertTrue(expected.issubset(set(workbook.sheetnames)))
+
+    def test_export_creates_one_safe_sheet_for_every_cafe(self):
+        first_user = User.objects.create_user('cafe-1', 'cafe1@example.com', 'StrongPassword-456!')
+        second_user = User.objects.create_user('cafe-2', 'cafe2@example.com', 'StrongPassword-789!')
+        first = CafeAccount.objects.create(user=first_user, business_name='Café / Zona Sul: Copacabana')
+        CafeAccount.objects.create(user=second_user, business_name='Café / Zona Sul: Copacabana')
+        order = Order.objects.create(
+            customer=first.user, order_type='cafe', status='paid', delivery_date=timezone.localdate(),
+            subtotal=Decimal('20.00'), total=Decimal('20.00'),
+        )
+        order.items.create(product=self.product, quantity=2, unit_price=Decimal('10.00'))
+        stream = build_management_workbook(timezone.localdate().replace(day=1), timezone.localdate())
+        workbook = load_workbook(stream, read_only=True, data_only=True)
+        cafe_sheets = [name for name in workbook.sheetnames if name.startswith('CAFÉ - ')]
+        self.assertEqual(len(cafe_sheets), 2)
+        self.assertEqual(len(set(name.casefold() for name in cafe_sheets)), 2)
+        self.assertTrue(all(len(name) <= 31 and '/' not in name and ':' not in name for name in cafe_sheets))
+        self.assertEqual(sum(workbook[name].max_row - 1 for name in cafe_sheets), 1)
 
     def test_management_center_requires_verified_admin(self):
         self.client.force_login(self.user)
@@ -134,3 +117,17 @@ class SpreadsheetRoundTripTests(TestCase):
         response = self.client.get('/health/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['status'], 'ok')
+
+
+class NativeCatalogTests(TestCase):
+    def test_native_catalog_is_complete_and_idempotent(self):
+        call_command('load_native_catalog', verbosity=0)
+        self.assertEqual(Ingredient.objects.count(), 80)
+        self.assertEqual(Recipe.objects.count(), 64)
+        self.assertEqual(RecipeIngredient.objects.count(), 395)
+        self.assertGreater(Recipe.objects.get(code='REC-001').production_cost, Decimal('0'))
+        incomplete = Recipe.objects.get(code='REC-021')
+        self.assertTrue(incomplete.active)
+        self.assertFalse(incomplete.ingredients.exists())
+        call_command('load_native_catalog', verbosity=0)
+        self.assertEqual((Ingredient.objects.count(), Recipe.objects.count(), RecipeIngredient.objects.count()), (80, 64, 395))

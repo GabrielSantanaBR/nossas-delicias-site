@@ -70,9 +70,10 @@ class OperationsWorkspaceTests(TestCase):
         body = response.content.decode('utf-8')
         for marker in (
             'Portfólio & site', 'Pedidos', 'Mensagens', 'Cafeterias', 'Eventos',
-            'Logística', 'Dados & planilha', 'Financeiro', 'Precificação', 'Produção & estoque',
+            'Logística', 'Dados & relatórios', 'Financeiro', 'Precificação', 'Produção & estoque',
         ):
             self.assertIn(marker, body)
+        self.assertNotIn('Importar planilha', body)
 
     def test_pricing_simulator_is_a_complete_management_screen(self):
         response = self.client.get(reverse('pricing_simulator'))
@@ -110,6 +111,24 @@ class OperationsWorkspaceTests(TestCase):
                 read_at__isnull=True,
             ).exists()
         )
+
+    def test_message_thread_loads_on_demand_and_marks_incoming_as_read(self):
+        response = self.client.get(reverse('management_conversation_thread', args=[self.conversation.pk]))
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload['conversation_id'], self.conversation.pk)
+        self.assertEqual(payload['messages'][0]['body'], 'Mensagem nova')
+        self.assertFalse(payload['messages'][0]['from_team'])
+        self.assertFalse(self.conversation.messages.filter(read_at__isnull=True).exists())
+
+    def test_management_reply_supports_ajax_without_page_reload(self):
+        response = self.client.post(reverse('management_conversation_send'), {
+            'conversation_id': self.conversation.pk,
+            'body': 'Resposta instantânea',
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['message']['body'], 'Resposta instantânea')
+        self.assertTrue(response.json()['message']['from_team'])
 
     def test_cafe_can_be_approved_from_operations_workspace(self):
         cafe_user = User.objects.create_user(

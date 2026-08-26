@@ -35,6 +35,7 @@ urlpatterns=[
     path('gestao/vendas/registrar/',views_management.management_direct_sale,name='management_direct_sale'),
     path('gestao/pedidos/status/',views_management.management_order_status,name='management_order_status'),
     path('gestao/mensagens/enviar/',views_management.management_conversation_send,name='management_conversation_send'),
+    path('gestao/mensagens/<int:conversation_id>/',views_management.management_conversation_thread,name='management_conversation_thread'),
     path('gestao/mensagens/lida/',views_management.management_conversation_read,name='management_conversation_read'),
     path('gestao/mensagens/alternar/',views_management.management_conversation_toggle,name='management_conversation_toggle'),
     path('gestao/cafeterias/acao/',views_management.management_cafe_action,name='management_cafe_action'),
@@ -49,7 +50,6 @@ urlpatterns=[
     path('gestao/custos-fixos/salvar/',views_management.fixed_cost_save,name='fixed_cost_save'),
     path('gestao/despesas/salvar/',views_management.expense_save,name='expense_save'),
     path('gestao/configuracoes-financeiras/salvar/',views_management.financial_settings_save,name='financial_settings_save'),
-    path('gestao/planilha/importar/',views_management.spreadsheet_import,name='spreadsheet_import'),
     path('gestao/planilha/exportar.xlsx',views_management.management_export_xlsx,name='management_export_xlsx'),
     path('gestao/simulador/',views_management.pricing_simulator,name='pricing_simulator'),
 

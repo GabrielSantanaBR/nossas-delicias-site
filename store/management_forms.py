@@ -56,19 +56,6 @@ class FinancialSettingsForm(forms.ModelForm):
         fields = ('desired_margin_percent', 'payment_fee_percent', 'tax_percent', 'contingency_percent')
 
 
-class SpreadsheetUploadForm(forms.Form):
-    file = forms.FileField(label='Planilha .xlsx')
-
-    def clean_file(self):
-        upload = self.cleaned_data['file']
-        name = upload.name.lower()
-        if not name.endswith('.xlsx'):
-            raise forms.ValidationError('Envie uma planilha .xlsx.')
-        if upload.size > 10 * 1024 * 1024:
-            raise forms.ValidationError('A planilha deve ter no máximo 10 MB.')
-        return upload
-
-
 class PriceSimulatorForm(forms.Form):
     recipe = forms.ModelChoiceField(queryset=Recipe.objects.filter(active=True), label='Receita')
     current_price = forms.DecimalField(max_digits=12, decimal_places=2, required=False, min_value=Decimal('0.01'), label='Preço atual')

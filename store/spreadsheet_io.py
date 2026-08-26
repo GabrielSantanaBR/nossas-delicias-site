@@ -22,7 +22,7 @@ from .management_models import (
     SpreadsheetImportBatch,
 )
 from .management_services import cashflow_summary, pricing_health, sync_recipe_product_cost
-from .models import PriceTable, ProductPrice
+from .models import CafeAccount, PriceTable, ProductPrice
 
 HEADER_FILL = '3A211A'
 MAX_XLSX_BYTES = 10 * 1024 * 1024
@@ -290,10 +290,24 @@ def import_management_workbook(uploaded_file, user=None):
 def _style_sheet(ws, freeze='A2'):
     ws.freeze_panes = freeze
     ws.sheet_view.showGridLines = False
+    ws.auto_filter.ref = ws.dimensions
+    ws.row_dimensions[1].height = 26
     for cell in ws[1]:
         cell.fill = PatternFill('solid', fgColor=HEADER_FILL)
         cell.font = Font(color='FFFFFF', bold=True)
         cell.alignment = Alignment(vertical='center')
+    money_headers = {'PREÇO DA EMBALAGEM', 'CUSTO POR UNIDADE', 'PREÇO CAFETERIA', 'PREÇO CLIENTE', 'LUCRO/UN. CAFÉ', 'LUCRO/UN. CLIENTE', 'PREÇO RECOMENDADO', 'PREÇO UNITÁRIO', 'FATURAMENTO', 'CUSTO UNITÁRIO', 'CUSTO TOTAL', 'LUCRO', 'VALOR', 'VALOR MENSAL'}
+    date_headers = {'DATA', 'ÚLTIMA ATUALIZAÇÃO', 'INÍCIO', 'FIM'}
+    percent_headers = {'MARGEM', 'MARGEM CAFÉ', 'MARGEM CLIENTE'}
+    headers = {str(cell.value or '').strip().upper(): cell.column for cell in ws[1]}
+    for label, column in headers.items():
+        for target in (ws.cell(row=row, column=column) for row in range(2, ws.max_row + 1)):
+            if label in money_headers:
+                target.number_format = 'R$ #,##0.00;[Red]-R$ #,##0.00'
+            elif label in date_headers:
+                target.number_format = 'dd/mm/yyyy'
+            elif label in percent_headers:
+                target.number_format = '0.00"%"'
     for column in ws.columns:
         letter = get_column_letter(column[0].column)
         width = min(max((len(str(cell.value or '')) for cell in column), default=8) + 2, 34)
@@ -304,15 +318,29 @@ def _append_money(value):
     return float(Decimal(value or 0).quantize(Decimal('0.01')))
 
 
+def _safe_sheet_title(value, used):
+    cleaned = ''.join('-' if char in '[]:*?/\\' else char for char in str(value or '')).strip() or 'SEM NOME'
+    base = cleaned[:31]
+    candidate = base
+    suffix = 2
+    while candidate.casefold() in used:
+        marker = f' {suffix}'
+        candidate = f'{base[:31 - len(marker)]}{marker}'
+        suffix += 1
+    used.add(candidate.casefold())
+    return candidate
+
+
 def build_management_workbook(start, end):
     wb = Workbook()
     wb.remove(wb.active)
+    used_sheet_titles = set()
 
     health = pricing_health()
     sales = sales_report(start, end)
     cash = cashflow_summary(start, end)
 
-    ws = wb.create_sheet('PAINEL')
+    ws = wb.create_sheet(_safe_sheet_title('PAINEL', used_sheet_titles))
     ws.append(['PAINEL DE GESTÃO', 'Valor'])
     ws.append(['Período', f'{start:%d/%m/%Y} a {end:%d/%m/%Y}'])
     ws.append(['Receitas ativas', health['active_recipes']])
@@ -328,22 +356,38 @@ def build_management_workbook(start, end):
     ws.append(['Caixa líquido', _append_money(cash['net_cash'])])
     _style_sheet(ws)
 
-    ws = wb.create_sheet('BASE DE PREÇOS')
+    ws = wb.create_sheet(_safe_sheet_title('BASE DE PREÇOS', used_sheet_titles))
     ws.append(['Código', 'Ingrediente padrão', 'Categoria', 'Preço da embalagem', 'Qtd. da embalagem', 'Unidade base', 'Custo por unidade', 'Estoque atual', 'Estoque mínimo', 'Status', 'Última atualização', 'Fornecedor', 'Observações', 'Nomes encontrados'])
     for item in Ingredient.objects.all():
         ws.append([item.code, item.name, item.category, _append_money(item.package_price), float(item.package_quantity), item.base_unit, float(item.unit_cost), float(item.stock_balance), float(item.minimum_stock), 'ATIVO' if item.active else 'INATIVO', item.last_price_update, item.supplier, item.notes, item.aliases])
     _style_sheet(ws)
 
-    ws = wb.create_sheet('PRECIFICAÇÃO')
+    ws = wb.create_sheet(_safe_sheet_title('PRECIFICAÇÃO', used_sheet_titles))
     ws.append(['Código', 'Categoria', 'Produto', 'Unidade de venda', 'Rendimento (qtd.)', 'Custo total', 'Custo unitário', 'Preço cafeteria', 'Preço cliente', 'Lucro/un. café', 'Margem café', 'Lucro/un. cliente', 'Margem cliente', 'Preço recomendado', 'Situação', 'Venda ativa?'])
     for row in health['rows']:
         recipe = row['recipe']
         ws.append([recipe.code, recipe.category, recipe.name, recipe.get_sale_unit_display(), float(recipe.yield_quantity), float(row['production_cost']), float(row['unit_cost']), None if row['cafe_price'] is None else float(row['cafe_price']), None if row['client_price'] is None else float(row['client_price']), None if row['cafe_profit'] is None else float(row['cafe_profit']), None if row['cafe_margin'] is None else float(row['cafe_margin']), None if row['client_profit'] is None else float(row['client_profit']), None if row['client_margin'] is None else float(row['client_margin']), None if row['recommended_price'] is None else float(row['recommended_price']), row['status'], 'SIM' if recipe.active else 'NÃO'])
     _style_sheet(ws)
 
-    def sales_sheet(title, order_type=None):
-        report = sales_report(start, end, order_type=order_type)
-        sheet = wb.create_sheet(title)
+    ws = wb.create_sheet(_safe_sheet_title('RECEITAS', used_sheet_titles))
+    ws.append(['Código', 'Receita', 'Categoria', 'Ativa', 'Rendimento', 'Unidade de venda', 'Código ingrediente', 'Ingrediente / insumo', 'Quantidade usada', 'Unidade base', 'Custo do ingrediente', 'Custo da linha', 'Custo total da receita', 'Custo por unidade', 'Produto vinculado'])
+    recipes = Recipe.objects.select_related('product').prefetch_related('ingredients__ingredient').all()
+    for recipe in recipes:
+        lines = list(recipe.ingredients.all()) or [None]
+        for line in lines:
+            ingredient = line.ingredient if line else None
+            line_cost = line.total_cost if line else None
+            ws.append([
+                recipe.code, recipe.name, recipe.category, 'SIM' if recipe.active else 'NÃO', float(recipe.yield_quantity), recipe.get_sale_unit_display(),
+                ingredient.code if ingredient else '', ingredient.name if ingredient else 'Composição pendente', float(line.quantity_used) if line else None,
+                ingredient.base_unit if ingredient else '', float(ingredient.unit_cost) if ingredient else None, float(line_cost) if line_cost is not None else None,
+                float(recipe.production_cost), float(recipe.unit_cost), recipe.product.name if recipe.product else '',
+            ])
+    _style_sheet(ws)
+
+    def sales_sheet(title, order_type=None, cafe=None):
+        report = sales_report(start, end, order_type=order_type, cafe=cafe)
+        sheet = wb.create_sheet(_safe_sheet_title(title, used_sheet_titles))
         sheet.append(['Data', 'Pedido/nota', 'Canal', 'Cliente/cafeteria', 'Código', 'Produto', 'Quantidade', 'Preço unitário', 'Faturamento', 'Custo unitário', 'Custo total', 'Lucro', 'Margem', 'Pagamento', 'Mês', 'Ano', 'Observações'])
         for snap in report['rows']:
             order = snap.order_item.order
@@ -355,9 +399,11 @@ def build_management_workbook(start, end):
 
     sales_sheet('VENDAS CLIENTES', 'retail')
     sales_sheet('VENDAS CAFETERIAS', 'cafe')
+    for cafe in CafeAccount.objects.select_related('user').order_by('business_name', 'pk'):
+        sales_sheet(f'CAFÉ - {cafe.business_name}', 'cafe', cafe=cafe)
     sales_sheet('VENDAS EVENTOS', 'event')
 
-    ws = wb.create_sheet('ANÁLISE DE VENDAS')
+    ws = wb.create_sheet(_safe_sheet_title('ANÁLISE DE VENDAS', used_sheet_titles))
     ws.append(['Cafeteria/cliente', 'Itens', 'Pedidos', 'Faturamento', 'Custo', 'Lucro', 'Margem'])
     for row in sales['by_cafe']:
         ws.append([row['name'], row['quantity'], row.get('order_count', 0), _append_money(row['revenue']), _append_money(row['cost']), _append_money(row['profit']), float(row['margin_percent'])])
@@ -367,25 +413,25 @@ def build_management_workbook(start, end):
         ws.append([row['name'], row['quantity'], _append_money(row['revenue']), _append_money(row['cost']), _append_money(row['profit']), float(row['margin_percent'])])
     _style_sheet(ws)
 
-    ws = wb.create_sheet('DESPESAS')
+    ws = wb.create_sheet(_safe_sheet_title('DESPESAS', used_sheet_titles))
     ws.append(['Data', 'Categoria', 'Descrição', 'Fornecedor', 'Valor', 'Status', 'Pagamento', 'Observações'])
     for expense in BusinessExpense.objects.filter(date__range=(start, end)).order_by('date'):
         ws.append([expense.date, expense.get_category_display(), expense.description, expense.supplier, _append_money(expense.amount), expense.get_payment_status_display(), expense.payment_method, expense.notes])
     _style_sheet(ws)
 
-    ws = wb.create_sheet('CUSTOS FIXOS')
+    ws = wb.create_sheet(_safe_sheet_title('CUSTOS FIXOS', used_sheet_titles))
     ws.append(['Nome', 'Categoria', 'Valor mensal', 'Dia vencimento', 'Ativo', 'Início', 'Fim', 'Observações'])
     for cost in FixedCost.objects.all():
         ws.append([cost.name, cost.get_category_display(), _append_money(cost.monthly_amount), cost.due_day, 'SIM' if cost.active else 'NÃO', cost.start_date, cost.end_date, cost.notes])
     _style_sheet(ws)
 
-    ws = wb.create_sheet('ESTOQUE')
+    ws = wb.create_sheet(_safe_sheet_title('ESTOQUE', used_sheet_titles))
     ws.append(['Data', 'Código', 'Ingrediente', 'Tipo', 'Quantidade', 'Custo unitário', 'Referência', 'Observações'])
     for movement in InventoryMovement.objects.select_related('ingredient').filter(date__range=(start, end)).order_by('date', 'ingredient__name'):
         ws.append([movement.date, movement.ingredient.code, movement.ingredient.name, movement.get_movement_type_display(), float(movement.quantity_delta), float(movement.unit_cost_snapshot or 0), movement.reference, movement.notes])
     _style_sheet(ws)
 
-    ws = wb.create_sheet('FLUXO DE CAIXA')
+    ws = wb.create_sheet(_safe_sheet_title('FLUXO DE CAIXA', used_sheet_titles))
     ws.append(['Indicador', 'Valor'])
     ws.append(['Entradas recebidas', _append_money(cash['cash_in'])])
     ws.append(['Saídas pagas', _append_money(cash['cash_out'])])
