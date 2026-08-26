@@ -57,6 +57,7 @@ A Central de Gestão concentra, conforme o módulo:
 O simulador privado de precificação calcula custo unitário, preço recomendado, margem, impacto por lote e ponto de equilíbrio sem alterar o cardápio real.
 
 O Django Admin em `/nd-admin/` funciona como retaguarda técnica. A operação diária deve preferir a Central de Gestão própria.
+Essas rotas internas nunca aparecem na navegação da loja: clientes usam apenas cardápio, sacola, pedidos, mensagens e conta; Gestão, Financeiro e Admin exigem usuário staff com OTP verificado.
 
 ## Stack
 

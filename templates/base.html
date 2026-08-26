@@ -25,14 +25,15 @@
   <link rel="stylesheet" href="{% static 'v18-polish.css' %}">
   <link rel="stylesheet" href="{% static 'v18-media-fallback.css' %}">
   <link rel="stylesheet" href="{% static 'brand-v19.css' %}">
+  {% block late_head %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
   <div class="scroll-progress" aria-hidden="true"><span data-scroll-progress></span></div>
   <div class="ambient-orb ambient-orb-one" aria-hidden="true"></div>
   <div class="ambient-orb ambient-orb-two" aria-hidden="true"></div>
 
-  <header class="site-header" data-site-header>
+  {% block site_header %}<header class="site-header" data-site-header>
     <div class="header-inner">
       <a class="brand-lockup" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
         <span class="brand-logo-frame" aria-hidden="true"><img src="{% static 'brand/nossas-delicias-wordmark.png' %}" width="500" height="500" alt=""></span>
@@ -41,22 +42,21 @@
       <nav class="site-nav" id="site-nav" data-site-nav aria-label="Navegação principal">
         <a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'cake_studio' %}">Monte seu bolo</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}">Cafeterias</a>
         {% if user.is_authenticated %}
-          {% cart_count as cart_total %}<a href="{% url 'cart' %}">Sacola{% if cart_total %}<span class="nav-count">{{ cart_total }}</span>{% endif %}</a><a href="{% url 'account' %}">Minha conta</a>
-          {% if user.is_staff %}<a href="{% url 'management_center' %}">Gestão</a><a href="{% url 'finance_dashboard' %}">Financeiro</a><a href="/nd-admin/">Admin</a>{% endif %}
+          {% cart_count as cart_total %}<a href="{% url 'cart' %}">Sacola{% if cart_total %}<span class="nav-count">{{ cart_total }}</span>{% endif %}</a><a href="{% url 'account' %}#pedidos">Pedidos e mensagens</a><a href="{% url 'account' %}">Minha conta</a>
           <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sair</button></form>
         {% else %}
           <a href="{% url 'login' %}">Entrar</a><a class="nav-cta" href="{% url 'register' %}">Criar conta</a>
         {% endif %}
       </nav>
     </div>
-  </header>
+  </header>{% endblock %}
 
   <main id="conteudo" class="site-main">
     {% if messages %}<div class="messages" role="status" aria-live="polite">{% for message in messages %}<p class="message {{ message.tags|default:'' }}">{{ message }}</p>{% endfor %}</div>{% endif %}
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="site-footer">
+  {% block site_footer %}<footer class="site-footer">
     <div class="footer-grid">
       <div class="footer-brand">
         <a class="brand-lockup" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
@@ -69,7 +69,7 @@
       <div class="footer-note"><span class="footer-label">Nossas Delícias</span><p>Produção artesanal, atendimento próximo e doces para diferentes ocasiões.</p></div>
     </div>
     <div class="footer-bottom"><span>© {% now 'Y' %} Nossas Delícias</span><span>Bolos e doces feitos com cuidado.</span></div>
-  </footer>
+  </footer>{% endblock %}
 
   <script src="{% static 'app.js' %}" defer></script>
   <script src="{% static 'public-v17.js' %}" defer></script>

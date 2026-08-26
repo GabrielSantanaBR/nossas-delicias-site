@@ -1,10 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'private_base.html' %}
 {% block title %}Financeiro | Nossas Delícias{% endblock %}
 {% block content %}
 <section class="finance-wrap">
   <div class="finance-header">
     <div><span class="eyebrow">Central financeira</span><h1 class="finance-title">Números do negócio.</h1><p class="muted">Vendas, custos, lucro, margem, despesas e desempenho por canal usando snapshots históricos — sem alterar o passado quando o custo de uma receita muda.</p></div>
-    <a class="cta-secondary" href="/nd-admin/">Abrir administração</a>
+    <a class="cta-secondary" href="{% url 'management_center' %}#finance">Voltar à central operacional</a>
   </div>
 
   <form class="finance-filters" method="get">

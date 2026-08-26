@@ -1,6 +1,8 @@
-{% extends 'base.html' %}{% load static store_tags %}
+{% extends 'private_base.html' %}{% load static store_tags %}
 {% block title %}Nossas Delícias OS | Central de Operação{% endblock %}
-{% block head %}<link rel="stylesheet" href="{% static 'operations-v16.css' %}">{% endblock %}
+{% block private_head %}<link rel="stylesheet" href="{% static 'operations-v16.css' %}">{% endblock %}
+{% block late_head %}<link rel="stylesheet" href="{% static 'operations-v20.css' %}">{% endblock %}
+{% block site_header %}{% endblock %}
 {% block content %}
 <div class="ops-shell" data-ops-shell>
   <aside class="ops-sidebar" data-ops-sidebar>

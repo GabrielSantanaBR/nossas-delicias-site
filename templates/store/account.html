@@ -9,8 +9,8 @@
 </section>
 <section class="account-workspace">
   <div class="account-main">
-    <article class="panel" data-reveal>
-      <div class="section-head compact"><div><span class="eyebrow">Histórico</span><h2>Seus pedidos</h2></div><a class="cta-secondary" href="{% url 'catalog' %}">Novo pedido</a></div>
+    <article class="panel" id="pedidos" data-reveal>
+      <div class="section-head compact"><div><span class="eyebrow">Histórico e atendimento</span><h2>Seus pedidos e mensagens</h2></div><a class="cta-secondary" href="{% url 'catalog' %}">Novo pedido</a></div>
       {% for order in orders %}<a class="order-row" href="{% url 'order_detail' order.public_id %}"><div><b>#{{ order.public_id|stringformat:'s'|slice:':8'|upper }}</b><small>{{ order.created_at|date:'d/m/Y H:i' }}{% if order.delivery_date %} · entrega {{ order.delivery_date|date:'d/m/Y' }}{% endif %}</small></div><span class="tag">{{ order.get_status_display }}</span><strong>R$ {{ order.total|floatformat:2 }}</strong></a>{% empty %}<div class="empty-state"><span class="eyebrow">Primeiro pedido</span><h3>Quando você fizer uma encomenda, ela aparece aqui.</h3><a class="cta" href="{% url 'catalog' %}">Escolher doces</a></div>{% endfor %}
     </article>
     <article class="panel" data-reveal>

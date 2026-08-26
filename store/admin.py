@@ -5,7 +5,7 @@ from .financial_models import BusinessExpense, CafeDeliveryNote, OrderItemFinanc
 from .financial_services import cafe_order_editable, lock_cafe_note, maybe_lock_cafe_note
 from .management_models import (
     FinancialSettings, FixedCost, Ingredient, IngredientPriceHistory,
-    InventoryMovement, Recipe, RecipeIngredient, SpreadsheetImportBatch,
+    InventoryMovement, Recipe, RecipeIngredient,
 )
 from .management_services import sync_recipe_product_cost
 
@@ -201,20 +201,6 @@ class FixedCostAdmin(admin.ModelAdmin):
     list_filter = ('category', 'active')
     list_editable = ('active',)
     search_fields = ('name', 'notes')
-
-
-@admin.register(SpreadsheetImportBatch, site=secure_admin_site)
-class SpreadsheetImportBatchAdmin(admin.ModelAdmin):
-    list_display = ('created_at', 'filename', 'status', 'ingredients_created', 'ingredients_updated', 'recipes_created', 'recipes_updated', 'prices_updated', 'imported_by')
-    list_filter = ('status', 'created_at')
-    search_fields = ('filename', 'sha256')
-    readonly_fields = tuple(field.name for field in SpreadsheetImportBatch._meta.fields)
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
 
 
 @admin.register(PriceTable, site=secure_admin_site)

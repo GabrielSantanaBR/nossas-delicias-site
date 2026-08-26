@@ -1,0 +1,23 @@
+{% extends 'base.html' %}{% load static %}
+{% block body_class %}private-app{% endblock %}
+{% block head %}
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <link rel="stylesheet" href="{% static 'private-shell.css' %}">
+  {% block private_head %}{% endblock %}
+{% endblock %}
+{% block site_header %}
+  <header class="private-header">
+    <a class="private-brand" href="{% url 'management_center' %}" aria-label="Nossas Delícias — Central da equipe">
+      <span aria-hidden="true"><img src="{% static 'brand/nossas-delicias-seal.png' %}" width="478" height="478" alt=""></span>
+      <span><strong>Nossas Delícias</strong><small>ÁREA PRIVADA DA EQUIPE</small></span>
+    </a>
+    <nav aria-label="Navegação interna da equipe">
+      <a href="{% url 'management_center' %}">Central operacional</a>
+      <a href="{% url 'management_center' %}#finance">Financeiro</a>
+      <a href="/nd-admin/">Admin avançado</a>
+      <a href="{% url 'home' %}" target="_blank" rel="noopener">Ver site público <span aria-hidden="true">↗</span></a>
+    </nav>
+    <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sair</button></form>
+  </header>
+{% endblock %}
+{% block site_footer %}{% endblock %}

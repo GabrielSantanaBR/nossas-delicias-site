@@ -26,5 +26,5 @@
 {% endblock %}
 
 {% block nav-global %}
-  <div class="nd-admin-shortcuts"><a href="{% url 'home' %}">Ver site</a><a href="{% url 'management_center' %}">Gestão</a><a href="{% url 'finance_dashboard' %}">Financeiro</a></div>
+  <div class="nd-admin-shortcuts"><a href="{% url 'management_center' %}">Central operacional</a><a href="{% url 'management_center' %}#finance">Financeiro</a><a href="{% url 'home' %}" target="_blank" rel="noopener">Ver site público ↗</a></div>
 {% endblock %}
