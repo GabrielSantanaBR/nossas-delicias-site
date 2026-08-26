@@ -1,0 +1,17 @@
+{
+  "name": "Nossas Delícias",
+  "short_name": "Nossas Delícias",
+  "description": "Confeitaria artesanal, pedidos, bolos personalizados e eventos.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbf6ef",
+  "theme_color": "#2d1a15",
+  "icons": [
+    {
+      "src": "/static/brand/nossas-delicias-seal.png",
+      "sizes": "478x478",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
