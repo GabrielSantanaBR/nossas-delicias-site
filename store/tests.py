@@ -9,7 +9,10 @@ from django.utils import timezone
 from .forms import EventQuoteForm
 from .models import (
     CafeAccount,
+    CakeDesign,
+    CakeOption,
     Category,
+    CustomerAddress,
     CustomerProfile,
     DeliveryRegion,
     DeliveryRoute,
@@ -17,6 +20,10 @@ from .models import (
     PriceTable,
     Product,
     ProductPrice,
+    EventQuote,
+    EventQuoteItem,
+    EventQuoteMessage,
+    Favorite,
 )
 from .payment_gateway import create_checkout_preference
 from .services import can_schedule, lock_delivery_slot, price_for, region_for_zip
@@ -64,6 +71,13 @@ class CommerceServiceTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("default-src 'self'", response.headers['Content-Security-Policy'])
         self.assertEqual(response.headers['X-Permitted-Cross-Domain-Policies'], 'none')
+        self.assertNotIn("script-src 'self' 'unsafe-inline'", response.headers['Content-Security-Policy'])
+        self.assertEqual(response.headers['Cross-Origin-Resource-Policy'], 'same-origin')
+
+    def test_authenticated_pages_are_not_stored_in_shared_browser_caches(self):
+        self.client.login(username='cliente', password='StrongPassword-123!')
+        response = self.client.get('/minha-conta/')
+        self.assertEqual(response.headers['Cache-Control'], 'private, no-store, max-age=0')
 
     def test_secure_admin_login_template_renders(self):
         response = self.client.get('/nd-admin/login/')
@@ -122,6 +136,134 @@ class CommerceServiceTests(TestCase):
         )
         Order.objects.filter(pk=stale.pk).update(created_at=timezone.now() - timedelta(hours=2))
         self.assertTrue(can_schedule(self.region, delivery_date, lead_days=1))
+
+    def test_customer_can_manage_profile_address_and_favorites(self):
+        self.client.login(username='cliente', password='StrongPassword-123!')
+        response = self.client.post('/minha-conta/perfil/', {
+            'first_name': 'Gabriel', 'last_name': 'Santana', 'email': 'gabriel@example.com',
+            'phone': '(21) 99999-0000', 'marketing_opt_in': 'on',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.user.refresh_from_db()
+        self.user.customer_profile.refresh_from_db()
+        self.assertEqual(self.user.first_name, 'Gabriel')
+        self.assertTrue(self.user.customer_profile.marketing_opt_in)
+
+        response = self.client.post('/minha-conta/enderecos/salvar/', {
+            'label': 'Casa', 'zip_code': '21660000', 'street': 'Rua do Teste',
+            'number': '10', 'neighborhood': 'Guadalupe', 'city': 'Rio de Janeiro', 'default': 'on',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(CustomerAddress.objects.filter(user=self.user, zip_code='21660-000', default=True).exists())
+
+        response = self.client.post(f'/favoritos/{self.product.pk}/alternar/', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['favorite'])
+        self.assertTrue(Favorite.objects.filter(user=self.user, product=self.product).exists())
+
+    def test_event_conversation_is_private_and_contextual(self):
+        quote = EventQuote.objects.create(
+            customer=self.user, event_type='birthday', event_date=timezone.localdate() + timedelta(days=30), guest_count=40,
+        )
+        other = User.objects.create_user('intruso', 'intruso@example.com', 'StrongPassword-456!')
+        self.client.login(username='cliente', password='StrongPassword-123!')
+        response = self.client.post(f'/eventos/orcamentos/{quote.public_id}/mensagem/', {'body': 'Prefiro chocolate meio amargo.'})
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(EventQuoteMessage.objects.filter(quote=quote, sender=self.user).exists())
+        self.client.force_login(other)
+        self.assertEqual(self.client.get(f'/eventos/orcamentos/{quote.public_id}/').status_code, 404)
+
+    def test_customer_accepts_only_a_complete_sent_event_proposal(self):
+        quote = EventQuote.objects.create(
+            customer=self.user, event_type='birthday', event_date=timezone.localdate() + timedelta(days=30),
+            guest_count=40, status='sent',
+        )
+        EventQuoteItem.objects.create(
+            quote=quote, product=self.product, quantity=10, proposed_unit_price=Decimal('8.00'),
+        )
+        self.client.login(username='cliente', password='StrongPassword-123!')
+        response = self.client.post(f'/eventos/orcamentos/{quote.public_id}/aceitar/')
+        self.assertEqual(response.status_code, 302)
+        quote.refresh_from_db()
+        self.assertEqual(quote.status, 'accepted')
+        self.assertEqual(quote.final_total, Decimal('80.00'))
+        self.assertTrue(quote.status_history.filter(status='accepted', changed_by=self.user).exists())
+
+
+class CakeStudioTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('boleira', 'bolo@example.com', 'StrongPassword-123!')
+        CustomerProfile.objects.create(user=self.user)
+        self.dough = CakeOption.objects.filter(kind='dough', active=True).first()
+        self.filling = CakeOption.objects.filter(kind='filling', active=True).first()
+        self.frosting = CakeOption.objects.filter(kind='frosting', active=True).first()
+
+    def payload(self, **overrides):
+        data = {
+            'dough': self.dough.pk,
+            'primary_filling': self.filling.pk,
+            'secondary_filling': '',
+            'complement': '',
+            'frosting': self.frosting.pk,
+            'decoration_style': 'floral',
+            'guest_count': 35,
+            'occasion': 'Aniversário de 30 anos',
+            'event_date': timezone.localdate() + timedelta(days=20),
+            'address': 'Rua das Flores, 120 · Rio de Janeiro',
+            'decoration_notes': 'Flores delicadas em tons rosados.',
+            'notes': 'Entrega no período da manhã.',
+        }
+        data.update(overrides)
+        return data
+
+    def test_public_studio_renders_seeded_menu(self):
+        response = self.client.get('/monte-seu-bolo/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Monte camada por camada')
+        self.assertContains(response, 'Amanteigada de baunilha')
+        self.assertEqual(CakeOption.objects.filter(kind='dough').count(), 8)
+        self.assertEqual(CakeOption.objects.filter(kind='filling').count(), 9)
+        self.assertEqual(CakeOption.objects.filter(kind='complement').count(), 5)
+        self.assertEqual(CakeOption.objects.filter(kind='frosting').count(), 4)
+
+    def test_menu_products_and_prices_are_available_in_catalog(self):
+        response = self.client.get('/cardapio/')
+        self.assertContains(response, 'Brigadeiros gourmet 20 g · caixa 50')
+        self.assertContains(response, 'Brownie 6×6 recheado · caixa 12')
+        self.assertContains(response, 'Banoffee 24 cm')
+        banoffee = Product.objects.get(slug='banoffee-24cm')
+        self.assertEqual(banoffee.prices.get(table__kind='retail').unit_price, Decimal('150.00'))
+
+    def test_authenticated_customer_creates_cake_quote(self):
+        self.client.login(username='boleira', password='StrongPassword-123!')
+        response = self.client.post('/monte-seu-bolo/', self.payload())
+        quote = EventQuote.objects.get(customer=self.user)
+        design = CakeDesign.objects.get(quote=quote)
+        self.assertRedirects(response, f'/eventos/orcamentos/{quote.public_id}/')
+        self.assertEqual(design.dough, self.dough)
+        self.assertEqual(design.primary_filling, self.filling)
+        self.assertEqual(design.selection_snapshot['decoration_style'], 'Floral delicado')
+        self.assertTrue(quote.items.filter(description__contains=self.dough.name).exists())
+        self.assertTrue(quote.status_history.filter(note__contains='estúdio de bolos').exists())
+        detail = self.client.get(f'/eventos/orcamentos/{quote.public_id}/')
+        self.assertContains(detail, 'Sua receita')
+        self.assertContains(detail, self.dough.name)
+
+    def test_wrong_kind_and_short_lead_time_are_rejected(self):
+        self.client.login(username='boleira', password='StrongPassword-123!')
+        response = self.client.post('/monte-seu-bolo/', self.payload(
+            dough=self.filling.pk,
+            event_date=timezone.localdate() + timedelta(days=2),
+        ))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Faça uma escolha válida')
+        self.assertContains(response, 'pelo menos 7 dias de antecedência')
+        self.assertFalse(EventQuote.objects.filter(customer=self.user).exists())
+
+    def test_anonymous_customer_is_sent_to_login_before_creating_quote(self):
+        response = self.client.post('/monte-seu-bolo/', self.payload())
+        self.assertRedirects(response, '/login/?next=/monte-seu-bolo/', fetch_redirect_response=False)
+        self.assertFalse(CakeDesign.objects.exists())
 
 
 class TransactionBoundaryTests(TransactionTestCase):

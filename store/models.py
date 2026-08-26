@@ -68,6 +68,14 @@ class ProductImage(TimeStamped):
     sort_order=models.PositiveIntegerField(default=0)
     class Meta: ordering=['sort_order','id']
 
+class Favorite(TimeStamped):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='favorite_products')
+    product=models.ForeignKey(Product,on_delete=models.CASCADE,related_name='favorited_by')
+    class Meta:
+        unique_together=('user','product')
+        ordering=['-created_at']
+    def __str__(self): return f'{self.user} · {self.product}'
+
 class PriceTable(TimeStamped):
     TYPES=[('retail','Cliente'),('cafe','Cafeteria'),('event','Eventos'),('custom','Personalizada')]
     name=models.CharField(max_length=100)
@@ -212,7 +220,7 @@ class PromotionRedemption(TimeStamped):
     discount_amount=models.DecimalField(max_digits=10,decimal_places=2)
 
 class EventQuote(TimeStamped):
-    STATUSES=[('new','Novo'),('review','Em análise'),('sent','Proposta enviada'),('accepted','Aceito'),('declined','Recusado'),('converted','Convertido em pedido')]
+    STATUSES=[('new','Novo'),('review','Em análise'),('sent','Proposta enviada'),('negotiation','Em negociação'),('accepted','Aceito'),('converted','Convertido em pedido'),('production','Em produção'),('completed','Concluído'),('declined','Recusado')]
     TYPES=[('birthday','Aniversário'),('wedding','Casamento'),('corporate','Corporativo'),('party','Festa'),('other','Outro')]
     public_id=models.UUIDField(default=uuid.uuid4,unique=True,editable=False)
     customer=models.ForeignKey(User,on_delete=models.PROTECT,related_name='event_quotes')
@@ -233,6 +241,52 @@ class EventQuoteItem(TimeStamped):
     description=models.CharField(max_length=200,blank=True)
     quantity=models.PositiveIntegerField(default=1)
     proposed_unit_price=models.DecimalField(max_digits=10,decimal_places=2,null=True,blank=True)
+
+class CakeOption(TimeStamped):
+    KINDS=[('dough','Massa'),('filling','Recheio'),('complement','Complemento'),('frosting','Cobertura')]
+    kind=models.CharField(max_length=16,choices=KINDS,db_index=True)
+    name=models.CharField(max_length=120)
+    slug=models.SlugField(max_length=140)
+    description=models.CharField(max_length=220,blank=True)
+    preview_color=models.CharField(max_length=20,default='#d9a77f',help_text='Cor usada apenas na prévia visual do configurador.')
+    active=models.BooleanField(default=True)
+    sort_order=models.PositiveIntegerField(default=0)
+    class Meta:
+        ordering=['kind','sort_order','name']
+        unique_together=('kind','slug')
+        verbose_name='Opção de bolo'
+        verbose_name_plural='Opções de bolo'
+    def __str__(self): return f'{self.get_kind_display()} · {self.name}'
+
+class CakeDesign(TimeStamped):
+    DECORATION_STYLES=[('classic','Clássico artesanal'),('vintage','Vintage'),('minimal','Minimalista'),('floral','Floral delicado'),('themed','Tema personalizado')]
+    quote=models.OneToOneField(EventQuote,on_delete=models.CASCADE,related_name='cake_design')
+    dough=models.ForeignKey(CakeOption,on_delete=models.PROTECT,related_name='cake_doughs',limit_choices_to={'kind':'dough'})
+    primary_filling=models.ForeignKey(CakeOption,on_delete=models.PROTECT,related_name='cake_primary_fillings',limit_choices_to={'kind':'filling'})
+    secondary_filling=models.ForeignKey(CakeOption,on_delete=models.PROTECT,related_name='cake_secondary_fillings',limit_choices_to={'kind':'filling'},null=True,blank=True)
+    complement=models.ForeignKey(CakeOption,on_delete=models.PROTECT,related_name='cake_complements',limit_choices_to={'kind':'complement'},null=True,blank=True)
+    frosting=models.ForeignKey(CakeOption,on_delete=models.PROTECT,related_name='cake_frostings',limit_choices_to={'kind':'frosting'})
+    decoration_style=models.CharField(max_length=16,choices=DECORATION_STYLES,default='classic')
+    decoration_notes=models.TextField(blank=True,max_length=1200)
+    occasion=models.CharField(max_length=120,blank=True)
+    reference_image=models.ImageField(upload_to='events/cake-references/',blank=True,null=True)
+    selection_snapshot=models.JSONField(default=dict,blank=True,editable=False)
+    def __str__(self): return f'Bolo · evento #{str(self.quote.public_id)[:8]}'
+
+class EventQuoteStatusHistory(TimeStamped):
+    quote=models.ForeignKey(EventQuote,on_delete=models.CASCADE,related_name='status_history')
+    status=models.CharField(max_length=20,choices=EventQuote.STATUSES)
+    changed_by=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True)
+    note=models.CharField(max_length=250,blank=True)
+    class Meta: ordering=['created_at']
+
+class EventQuoteMessage(TimeStamped):
+    quote=models.ForeignKey(EventQuote,on_delete=models.CASCADE,related_name='messages')
+    sender=models.ForeignKey(User,on_delete=models.PROTECT,related_name='sent_event_messages')
+    body=models.TextField(max_length=4000)
+    read_at=models.DateTimeField(null=True,blank=True)
+    class Meta: ordering=['created_at']
+    def __str__(self): return f'Evento {str(self.quote.public_id)[:8]} · {self.sender}'
 
 class RecurringOrder(TimeStamped):
     cafe=models.ForeignKey(CafeAccount,on_delete=models.CASCADE,related_name='recurring_orders')

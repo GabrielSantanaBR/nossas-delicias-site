@@ -1,0 +1,66 @@
+{% extends 'base.html' %}{% load static %}
+{% block title %}Monte seu bolo | Nossas Delícias{% endblock %}
+{% block head %}<link rel="stylesheet" href="{% static 'cake-builder.css' %}">{% endblock %}
+{% block content %}
+<section class="cake-hero">
+  <div class="cake-hero-copy" data-reveal><span class="eyebrow">Ateliê de bolos</span><h1>Um bolo com a sua <em>combinação.</em></h1><p>Escolha cada camada, imagine o acabamento e envie a composição para orçamento. A equipe confirma tamanho, produção, valor e entrega antes de qualquer pagamento.</p><div class="cake-hero-notes"><span>8 massas</span><i></i><span>9 recheios</span><i></i><span>5 complementos</span><i></i><span>4 coberturas</span></div></div>
+  <div class="cake-hero-card cake-hero-photo" data-reveal><img src="{% static 'images/showcase/bolo-personalizado.webp' %}" alt="Bolo personalizado com decoração floral"><span class="cake-orbit-label">feito para a ocasião</span><div class="cake-script">do seu jeito</div></div>
+</section>
+
+<section class="cake-builder-shell" data-cake-builder>
+  <div class="cake-builder-main">
+    <header class="cake-builder-head" data-reveal><div><span class="eyebrow">Composição guiada</span><h2>Monte camada por camada.</h2></div><div class="cake-progress" aria-label="Progresso da composição"><span data-progress-label>Etapa 1 de 4</span><div><i data-progress-bar></i></div></div></header>
+    {% if form.non_field_errors %}<div class="cake-form-alert" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    <form method="post" enctype="multipart/form-data" class="cake-form" data-cake-form novalidate>{% csrf_token %}
+      <nav class="cake-steps" aria-label="Etapas do configurador">
+        <button type="button" class="is-active" data-step-tab="1" aria-current="step"><i>01</i><span>Base</span><small>Massa e tamanho</small></button>
+        <button type="button" data-step-tab="2"><i>02</i><span>Interior</span><small>Recheios</small></button>
+        <button type="button" data-step-tab="3"><i>03</i><span>Acabamento</span><small>Cobertura e estilo</small></button>
+        <button type="button" data-step-tab="4"><i>04</i><span>Entrega</span><small>Data e referência</small></button>
+      </nav>
+
+      <section class="cake-step is-active" data-step="1">
+        <div class="cake-step-heading"><span>01 · A estrutura</span><h3>Para quantas pessoas e com qual massa?</h3><p>Essa informação orienta formato, peso e quantidade de camadas. A confirmação final acontece no orçamento.</p></div>
+        <div class="cake-inline-fields"><label><span>Quantidade de pessoas</span>{{ form.guest_count }}{{ form.guest_count.errors }}</label><label><span>Qual é a ocasião?</span>{{ form.occasion }}{{ form.occasion.errors }}</label></div>
+        <fieldset class="cake-choice-field"><legend>Massa</legend><div class="cake-choice-grid">{% for option in option_groups.dough %}<label class="cake-choice" style="--choice-color:{{ option.preview_color }}"><input type="radio" name="dough" value="{{ option.pk }}" data-cake-choice data-summary="dough" data-label="{{ option.name }}" data-color="{{ option.preview_color }}" required {% if form.dough.value == option.pk|stringformat:'s' %}checked{% endif %}><span class="cake-choice-swatch"></span><span><b>{{ option.name }}</b><small>{{ option.description|default:'Massa artesanal preparada para a encomenda.' }}</small></span><i>✓</i></label>{% endfor %}</div>{{ form.dough.errors }}</fieldset>
+      </section>
+
+      <section class="cake-step" data-step="2" hidden>
+        <div class="cake-step-heading"><span>02 · O interior</span><h3>Escolha o recheio que vai marcar o corte.</h3><p>O segundo recheio e o complemento são opcionais. A equipe avalia equilíbrio, estrutura e conservação da combinação.</p></div>
+        <fieldset class="cake-choice-field"><legend>Recheio principal</legend><div class="cake-choice-grid">{% for option in option_groups.filling %}<label class="cake-choice compact" style="--choice-color:{{ option.preview_color }}"><input type="radio" name="primary_filling" value="{{ option.pk }}" data-cake-choice data-summary="primary_filling" data-label="{{ option.name }}" data-color="{{ option.preview_color }}" required {% if form.primary_filling.value == option.pk|stringformat:'s' %}checked{% endif %}><span class="cake-choice-swatch"></span><span><b>{{ option.name }}</b></span><i>✓</i></label>{% endfor %}</div>{{ form.primary_filling.errors }}</fieldset>
+        <fieldset class="cake-choice-field"><legend>Segundo recheio <small>opcional</small></legend><div class="cake-choice-grid"><label class="cake-choice compact neutral"><input type="radio" name="secondary_filling" value="" data-cake-choice data-summary="secondary_filling" data-label="Sem segundo recheio" data-color="transparent" {% if not form.secondary_filling.value %}checked{% endif %}><span class="cake-choice-swatch">—</span><span><b>Sem segundo recheio</b></span><i>✓</i></label>{% for option in option_groups.filling %}<label class="cake-choice compact" style="--choice-color:{{ option.preview_color }}"><input type="radio" name="secondary_filling" value="{{ option.pk }}" data-cake-choice data-summary="secondary_filling" data-label="{{ option.name }}" data-color="{{ option.preview_color }}" {% if form.secondary_filling.value == option.pk|stringformat:'s' %}checked{% endif %}><span class="cake-choice-swatch"></span><span><b>{{ option.name }}</b></span><i>✓</i></label>{% endfor %}</div>{{ form.secondary_filling.errors }}</fieldset>
+        <fieldset class="cake-choice-field"><legend>Complemento <small>opcional</small></legend><div class="cake-choice-grid"><label class="cake-choice compact neutral"><input type="radio" name="complement" value="" data-cake-choice data-summary="complement" data-label="Sem complemento" data-color="transparent" {% if not form.complement.value %}checked{% endif %}><span class="cake-choice-swatch">—</span><span><b>Sem complemento</b></span><i>✓</i></label>{% for option in option_groups.complement %}<label class="cake-choice compact" style="--choice-color:{{ option.preview_color }}"><input type="radio" name="complement" value="{{ option.pk }}" data-cake-choice data-summary="complement" data-label="{{ option.name }}" data-color="{{ option.preview_color }}" {% if form.complement.value == option.pk|stringformat:'s' %}checked{% endif %}><span class="cake-choice-swatch"></span><span><b>{{ option.name }}</b></span><i>✓</i></label>{% endfor %}</div>{{ form.complement.errors }}</fieldset>
+      </section>
+
+      <section class="cake-step" data-step="3" hidden>
+        <div class="cake-step-heading"><span>03 · O acabamento</span><h3>Defina a cobertura e a linguagem visual.</h3><p>Você não precisa ter todos os detalhes prontos. Uma referência ou uma boa descrição já inicia a conversa criativa.</p></div>
+        <fieldset class="cake-choice-field"><legend>Cobertura</legend><div class="cake-choice-grid">{% for option in option_groups.frosting %}<label class="cake-choice" style="--choice-color:{{ option.preview_color }}"><input type="radio" name="frosting" value="{{ option.pk }}" data-cake-choice data-summary="frosting" data-label="{{ option.name }}" data-color="{{ option.preview_color }}" required {% if form.frosting.value == option.pk|stringformat:'s' %}checked{% endif %}><span class="cake-choice-swatch"></span><span><b>{{ option.name }}</b><small>Acabamento preparado para a decoração escolhida.</small></span><i>✓</i></label>{% endfor %}</div>{{ form.frosting.errors }}</fieldset>
+        <fieldset class="cake-choice-field"><legend>Estilo da decoração</legend><div class="decoration-grid">{% for value,label in decoration_styles %}<label class="decoration-choice style-{{ value }}"><input type="radio" name="decoration_style" value="{{ value }}" data-decoration data-summary="decoration_style" data-label="{{ label }}" required {% if form.decoration_style.value == value %}checked{% endif %}><span class="decoration-glyph"><i></i><i></i><i></i></span><b>{{ label }}</b><small>{% if value == 'classic' %}Texturas e bicos delicados.{% elif value == 'vintage' %}Contornos marcantes e ornamentais.{% elif value == 'minimal' %}Forma limpa e poucos elementos.{% elif value == 'floral' %}Flores, leveza e composição orgânica.{% else %}Cores e elementos ligados ao seu tema.{% endif %}</small></label>{% endfor %}</div>{{ form.decoration_style.errors }}</fieldset>
+        <label class="cake-text-field"><span>Conte como imagina a decoração</span>{{ form.decoration_notes }}{{ form.decoration_notes.errors }}</label>
+      </section>
+
+      <section class="cake-step" data-step="4" hidden>
+        <div class="cake-step-heading"><span>04 · Os detalhes finais</span><h3>Quando, onde e qual referência devemos considerar?</h3><p>O envio cria uma solicitação de orçamento, não uma cobrança. A equipe confirma disponibilidade e valor com você.</p></div>
+        <div class="cake-inline-fields"><label><span>Dia da festa ou entrega</span>{{ form.event_date }}{{ form.event_date.errors }}</label><label><span>Local de entrega</span>{{ form.address }}{{ form.address.errors }}</label></div>
+        <label class="cake-upload"><span class="cake-upload-icon">↥</span><span><b>Imagem de referência</b><small>JPG, PNG ou WebP, até 5 MB. Opcional.</small></span>{{ form.reference_image }}{{ form.reference_image.errors }}<em data-file-name>Nenhum arquivo escolhido</em></label>
+        <label class="cake-text-field"><span>Observações gerais</span>{{ form.notes }}{{ form.notes.errors }}</label>
+        <div class="cake-submit-card"><div><span>Próximo passo</span><h4>A equipe transforma sua composição em proposta.</h4><p>Você acompanha o orçamento, conversa sobre ajustes e aceita somente quando tudo estiver certo.</p></div>{% if user.is_authenticated %}<button class="cake-submit" type="submit"><span>Enviar para orçamento</span><i>→</i></button>{% else %}<a class="cake-submit" href="{% url 'login' %}?next={% url 'cake_studio' %}"><span>Entrar para enviar</span><i>→</i></a>{% endif %}</div>
+      </section>
+
+      <footer class="cake-form-nav"><button type="button" data-step-prev disabled>← Voltar</button><span data-step-count>1 / 4</span><button type="button" data-step-next>Continuar →</button></footer>
+    </form>
+  </div>
+
+  <aside class="cake-preview-column" data-reveal>
+    <div class="cake-preview-card">
+      <header><span>Prévia da composição</span><small>ilustração conceitual</small></header>
+      <div class="cake-stage" data-decoration-stage="classic"><div class="cake-sparkles"><i></i><i></i><i></i></div><div class="cake-model"><div class="cake-top"><span></span><span></span><span></span></div><div class="cake-frosting"></div><div class="cake-layer cake-layer-top"></div><div class="cake-fill cake-fill-one"></div><div class="cake-layer cake-layer-middle"></div><div class="cake-fill cake-fill-two"></div><div class="cake-layer cake-layer-bottom"></div><div class="cake-plate"></div></div></div>
+      <div class="cake-summary"><div><span>Massa</span><b data-summary-value="dough">Escolha uma massa</b></div><div><span>Recheio</span><b data-summary-value="primary_filling">Escolha o recheio</b></div><div><span>Segundo recheio</span><b data-summary-value="secondary_filling">Opcional</b></div><div><span>Complemento</span><b data-summary-value="complement">Opcional</b></div><div><span>Cobertura</span><b data-summary-value="frosting">Escolha a cobertura</b></div><div><span>Decoração</span><b data-summary-value="decoration_style">Escolha o estilo</b></div></div>
+      <p class="cake-preview-note">As cores representam sabores de forma lúdica. O desenho final é combinado com a confeitaria.</p>
+    </div>
+  </aside>
+</section>
+
+<section class="cake-trust" data-reveal><article><span>01</span><h3>Você cria</h3><p>Combine sabores e referências com liberdade.</p></article><article><span>02</span><h3>A gente avalia</h3><p>Estrutura, rendimento, agenda e entrega são conferidos.</p></article><article><span>03</span><h3>Você decide</h3><p>A proposta só vira pedido depois do seu aceite.</p></article></section>
+{% endblock %}
+{% block scripts %}<script src="{% static 'cake-builder.js' %}" defer></script>{% endblock %}

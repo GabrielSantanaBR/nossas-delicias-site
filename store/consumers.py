@@ -17,7 +17,7 @@ class OrderChatConsumer(AsyncJsonWebsocketConsumer):
         self.order_id = self.scope['url_route']['kwargs']['order_id']
         self.message_times = deque()
 
-        if not user.is_authenticated or not await self.can_access(user.id, self.order_id, user.is_staff):
+        if not user.is_authenticated or not await self.can_access(user.id, self.order_id):
             await self.close(code=4403)
             return
 
@@ -55,11 +55,10 @@ class OrderChatConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(event['payload'])
 
     @database_sync_to_async
-    def can_access(self, user_id, order_id, is_staff):
-        query = Conversation.objects.filter(order__public_id=order_id)
-        if is_staff:
-            return query.exists()
-        return query.filter(customer_id=user_id).exists()
+    def can_access(self, user_id, order_id):
+        # Operational staff reply through the OTP-protected management center.
+        # The public socket is deliberately restricted to the order owner.
+        return Conversation.objects.filter(order__public_id=order_id, customer_id=user_id).exists()
 
     @database_sync_to_async
     def save_message(self, user_id, order_id, text):

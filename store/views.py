@@ -8,20 +8,27 @@ from django.db import transaction
 from django.db.models import Prefetch, Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 from django_ratelimit.decorators import ratelimit
 
-from .forms import CafeApplicationForm, CheckoutForm, EventQuoteForm, RegisterForm
+from .forms import AddressForm, CafeApplicationForm, CakeDesignForm, CheckoutForm, EventQuoteForm, ProfileForm, RegisterForm
 from .models import (
     CafeAccount,
+    CakeDesign,
+    CakeOption,
     Cart,
     CartItem,
     Category,
     Conversation,
     CustomerAddress,
     CustomerProfile,
+    EventQuote,
+    EventQuoteItem,
+    EventQuoteMessage,
+    Favorite,
     Order,
     Payment,
     Product,
@@ -83,7 +90,81 @@ def catalog(request):
     categories = Category.objects.filter(active=True).prefetch_related(
         Prefetch('products', queryset=visible_products.order_by('sort_order', 'name'))
     ).order_by('sort_order', 'name')
-    return render(request, 'store/catalog.html', {'categories': categories, 'order_type': order_type})
+    favorite_ids = set()
+    if request.user.is_authenticated:
+        favorite_ids = set(request.user.favorite_products.values_list('product_id', flat=True))
+    return render(request, 'store/catalog.html', {'categories': categories, 'order_type': order_type, 'favorite_ids': favorite_ids})
+
+
+@ratelimit(key='ip', rate='10/d', method='POST', block=True)
+def cake_studio(request):
+    form = CakeDesignForm(request.POST or None, request.FILES or None)
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            messages.info(request, 'Entre na sua conta para enviar a composição do bolo.')
+            return redirect(f"{reverse('login')}?next={reverse('cake_studio')}")
+        if form.is_valid():
+            data = form.cleaned_data
+            selected = {
+                'dough': data['dough'].name,
+                'primary_filling': data['primary_filling'].name,
+                'secondary_filling': data['secondary_filling'].name if data.get('secondary_filling') else '',
+                'complement': data['complement'].name if data.get('complement') else '',
+                'frosting': data['frosting'].name,
+                'decoration_style': dict(CakeDesign.DECORATION_STYLES)[data['decoration_style']],
+            }
+            summary_parts = [
+                f"Massa: {selected['dough']}",
+                f"Recheio: {selected['primary_filling']}",
+            ]
+            if selected['secondary_filling']:
+                summary_parts.append(f"Segundo recheio: {selected['secondary_filling']}")
+            if selected['complement']:
+                summary_parts.append(f"Complemento: {selected['complement']}")
+            summary_parts.extend([
+                f"Cobertura: {selected['frosting']}",
+                f"Decoração: {selected['decoration_style']}",
+            ])
+            with transaction.atomic():
+                quote = EventQuote.objects.create(
+                    customer=request.user,
+                    event_type='other',
+                    event_date=data['event_date'],
+                    guest_count=data['guest_count'],
+                    address=data['address'],
+                    notes=data.get('notes', ''),
+                    status='new',
+                )
+                CakeDesign.objects.create(
+                    quote=quote,
+                    dough=data['dough'],
+                    primary_filling=data['primary_filling'],
+                    secondary_filling=data.get('secondary_filling'),
+                    complement=data.get('complement'),
+                    frosting=data['frosting'],
+                    decoration_style=data['decoration_style'],
+                    decoration_notes=data.get('decoration_notes', ''),
+                    occasion=data.get('occasion', ''),
+                    reference_image=data.get('reference_image'),
+                    selection_snapshot=selected,
+                )
+                EventQuoteItem.objects.create(
+                    quote=quote,
+                    description='Bolo personalizado · ' + ' · '.join(summary_parts),
+                    quantity=1,
+                )
+                quote.status_history.create(status='new', changed_by=request.user, note='Composição criada no estúdio de bolos.')
+            messages.success(request, 'Seu bolo foi enviado para orçamento. Acompanhe a proposta e converse com a equipe por aqui.')
+            return redirect('event_quote_detail', public_id=quote.public_id)
+    option_groups = {
+        kind: CakeOption.objects.filter(kind=kind, active=True).order_by('sort_order', 'name')
+        for kind in ('dough', 'filling', 'complement', 'frosting')
+    }
+    return render(request, 'store/cake_studio.html', {
+        'form': form,
+        'option_groups': option_groups,
+        'decoration_styles': CakeDesign.DECORATION_STYLES,
+    })
 
 
 @ratelimit(key='ip', rate='5/m', method='POST', block=True)
@@ -108,12 +189,91 @@ def register(request):
 def account(request):
     profile, _ = CustomerProfile.objects.get_or_create(user=request.user)
     orders = request.user.orders.prefetch_related('items__product', 'payments').order_by('-created_at')
+    profile_form = ProfileForm(user=request.user, initial={
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name,
+        'email': request.user.email,
+        'phone': profile.phone,
+        'birth_date': profile.birth_date,
+        'marketing_opt_in': profile.marketing_opt_in,
+    })
     return render(request, 'store/account.html', {
         'profile': profile,
         'orders': orders,
         'promotions': eligible_promotions(request.user),
         'event_quotes': request.user.event_quotes.order_by('-created_at')[:10],
+        'profile_form': profile_form,
+        'address_form': AddressForm(),
+        'addresses': request.user.saved_addresses.order_by('-default', 'label'),
+        'favorites': Product.objects.filter(favorited_by__user=request.user, active=True).select_related('category'),
     })
+
+
+@login_required
+@require_POST
+@ratelimit(key='user', rate='12/m', method='POST', block=True)
+def account_profile_update(request):
+    form = ProfileForm(request.POST, user=request.user)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Seus dados foram atualizados.')
+    else:
+        messages.error(request, 'Revise os dados do perfil: ' + '; '.join(sum(form.errors.values(), [])))
+    return redirect('account')
+
+
+@login_required
+@require_POST
+@ratelimit(key='user', rate='20/m', method='POST', block=True)
+def address_save(request):
+    address_id = request.POST.get('address_id')
+    instance = get_object_or_404(CustomerAddress, pk=address_id, user=request.user) if address_id else None
+    form = AddressForm(request.POST, instance=instance)
+    if form.is_valid():
+        with transaction.atomic():
+            address = form.save(commit=False)
+            address.user = request.user
+            if address.default:
+                request.user.saved_addresses.exclude(pk=address.pk).update(default=False)
+            elif not request.user.saved_addresses.exclude(pk=address.pk).exists():
+                address.default = True
+            address.save()
+        messages.success(request, 'Endereço salvo.')
+    else:
+        messages.error(request, 'Revise o endereço: ' + '; '.join(sum(form.errors.values(), [])))
+    return redirect('account')
+
+
+@login_required
+@require_POST
+def address_delete(request, address_id):
+    address = get_object_or_404(CustomerAddress, pk=address_id, user=request.user)
+    was_default = address.default
+    address.delete()
+    if was_default:
+        replacement = request.user.saved_addresses.order_by('created_at').first()
+        if replacement:
+            replacement.default = True
+            replacement.save(update_fields=['default', 'updated_at'])
+    messages.success(request, 'Endereço removido.')
+    return redirect('account')
+
+
+@login_required
+@require_POST
+@ratelimit(key='user', rate='60/m', method='POST', block=True)
+def favorite_toggle(request, product_id):
+    product = get_object_or_404(Product, pk=product_id, active=True)
+    favorite = Favorite.objects.filter(user=request.user, product=product).first()
+    if favorite:
+        favorite.delete()
+        active = False
+    else:
+        Favorite.objects.create(user=request.user, product=product)
+        active = True
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'ok': True, 'favorite': active})
+    return redirect('catalog')
 
 
 @login_required
@@ -314,10 +474,9 @@ def order_detail(request, public_id):
     return render(request, 'store/order_detail.html', {'order': order, 'conversation': conversation})
 
 
-@login_required
 def cafe_portal(request):
-    account = CafeAccount.objects.filter(user=request.user).first()
-    form = None if account else CafeApplicationForm()
+    account = CafeAccount.objects.filter(user=request.user).first() if request.user.is_authenticated else None
+    form = None if account or not request.user.is_authenticated else CafeApplicationForm()
     recurring = account.recurring_orders.prefetch_related('items__product') if account and account.approved else []
     return render(request, 'store/cafe.html', {'account': account, 'form': form, 'recurring': recurring})
 
@@ -340,10 +499,9 @@ def cafe_apply(request):
     return render(request, 'store/cafe.html', {'form': form, 'account': None}, status=400)
 
 
-@login_required
 def event_portal(request):
     form = EventQuoteForm()
-    quotes = request.user.event_quotes.prefetch_related('items').order_by('-created_at')
+    quotes = request.user.event_quotes.prefetch_related('items').order_by('-created_at') if request.user.is_authenticated else []
     return render(request, 'store/events.html', {'form': form, 'quotes': quotes})
 
 
@@ -356,9 +514,72 @@ def event_quote_create(request):
         quote = form.save(commit=False)
         quote.customer = request.user
         quote.save()
+        quote.status_history.create(status='new', changed_by=request.user, note='Solicitação criada pelo cliente.')
         messages.success(request, 'Pedido de orçamento recebido. Você poderá acompanhar pela sua conta.')
         return redirect('event_portal')
     return render(request, 'store/events.html', {'form': form, 'quotes': request.user.event_quotes.all()}, status=400)
+
+
+@login_required
+def event_quote_detail(request, public_id):
+    quote = get_object_or_404(
+        EventQuote.objects.select_related(
+            'cake_design__dough',
+            'cake_design__primary_filling',
+            'cake_design__secondary_filling',
+            'cake_design__complement',
+            'cake_design__frosting',
+        ).prefetch_related('items__product', 'messages__sender', 'status_history'),
+        public_id=public_id,
+        customer=request.user,
+    )
+    quote.messages.filter(read_at__isnull=True).exclude(sender=request.user).update(read_at=timezone.now())
+    return render(request, 'store/event_quote_detail.html', {
+        'quote': quote,
+        'cake_design': getattr(quote, 'cake_design', None),
+    })
+
+
+@login_required
+@require_POST
+@ratelimit(key='user', rate='20/m', method='POST', block=True)
+def event_quote_message_send(request, public_id):
+    quote = get_object_or_404(EventQuote, public_id=public_id, customer=request.user)
+    body = (request.POST.get('body') or '').strip()
+    if not body:
+        messages.error(request, 'Escreva uma mensagem antes de enviar.')
+    elif len(body) > 4000:
+        messages.error(request, 'A mensagem pode ter no máximo 4.000 caracteres.')
+    else:
+        EventQuoteMessage.objects.create(quote=quote, sender=request.user, body=body)
+        messages.success(request, 'Mensagem enviada para a equipe do evento.')
+    return redirect('event_quote_detail', public_id=quote.public_id)
+
+
+@login_required
+@require_POST
+@ratelimit(key='user', rate='8/d', method='POST', block=True)
+def event_quote_accept(request, public_id):
+    with transaction.atomic():
+        quote = get_object_or_404(
+            EventQuote.objects.select_for_update().prefetch_related('items'),
+            public_id=public_id,
+            customer=request.user,
+        )
+        if quote.status not in {'sent', 'negotiation'}:
+            messages.error(request, 'Esta proposta não está disponível para aceite.')
+            return redirect('event_quote_detail', public_id=quote.public_id)
+        rows = list(quote.items.all())
+        if not rows or any(row.proposed_unit_price is None for row in rows):
+            messages.error(request, 'A proposta precisa estar completa antes do aceite.')
+            return redirect('event_quote_detail', public_id=quote.public_id)
+        total = money(sum((row.proposed_unit_price * row.quantity for row in rows), Decimal('0')))
+        quote.status = 'accepted'
+        quote.final_total = total
+        quote.save(update_fields=['status', 'final_total', 'updated_at'])
+        quote.status_history.create(status='accepted', changed_by=request.user, note='Proposta aceita pelo cliente.')
+    messages.success(request, 'Proposta aceita. A equipe agora poderá convertê-la em pedido.')
+    return redirect('event_quote_detail', public_id=quote.public_id)
 
 
 @login_required

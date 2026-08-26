@@ -5,6 +5,11 @@
     if (!img || img.dataset.ndFallbackBound === '1') return;
     img.dataset.ndFallbackBound = '1';
     const fallback = () => {
+      if (img.dataset.fallbackSrc && img.dataset.ndFallbackAttempted !== '1') {
+        img.dataset.ndFallbackAttempted = '1';
+        img.src = img.dataset.fallbackSrc;
+        return;
+      }
       const parent = img.parentElement;
       if (!parent) return;
       parent.classList.add('nd-media-fallback');
@@ -12,7 +17,7 @@
       parent.dataset.fallbackLabel = alt.slice(0, 54);
       img.hidden = true;
     };
-    img.addEventListener('error', fallback, { once: true });
+    img.addEventListener('error', fallback);
     if (img.complete && img.naturalWidth === 0) fallback();
   };
 

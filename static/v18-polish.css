@@ -12,6 +12,8 @@
 .portfolio-card:hover{transform:translateY(-6px);box-shadow:0 30px 76px rgba(42,23,18,.12)}.portfolio-media{overflow:hidden}.portfolio-media img{transition:transform .75s cubic-bezier(.2,.75,.22,1)}.portfolio-card:hover .portfolio-media img{transform:scale(1.045)}
 .public-process-card{border:1px solid var(--nd-v18-border);background:var(--nd-v18-glass);box-shadow:0 10px 34px rgba(42,23,18,.05)}.public-process-card span{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#2a1712;color:#fff8f0}
 .service-card{border:1px solid var(--nd-v18-border);box-shadow:0 12px 36px rgba(42,23,18,.055)}
+.product>img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#ead9cc}.featured-media img{width:100%;height:100%;object-fit:cover}.site-main{min-height:calc(100vh - 170px)}
+.site-footer{width:100%!important;max-width:none!important;margin:90px 0 0!important;padding:62px max(24px,calc((100vw - var(--max))/2)) 28px!important;border-radius:0!important}.footer-grid,.footer-bottom{width:100%;max-width:var(--max);margin-left:auto;margin-right:auto}.footer-grid{align-items:start}.site-footer .footer-brand p,.site-footer .footer-note p,.site-footer .footer-bottom{color:rgba(255,244,237,.56)}.site-footer .footer-grid a{color:rgba(255,250,246,.83);transition:color .2s ease,transform .2s ease}.site-footer .footer-grid a:hover{color:#fff;transform:translateX(2px)}
 
 /* Private operations — denser, clearer and more dashboard-like. */
 .ops-shell{background:linear-gradient(145deg,#f8f2eb 0%,#f3ebe2 52%,#fbf8f4 100%)}
@@ -30,5 +32,5 @@
 .ops-empty{padding:34px;border:1px dashed rgba(42,23,18,.15);border-radius:18px;background:rgba(255,255,255,.35)}
 
 @media(max-width:900px){.featured-media{min-height:230px}.ops-content{padding-inline:14px}.ops-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}.ops-topbar{gap:12px}}
-@media(max-width:620px){.hero-proof{grid-template-columns:1fr}.ops-kpis{grid-template-columns:1fr!important}.ops-panel{border-radius:19px}.ops-table-wrap{border-radius:14px}}
+@media(max-width:620px){.hero-proof{grid-template-columns:1fr}.ops-kpis{grid-template-columns:1fr!important}.ops-panel{border-radius:19px}.ops-table-wrap{border-radius:14px}.site-footer{padding:48px 20px 24px!important}.footer-grid{grid-template-columns:1fr!important;gap:28px}.footer-brand{grid-column:auto!important}.footer-bottom{margin-top:30px}}
 @media(prefers-reduced-motion:reduce){.featured-product,.portfolio-card,.ops-module-card,.ops-showcase-item{transform:none!important;transition:none!important}.hero-photo-shell img{transform:none!important}}

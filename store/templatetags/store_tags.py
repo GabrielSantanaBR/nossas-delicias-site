@@ -1,9 +1,42 @@
 from django import template
+from django.templatetags.static import static
 from store.models import ProductPrice
 from store.services import price_for
 from store.financial_services import cafe_order_editable, ensure_cafe_note, maybe_lock_cafe_note
 
 register=template.Library()
+
+
+def _product_fallback_filename(product):
+    slug = getattr(product, 'slug', '') or ''
+    category = getattr(getattr(product, 'category', None), 'slug', '') or ''
+    if slug == 'bolo-personalizado-monte-o-seu':
+        filename = 'bolo-personalizado.webp'
+    elif 'brigadeiro' in slug or 'brigadeiro' in category:
+        filename = 'brigadeiros-gourmet.webp'
+    elif 'banoffee' in slug or 'torta' in category:
+        filename = 'banoffee-brownies.webp'
+    elif 'brownie' in slug or 'brownie' in category:
+        filename = 'confeitaria-hero.webp'
+    else:
+        filename = 'confeitaria-hero.webp'
+    return filename
+
+
+@register.simple_tag
+def product_fallback_visual(product):
+    return static(f'images/showcase/{_product_fallback_filename(product)}')
+
+
+@register.simple_tag
+def product_visual(product):
+    """Return an uploaded image when available and a local, reliable showcase otherwise."""
+    if product and product.image:
+        try:
+            return product.image.url
+        except (ValueError, AttributeError):
+            pass
+    return product_fallback_visual(product)
 
 
 @register.simple_tag(takes_context=True)

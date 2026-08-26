@@ -6,10 +6,10 @@ Aplicação completa da **Nossas Delícias**, com vitrine pública para clientes
 
 ## Branches
 
-- `main` — demonstração pública estática/GitHub Pages.
-- `feature/full-commerce-platform` — aplicação Django real e branch principal do desenvolvimento completo.
+- `main` — aplicação Django de produção e fonte do deploy no Render.
+- `feature/full-commerce-platform` — histórico da evolução inicial da plataforma.
 
-Não trate a `main` como backend de produção.
+O GitHub Pages não faz parte da arquitetura de produção.
 
 ## O produto
 
@@ -17,11 +17,14 @@ Não trate a `main` como backend de produção.
 
 - portfólio da confeitaria;
 - cardápio administrável;
+- ateliê visual para montar bolos personalizados por etapas;
+- cardápio inicial de brigadeiros, brownies, camafeus, banoffee e doces de evento;
 - clientes e contas;
+- edição de perfil, endereços salvos e favoritos;
 - sacola e pedidos;
 - regiões e datas de entrega;
 - cafeterias B2B;
-- eventos/orçamentos;
+- eventos/orçamentos com proposta, aceite, conversa e conversão em pedido;
 - acompanhamento de pedidos;
 - mensagens ligadas ao contexto do pedido.
 
@@ -38,6 +41,8 @@ A Central de Gestão concentra, conforme o módulo:
 - eventos;
 - logística;
 - produtos e catálogo;
+- cadastro integrado de produtos, canais, preços e custo de produção;
+- registro de vendas diretas (balcão, WhatsApp, eventos e cafeterias), com cliente, recebimento e baixa de estoque;
 - precificação;
 - ingredientes e fichas técnicas;
 - estoque;
@@ -49,6 +54,8 @@ A Central de Gestão concentra, conforme o módulo:
 - importação/exportação da Planilha Automatizada 4.0;
 - auditoria e configurações.
 
+O simulador privado de precificação calcula custo unitário, preço recomendado, margem, impacto por lote e ponto de equilíbrio sem alterar o cardápio real.
+
 O Django Admin em `/nd-admin/` funciona como retaguarda técnica. A operação diária deve preferir a Central de Gestão própria.
 
 ## Stack
@@ -57,6 +64,7 @@ O Django Admin em `/nd-admin/` funciona como retaguarda técnica. A operação d
 - PostgreSQL
 - Redis
 - Django Channels / WebSockets
+- fotos locais de demonstração com fallback automático, sem dependência de hotlinks externos;
 - ASGI / Daphne
 - `openpyxl`
 - Mercado Pago
@@ -114,16 +122,16 @@ A CI também valida migrations, Django, arquivos estáticos, JavaScript e testes
 
 ## Produção
 
-Destino inicial planejado: **Railway**.
+Destino configurado: **Render**, por meio do [`render.yaml`](./render.yaml).
 
 Arquitetura mínima:
 
 1. Django/ASGI
 2. PostgreSQL
-3. Redis
+3. Render Key Value/Valkey, compatível com Redis
 
-Mídia pode usar R2/object storage e CDN. Consulte [`DEPLOYMENT.md`](./DEPLOYMENT.md), [`SECURITY.md`](./SECURITY.md) e [`.env.example`](./.env.example).
+O Blueprint cria o serviço web, PostgreSQL e cache. Para persistir fotos enviadas pelo painel, configure as variáveis R2 solicitadas pelo Render. Consulte [`DEPLOYMENT.md`](./DEPLOYMENT.md), [`SECURITY.md`](./SECURITY.md) e [`.env.example`](./.env.example).
 
 ## Regra importante
 
-Não fazer merge em `main` nem habilitar pagamentos/domínio de produção sem validação e autorização explícita.
+Não habilitar pagamentos reais nem domínio definitivo sem configurar os secrets, validar o webhook do Mercado Pago e executar um smoke test no ambiente publicado.

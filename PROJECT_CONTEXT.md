@@ -15,18 +15,16 @@ O projeto possui duas experiências separadas:
 1. **Site público da confeitaria** — marca, portfólio, cardápio, pedidos, clientes, cafeterias e eventos.
 2. **Sistema privado de gestão** — pedidos, mensagens, cafeterias, eventos, logística, dados, financeiro, precificação, estoque, produção e administração.
 
-A aplicação real é Django. A versão estática da `main` existe somente como demonstração visual/publicável em GitHub Pages.
+A aplicação real é Django e a `main` é a fonte de produção para o Render.
 
 ## 2. Branches e regra de trabalho
 
-- `main`: demonstração pública estática. Não é o backend de produção.
-- `feature/full-commerce-platform`: aplicação Django real e branch principal de desenvolvimento do produto completo.
+- `main`: aplicação Django real e branch de produção.
+- `feature/full-commerce-platform`: histórico da evolução inicial da plataforma.
 
 ### Regra
 
-Trabalhar por padrão em `feature/full-commerce-platform`.
-
-Não fazer merge em `main` sem autorização explícita.
+Trabalhar por padrão em uma branch de feature e integrar na `main` após validação.
 
 Não substituir a aplicação Django pela demo estática.
 
@@ -243,13 +241,13 @@ Se uma animação causar salto, tremida, sobreposição ou travamento, estabilid
 - Mercado Pago para pagamento;
 - object storage/CDN para mídia quando configurado.
 
-### Produção planejada
+### Produção configurada
 
-Railway inicialmente, com:
+Render, com:
 
 - aplicação Django/ASGI;
 - PostgreSQL;
-- Redis.
+- Render Key Value/Valkey para cache, rate limiting e Channels.
 
 Cloudflare/R2 pode ser usado para mídia/CDN/WAF conforme evolução.
 
@@ -554,7 +552,7 @@ Frontend:
 - imagem principal prioritária;
 - alt text útil.
 
-## 20. Deploy / Railway
+## 20. Deploy / Render
 
 Antes de produção, conferir `.env.example` e `DEPLOYMENT.md`.
 
@@ -569,7 +567,7 @@ Variáveis importantes incluem:
 - R2, se usado;
 - e-mail.
 
-Domínio personalizado será conectado depois que a aplicação estiver estável no domínio temporário do Railway.
+Domínio personalizado será conectado depois que a aplicação estiver estável no domínio temporário do Render.
 
 ## 21. Health check e observabilidade
 
@@ -636,15 +634,29 @@ Não declarar conclusão com teste falhando.
 
 ## 24. Estado conhecido da aplicação
 
-No último ciclo validado antes deste documento:
+No ciclo validado em 26/08/2026:
 
-- migrations `0001` e `0002` estavam versionadas;
+- migrations `0001` a `0004` estavam versionadas;
 - `django check` estava limpo;
 - JavaScript estático estava passando por `node --check` na CI;
 - banco de teste era criado do zero;
 - `collectstatic` concluía;
-- suíte completa tinha **33 testes passando**;
+- suíte completa tem **56 testes passando**;
 - testes cobriam também a separação entre vitrine pública e gestão privada.
+
+### Evoluções entregues na experiência unificada
+
+- vitrine com fotografias locais provisórias e fallback automático para mídia ausente ou quebrada;
+- estúdio interativo “Monte seu bolo”, baseado nas massas, recheios, complementos e coberturas do cardápio recebido;
+- cadastro interno de produto com canais, preços, custo, rendimento, estoque e destaque no mesmo fluxo;
+- venda direta para balcão e WhatsApp, com criação segura de cliente, pagamento manual, histórico, estoque e lucro por item;
+- vendas de cafeteria limitadas a contas empresariais ativas e aprovadas;
+- scripts externos separados dos templates, CSP sem `unsafe-inline`, WebSocket restrito ao dono do pedido e páginas autenticadas sem cache.
+- conta do cliente incluía perfil editável, endereços e favoritos;
+- eventos incluíam proposta, histórico, conversa, aceite e conversão segura em pedido;
+- o simulador de precificação possuía interface completa e protegida por acesso administrativo verificado.
+- o cardápio de referência estava semeado com brigadeiros, brownies, camafeus, banoffee e doces para eventos;
+- o ateliê visual de bolos permitia escolher massa, recheios, complemento, cobertura, decoração, data e entrega, criando um orçamento rastreável para cliente e equipe.
 
 Isto é um snapshot histórico. Sempre confirmar o estado atual da CI antes de assumir que continua válido.
 
@@ -660,7 +672,7 @@ Ordem sugerida para próximos ciclos:
 6. revisar financeiro, precificação, estoque e planilha ponta a ponta;
 7. testes de concorrência/logística;
 8. testes de autorização/segurança;
-9. preparar Railway com PostgreSQL + Redis;
+9. validar o Blueprint do Render com PostgreSQL + Key Value;
 10. smoke test de produção;
 11. somente então conectar domínio próprio e pagamentos reais.
 
@@ -668,4 +680,4 @@ Ordem sugerida para próximos ciclos:
 
 Use esta mensagem ao abrir um novo agente/workspace:
 
-> Leia `PROJECT_CONTEXT.md` inteiro antes de alterar qualquer arquivo. Depois audite o estado atual de `feature/full-commerce-platform`, compare o código com as regras deste documento e continue o desenvolvimento sem remover funcionalidades existentes. O site público deve vender a confeitaria; todo sistema operacional/financeiro deve permanecer privado. Priorize estabilidade, consolidação de código, segurança e UX. Execute a suíte de validação antes de concluir e não faça merge em `main` sem autorização explícita.
+> Leia `PROJECT_CONTEXT.md` inteiro antes de alterar qualquer arquivo. Depois crie uma branch a partir da `main`, compare o código com as regras deste documento e continue o desenvolvimento sem remover funcionalidades existentes. O site público deve vender a confeitaria; todo sistema operacional/financeiro deve permanecer privado. Priorize estabilidade, consolidação de código, segurança e UX. Execute a suíte de validação antes de integrar na `main`.

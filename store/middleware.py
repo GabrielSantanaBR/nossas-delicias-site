@@ -29,11 +29,15 @@ class SecurityHeadersMiddleware:
                 "img-src 'self' data: blob: https:",
                 "font-src 'self' https://fonts.gstatic.com data:",
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-                "script-src 'self' 'unsafe-inline'",
+                "script-src 'self'",
                 "connect-src 'self' ws: wss: https://api.mercadopago.com",
                 "upgrade-insecure-requests" if not settings.DEBUG else "block-all-mixed-content",
             ])
         response.headers.setdefault('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(self)')
         response.headers.setdefault('Cross-Origin-Opener-Policy', 'same-origin')
+        response.headers.setdefault('Cross-Origin-Resource-Policy', 'same-origin')
         response.headers.setdefault('X-Permitted-Cross-Domain-Policies', 'none')
+        if getattr(request, 'user', None) and request.user.is_authenticated:
+            response.headers.setdefault('Cache-Control', 'private, no-store, max-age=0')
+            response.headers.setdefault('Pragma', 'no-cache')
         return response

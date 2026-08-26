@@ -1,17 +1,27 @@
+import logging
+import uuid
 from datetime import date, timedelta
+from decimal import Decimal
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.contrib import messages
+from django.contrib.auth.models import User
+from django.db import transaction
 from django.db.models import Count, Q, Sum
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.text import slugify
 from django.views.decorators.http import require_POST
+from django_ratelimit.decorators import ratelimit
 
-from .financial_models import BusinessExpense
+from .financial_models import BusinessExpense, ProductCostProfile
+from .financial_services import refresh_order_financials
 from .management_forms import (
+    CatalogProductForm,
+    DirectSaleForm,
     ExpenseForm,
     FinancialSettingsForm,
     FixedCostForm,
@@ -42,12 +52,18 @@ from .models import (
     DeliveryRegion,
     DeliveryRoute,
     EventQuote,
+    EventQuoteMessage,
     Message,
     Order,
+    Payment,
     Product,
+    ProductPrice,
+    PriceTable,
 )
 from .spreadsheet_io import build_management_workbook, import_management_workbook
 from .views_finance import _parse_date, _staff_otp_guard
+
+logger = logging.getLogger(__name__)
 
 
 def _period(request):
@@ -111,8 +127,11 @@ def _operations_context(start, end):
         .order_by('-approved', '-updated_at')[:40]
     )
     events = list(
-        EventQuote.objects.select_related('customer', 'converted_order')
-        .prefetch_related('items')
+        EventQuote.objects.select_related(
+            'customer', 'converted_order', 'cake_design__dough', 'cake_design__primary_filling',
+            'cake_design__secondary_filling', 'cake_design__complement', 'cake_design__frosting',
+        )
+        .prefetch_related('items__product', 'messages__sender', 'status_history')
         .order_by('-created_at')[:40]
     )
 
@@ -221,7 +240,171 @@ def management_center(request):
         'expense_form': ExpenseForm(initial={'date': timezone.localdate()}),
         'settings_form': FinancialSettingsForm(instance=FinancialSettings.current()),
         'upload_form': SpreadsheetUploadForm(),
+        'catalog_product_form': CatalogProductForm(),
+        'direct_sale_form': DirectSaleForm(initial={'sale_date': timezone.localdate()}),
     })
+
+
+def _unique_product_slug(name, current=None):
+    base = slugify(name)[:120] or 'produto'
+    candidate = base
+    suffix = 2
+    queryset = Product.objects.exclude(pk=getattr(current, 'pk', None))
+    while queryset.filter(slug=candidate).exists():
+        candidate = f'{base[:112]}-{suffix}'
+        suffix += 1
+    return candidate
+
+
+@_staff_otp_guard
+@require_POST
+@ratelimit(key='user', rate='30/m', method='POST', block=True)
+def management_product_save(request):
+    form = CatalogProductForm(request.POST, request.FILES)
+    if not form.is_valid():
+        messages.error(request, 'Produto não salvo: ' + '; '.join(sum(form.errors.values(), [])))
+        return _management_redirect('portfolio')
+    data = form.cleaned_data
+    try:
+        with transaction.atomic():
+            selected = data.get('product')
+            product = Product.objects.select_for_update().filter(pk=selected.pk).first() if selected else Product()
+            product.category = data['category']
+            product.name = ' '.join(data['name'].split())
+            product.slug = product.slug if product.pk else _unique_product_slug(product.name)
+            product.description = data['description'].strip()
+            if data.get('image'):
+                product.image = data['image']
+            elif not product.pk:
+                product.image = ''
+            for field in ('active', 'featured', 'sell_retail', 'sell_cafe', 'sell_event', 'min_quantity', 'lead_time_days', 'stock_limit'):
+                setattr(product, field, data[field])
+            product.save()
+
+            table_names = {'retail': 'Varejo', 'cafe': 'Cafeterias', 'event': 'Eventos'}
+            for kind, field in (('retail', 'retail_price'), ('cafe', 'cafe_price'), ('event', 'event_price')):
+                price = data.get(field)
+                if price is None:
+                    continue
+                table, _ = PriceTable.objects.get_or_create(name=table_names[kind], kind=kind, defaults={'active': True})
+                ProductPrice.objects.update_or_create(
+                    product=product,
+                    table=table,
+                    min_quantity=product.min_quantity,
+                    defaults={'unit_price': price},
+                )
+
+            if data.get('production_cost') is not None or data.get('sku'):
+                raw_sku = (data.get('sku') or f'ND-{product.pk:04d}').strip().upper()
+                conflict = ProductCostProfile.objects.filter(sku=raw_sku).exclude(product=product).exists()
+                sku = f'{raw_sku[:33]}-{product.pk}' if conflict else raw_sku
+                ProductCostProfile.objects.update_or_create(
+                    product=product,
+                    defaults={
+                        'sku': sku,
+                        'sale_unit': data['sale_unit'],
+                        'yield_quantity': data['yield_quantity'],
+                        'production_cost': data.get('production_cost') or Decimal('0'),
+                        'source_reference': 'Cadastro pela Central de Gestão',
+                        'active': product.active,
+                    },
+                )
+    except Exception:
+        logger.exception('Falha ao salvar produto pela central para o usuário %s.', request.user.pk)
+        messages.error(request, 'Não foi possível salvar o produto. Nenhuma alteração parcial foi mantida.')
+        return _management_redirect('portfolio')
+    messages.success(request, f'{product.name} salvo com canais, preços e custo integrados.')
+    return _management_redirect('portfolio')
+
+
+@_staff_otp_guard
+@require_POST
+@ratelimit(key='user', rate='30/m', method='POST', block=True)
+def management_direct_sale(request):
+    form = DirectSaleForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, 'Venda não registrada: ' + '; '.join(sum(form.errors.values(), [])))
+        return _management_redirect('orders')
+    data = form.cleaned_data
+    try:
+        with transaction.atomic():
+            customer = data.get('customer')
+            if customer is None:
+                email = data['customer_email'].strip().lower()
+                customer = User.objects.filter(email__iexact=email, is_staff=False).first()
+                if customer is None:
+                    username = email[:150]
+                    suffix = 2
+                    while User.objects.filter(username=username).exists():
+                        marker = f'-{suffix}'
+                        username = f'{email[:150 - len(marker)]}{marker}'
+                        suffix += 1
+                    customer = User(username=username, email=email)
+                    name_parts = data['customer_name'].strip().split(maxsplit=1)
+                    customer.first_name = name_parts[0]
+                    customer.last_name = name_parts[1] if len(name_parts) > 1 else ''
+                    customer.set_unusable_password()
+                    customer.save()
+                    CustomerProfile.objects.get_or_create(user=customer)
+            if data['order_type'] == 'cafe':
+                cafe_account = CafeAccount.objects.filter(
+                    user=customer,
+                    approved=True,
+                    active=True,
+                ).first()
+                if cafe_account is None:
+                    raise ValueError('Vendas de cafeteria exigem uma conta empresarial ativa e aprovada.')
+            product = Product.objects.select_for_update().get(pk=data['product'].pk, active=True)
+            quantity = data['quantity']
+            if product.stock_limit is not None and quantity > product.stock_limit:
+                raise ValueError(f'Estoque disponível de {product.name}: {product.stock_limit}.')
+            if not getattr(product, f"sell_{data['order_type']}", False):
+                raise ValueError('Este produto não está liberado para o canal escolhido.')
+            price = data.get('unit_price')
+            if price is None:
+                price_row = ProductPrice.objects.filter(
+                    product=product,
+                    table__active=True,
+                    table__kind=data['order_type'],
+                    min_quantity__lte=quantity,
+                ).order_by('-min_quantity', '-updated_at').first()
+                price = price_row.unit_price if price_row else None
+            if price is None:
+                raise ValueError('Cadastre um preço para o canal ou informe o preço unitário desta venda.')
+            total = (price * quantity).quantize(Decimal('0.01'))
+            paid = data['payment_status'] == 'approved'
+            order = Order.objects.create(
+                customer=customer,
+                order_type=data['order_type'],
+                status='completed' if paid else 'pending_payment',
+                delivery_date=data['sale_date'],
+                subtotal=total,
+                total=total,
+                customer_note=data.get('note', ''),
+                internal_note=f'Venda direta registrada por {request.user.get_username()}.',
+            )
+            order.items.create(product=product, quantity=quantity, unit_price=price, note='Venda direta')
+            Payment.objects.create(
+                order=order,
+                provider='manual',
+                provider_id=f'manual-{uuid.uuid4()}',
+                status=data['payment_status'],
+                amount=total,
+                method=data['payment_method'],
+                paid_at=timezone.now() if paid else None,
+                raw_reference={'created_by': request.user.pk, 'source': 'management_direct_sale'},
+            )
+            Conversation.objects.create(order=order, customer=customer)
+            order.status_history.create(status=order.status, changed_by=request.user, note='Venda direta registrada na Central de Gestão.')
+            refresh_order_financials(order)
+            if product.stock_limit is not None:
+                product.stock_limit -= quantity
+                product.save(update_fields=['stock_limit', 'updated_at'])
+    except ValueError as exc:
+        messages.error(request, str(exc))
+        return _management_redirect('orders')
+    messages.success(request, f'Venda #{str(order.public_id)[:8].upper()} registrada e incluída no financeiro.')
+    return _management_redirect('orders')
 
 
 @_staff_otp_guard
@@ -277,7 +460,7 @@ def management_conversation_send(request):
         )
     except Exception:
         # The message is already safely persisted; websocket delivery can recover on reconnect.
-        pass
+        logger.warning('Falha ao publicar resposta administrativa no WebSocket da conversa %s.', conversation.pk, exc_info=True)
     messages.success(request, 'Mensagem enviada e salva no histórico do pedido.')
     return _management_redirect('messages')
 
@@ -332,9 +515,77 @@ def management_event_status(request):
     if status not in valid:
         messages.error(request, 'Status de evento inválido.')
         return _management_redirect('events')
-    quote.status = status
-    quote.save(update_fields=['status', 'updated_at'])
-    messages.success(request, f'Evento #{str(quote.public_id)[:8].upper()} → {valid[status]}.')
+    if quote.status != status:
+        quote.status = status
+        quote.save(update_fields=['status', 'updated_at'])
+        quote.status_history.create(status=status, changed_by=request.user, note='Etapa atualizada pela Central de Operação.')
+        messages.success(request, f'Evento #{str(quote.public_id)[:8].upper()} → {valid[status]}.')
+    return _management_redirect('events')
+
+
+@_staff_otp_guard
+@require_POST
+def management_event_message_send(request):
+    quote = get_object_or_404(EventQuote, pk=request.POST.get('quote_id'))
+    body = (request.POST.get('body') or '').strip()
+    if not body:
+        messages.error(request, 'Escreva uma mensagem antes de enviar.')
+    elif len(body) > 4000:
+        messages.error(request, 'A mensagem pode ter no máximo 4.000 caracteres.')
+    else:
+        EventQuoteMessage.objects.create(quote=quote, sender=request.user, body=body)
+        quote.messages.filter(read_at__isnull=True).exclude(sender__is_staff=True).update(read_at=timezone.now())
+        messages.success(request, 'Resposta enviada e vinculada ao orçamento.')
+    return _management_redirect('events')
+
+
+@_staff_otp_guard
+@require_POST
+def management_event_convert(request):
+    quote = get_object_or_404(EventQuote, pk=request.POST.get('quote_id'))
+    try:
+        with transaction.atomic():
+            quote = EventQuote.objects.select_for_update().prefetch_related('items__product').get(pk=quote.pk)
+            if quote.converted_order_id:
+                messages.info(request, 'Este orçamento já possui um pedido vinculado.')
+                return _management_redirect('events')
+            if quote.status != 'accepted':
+                raise ValueError('O cliente precisa aceitar a proposta antes da conversão.')
+            rows = list(quote.items.all())
+            if not rows:
+                raise ValueError('Adicione ao menos um item ao orçamento antes de converter.')
+            if any(not row.product_id or row.proposed_unit_price is None for row in rows):
+                raise ValueError('Todos os itens precisam de produto e preço unitário antes da conversão.')
+            subtotal = sum((row.proposed_unit_price * row.quantity for row in rows), Decimal('0'))
+            order = Order.objects.create(
+                customer=quote.customer,
+                order_type='event',
+                status='pending_payment',
+                delivery_date=quote.event_date,
+                delivery_address=quote.address,
+                subtotal=subtotal,
+                total=subtotal,
+                customer_note=quote.notes,
+                internal_note=f'Convertido do orçamento de evento #{str(quote.public_id)[:8].upper()}.',
+            )
+            for row in rows:
+                order.items.create(
+                    product=row.product,
+                    quantity=row.quantity,
+                    unit_price=row.proposed_unit_price,
+                    note=row.description[:250],
+                )
+            Conversation.objects.create(order=order, customer=quote.customer)
+            order.status_history.create(status='pending_payment', changed_by=request.user, note='Pedido criado a partir do orçamento aceito.')
+            quote.converted_order = order
+            quote.final_total = subtotal
+            quote.status = 'converted'
+            quote.save(update_fields=['converted_order', 'final_total', 'status', 'updated_at'])
+            quote.status_history.create(status='converted', changed_by=request.user, note=f'Convertido no pedido #{str(order.public_id)[:8].upper()}.')
+    except ValueError as exc:
+        messages.error(request, str(exc))
+        return _management_redirect('events')
+    messages.success(request, f'Orçamento convertido no pedido #{str(order.public_id)[:8].upper()}.')
     return _management_redirect('events')
 
 
@@ -477,6 +728,7 @@ def spreadsheet_import(request):
     try:
         result = import_management_workbook(form.cleaned_data['file'], user=request.user)
     except Exception:
+        logger.exception('Falha na importação da planilha de gestão enviada pelo usuário %s.', request.user.pk)
         messages.error(request, 'A planilha não pôde ser importada. Nenhuma alteração parcial foi mantida.')
         return _management_redirect('data')
     warning = f" Avisos: {'; '.join(result['warnings'])}" if result['warnings'] else ''

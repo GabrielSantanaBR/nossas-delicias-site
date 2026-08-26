@@ -57,6 +57,28 @@ class EventQuoteItemInline(admin.TabularInline):
     extra = 1
 
 
+class EventQuoteMessageInline(admin.TabularInline):
+    model = EventQuoteMessage
+    extra = 0
+    readonly_fields = ('sender', 'body', 'created_at', 'read_at')
+    fields = ('sender', 'body', 'created_at', 'read_at')
+    can_delete = False
+
+
+class EventQuoteStatusInline(admin.TabularInline):
+    model = EventQuoteStatusHistory
+    extra = 0
+    readonly_fields = ('status', 'changed_by', 'note', 'created_at')
+    can_delete = False
+
+
+class CakeDesignInline(admin.StackedInline):
+    model = CakeDesign
+    extra = 0
+    max_num = 1
+    readonly_fields = ('selection_snapshot', 'created_at', 'updated_at')
+
+
 class RecurringOrderItemInline(admin.TabularInline):
     model = RecurringOrderItem
     extra = 1
@@ -381,7 +403,7 @@ class EventQuoteAdmin(admin.ModelAdmin):
     list_filter = ('status', 'event_type', 'event_date')
     search_fields = ('public_id', 'customer__email', 'customer__first_name')
     readonly_fields = ('public_id', 'converted_order', 'created_at', 'updated_at')
-    inlines = (EventQuoteItemInline,)
+    inlines = (CakeDesignInline, EventQuoteItemInline, EventQuoteStatusInline, EventQuoteMessageInline)
 
     def short_id(self, obj):
         return str(obj.public_id)[:8]
@@ -406,3 +428,19 @@ class MessageAdmin(admin.ModelAdmin):
     list_display = ('conversation', 'sender', 'created_at', 'read_at')
     search_fields = ('body', 'sender__username')
     readonly_fields = ('body', 'sender', 'conversation', 'created_at', 'read_at')
+
+
+@admin.register(Favorite, site=secure_admin_site)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'created_at')
+    search_fields = ('user__username', 'user__email', 'product__name')
+    readonly_fields = ('user', 'product', 'created_at', 'updated_at')
+
+
+@admin.register(CakeOption, site=secure_admin_site)
+class CakeOptionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'kind', 'preview_color', 'active', 'sort_order')
+    list_filter = ('kind', 'active')
+    list_editable = ('active', 'sort_order')
+    search_fields = ('name', 'description')
+    prepopulated_fields = {'slug': ('name',)}

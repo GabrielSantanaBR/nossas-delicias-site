@@ -23,7 +23,7 @@
     <span class="eyebrow">Acompanhamento</span><h2>Seus orçamentos</h2>
     {% if user.is_authenticated %}
       {% for quote in quotes %}
-        <article class="quote-card"><header><b>#{{ quote.public_id|stringformat:'s'|slice:':8'|upper }} · {{ quote.get_event_type_display }}</b><span class="tag">{{ quote.get_status_display }}</span></header><p>{{ quote.event_date|date:'d/m/Y' }} · {{ quote.guest_count }} pessoas{% if quote.address %} · {{ quote.address|truncatechars:42 }}{% endif %}</p>{% if quote.final_total %}<strong>R$ {{ quote.final_total|floatformat:2 }}</strong>{% elif quote.estimated_total %}<strong>Estimativa R$ {{ quote.estimated_total|floatformat:2 }}</strong>{% else %}<small class="muted">Aguardando composição de valor.</small>{% endif %}</article>
+        <a class="quote-card quote-link" href="{% url 'event_quote_detail' quote.public_id %}"><header><b>#{{ quote.public_id|stringformat:'s'|slice:':8'|upper }} · {{ quote.get_event_type_display }}</b><span class="tag">{{ quote.get_status_display }}</span></header><p>{{ quote.event_date|date:'d/m/Y' }} · {{ quote.guest_count }} pessoas{% if quote.address %} · {{ quote.address|truncatechars:42 }}{% endif %}</p>{% if quote.final_total %}<strong>R$ {{ quote.final_total|floatformat:2 }}</strong>{% elif quote.estimated_total %}<strong>Estimativa R$ {{ quote.estimated_total|floatformat:2 }}</strong>{% else %}<small class="muted">Aguardando composição de valor.</small>{% endif %}<small class="quote-open">Abrir detalhes e conversa →</small></a>
       {% empty %}<p class="muted">Nenhum orçamento ainda. Sua primeira solicitação aparecerá aqui automaticamente.</p>{% endfor %}
     {% else %}<p class="muted">Seus orçamentos ficam vinculados à sua conta.</p>{% endif %}
   </aside>

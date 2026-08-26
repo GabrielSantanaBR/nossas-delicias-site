@@ -23,24 +23,26 @@
       {% else %}
         <p class="status-warning">Seu cadastro está em análise. A tabela B2B será liberada depois da aprovação administrativa.</p>
       {% endif %}
-    {% else %}
+    {% elif user.is_authenticated %}
       <span class="eyebrow">Primeiro acesso B2B</span><h2>Solicitar acesso de cafeteria</h2>
       <p class="muted">A equipe revisa o cadastro antes de liberar preços, pedido mínimo e condições comerciais exclusivas.</p>
       <form method="post" action="{% url 'cafe_apply' %}" class="stack-form">{% csrf_token %}{{ form.as_p }}<button class="cta">Enviar cadastro</button></form>
+    {% else %}
+      <span class="eyebrow">Fornecimento profissional</span><h2>Quer levar Nossas Delícias para sua cafeteria?</h2><p class="muted">Entre ou crie uma conta para enviar os dados da parceria. O cadastro não libera preço B2B automaticamente: cada solicitação passa pela análise da equipe.</p><div class="hero-actions"><a class="cta" href="{% url 'login' %}?next={% url 'cafe_portal' %}">Entrar para solicitar</a><a class="cta-secondary" href="{% url 'register' %}">Criar conta</a></div>
     {% endif %}
   </div>
 
   <aside class="panel" data-reveal>
     <span class="eyebrow">Rotina</span><h2>Pedidos recorrentes</h2>
-    {% if account.approved %}
+    {% if account and account.approved %}
       {% for recurring_order in recurring %}
         <div class="promo"><b>{{ recurring_order.name }}</b><p>Dia da semana: {{ recurring_order.weekday }} · {% if recurring_order.active %}ativo{% else %}pausado{% endif %}</p>{% for item in recurring_order.items.all %}<small>{{ item.quantity }}× {{ item.product.name }}</small>{% endfor %}</div>
       {% empty %}<p class="muted">Nenhuma rotina fixa configurada. A equipe pode criar pedidos recorrentes depois de combinar o fornecimento.</p>{% endfor %}
-    {% else %}<p class="muted">Pedidos recorrentes ficam disponíveis depois da aprovação.</p>{% endif %}
+    {% else %}<p class="muted">Pedidos recorrentes ficam disponíveis depois da aprovação da parceria.</p>{% endif %}
   </aside>
 </section>
 
-{% if account.approved and account.active %}
+{% if account and account.approved and account.active %}
 {% cafe_orders 20 as orders %}
 <section class="platform-section" id="notas">
   <div class="section-head" data-reveal><div><span class="eyebrow">Pedidos e notas</span><h2>O histórico da cafeteria.</h2></div><p>Cada pedido gera uma nota operacional. Ela pode ser ajustada até <b>16h do dia da entrega</b>; depois disso os itens e valores ficam congelados para preservar o histórico financeiro.</p></div>

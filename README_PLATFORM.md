@@ -1,13 +1,15 @@
 # Nossas Delícias — Plataforma de Pedidos
 
-## O que esta branch adiciona
+## O que a plataforma entrega
 
 - Django + PostgreSQL para catálogo, clientes, pedidos e histórico.
 - Categorias e produtos totalmente editáveis pelo painel administrativo.
 - Galeria de fotos, descrição, destaque, quantidade mínima e antecedência por produto.
 - Tabelas de preço para cliente, cafeteria, evento e preços personalizados.
 - Regiões, taxa de entrega, pedido mínimo, rotas e capacidade por data.
-- Conta do cliente com histórico de pedidos, pagamentos e promoções elegíveis.
+- Conta do cliente com perfil editável, endereços, favoritos, histórico de pedidos, pagamentos e promoções elegíveis.
+- Eventos com proposta detalhada, histórico, conversa contextual, aceite do cliente e conversão transacional em pedido.
+- Simulador de precificação com margem, lucro projetado e ponto de equilíbrio sem alterar preços reais.
 - Chat em tempo real por pedido com WebSocket e Redis em produção.
 - Integração de pagamentos desenhada para Mercado Pago sem armazenar dados de cartão.
 - Segurança de produção com Argon2, CSRF, cookies seguros, HSTS, limites de upload e secrets em ambiente.

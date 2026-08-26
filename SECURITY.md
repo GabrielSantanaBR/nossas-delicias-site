@@ -27,6 +27,9 @@ Use o token de uso único para entrar em `/nd-admin/`, cadastre um dispositivo T
 5. Configure rate limiting/WAF/DDoS protection na Cloudflare e limites de upload.
 6. Configure Cloudflare R2 (ou storage equivalente) para fotos e mídia.
 7. Configure backups automáticos do PostgreSQL e teste restauração.
+8. Mantenha a CSP sem `unsafe-inline` para scripts; novos comportamentos devem ficar em arquivos estáticos versionados.
+9. Preserve a validação de origem dos WebSockets e a autorização por proprietário do pedido.
+10. Respostas autenticadas devem permanecer com cache privado desabilitado.
 8. Configure logs sem conteúdo de mensagens, senhas, tokens ou dados de cartão.
 9. Publique Política de Privacidade e Termos adequados à operação e à LGPD.
 

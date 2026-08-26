@@ -35,7 +35,7 @@
       </a>
       <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menu"><span></span><span></span></button>
       <nav class="site-nav" id="site-nav" data-site-nav aria-label="Navegação principal">
-        <a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}">Cafeterias</a>
+        <a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'cake_studio' %}">Monte seu bolo</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}">Cafeterias</a>
         {% if user.is_authenticated %}
           {% cart_count as cart_total %}<a href="{% url 'cart' %}">Sacola{% if cart_total %}<span class="nav-count">{{ cart_total }}</span>{% endif %}</a><a href="{% url 'account' %}">Minha conta</a>
           {% if user.is_staff %}<a href="{% url 'management_center' %}">Gestão</a><a href="{% url 'finance_dashboard' %}">Financeiro</a><a href="/nd-admin/">Admin</a>{% endif %}
@@ -61,7 +61,7 @@
         </a>
         <p>Confeitaria artesanal para encomendas, cafeterias e eventos.</p>
       </div>
-      <div><span class="footer-label">Explorar</span><a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}">Cafeterias</a></div>
+      <div><span class="footer-label">Explorar</span><a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'cake_studio' %}">Monte seu bolo</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}">Cafeterias</a></div>
       <div><span class="footer-label">Sua conta</span>{% if user.is_authenticated %}<a href="{% url 'account' %}">Minha conta</a><a href="{% url 'cart' %}">Sacola</a>{% else %}<a href="{% url 'login' %}">Entrar</a><a href="{% url 'register' %}">Criar conta</a>{% endif %}</div>
       <div class="footer-note"><span class="footer-label">Nossas Delícias</span><p>Produção artesanal, atendimento próximo e doces para diferentes ocasiões.</p></div>
     </div>
