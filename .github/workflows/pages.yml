@@ -92,6 +92,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Prepare fresh public asset URLs
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for name in ('index.html', 'script.js', '404.html'):
+              path = Path(name)
+              if path.exists():
+                  path.write_text(path.read_text(encoding='utf-8').replace('?v=17', '?v=18'), encoding='utf-8')
+          print('Pages artifact prepared with v18 cache-busting URLs')
+          PY
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
