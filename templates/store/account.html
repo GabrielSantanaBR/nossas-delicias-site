@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Minha conta | Nossas Delícias{% endblock %}
+{% block content %}
+<section class="page-intro" data-reveal>
+  <span class="eyebrow">Minha conta</span>
+  <h1>Olá, {{ user.first_name|default:user.username }}.</h1>
+  <p>Aqui ficam seus pedidos, benefícios e os atalhos para continuar uma conversa com a Nossas Delícias.</p>
+  <div class="account-stats">
+    <div><span>Pedidos concluídos</span><b>{{ profile.orders_count }}</b></div>
+    <div><span>Histórico de compras</span><b>R$ {{ profile.lifetime_value|floatformat:2 }}</b></div>
+    <div><span>Seu perfil</span><b>{{ profile.get_customer_type_display }}</b></div>
+  </div>
+</section>
+
+<section class="dashboard">
+  <div class="panel" data-reveal>
+    <div class="section-head" style="margin-bottom:10px"><div><span class="eyebrow">Histórico</span><h2>Seus pedidos</h2></div><a class="cta-secondary" href="{% url 'catalog' %}">Novo pedido</a></div>
+    {% for order in orders %}
+      <a class="order-row" href="{% url 'order_detail' order.public_id %}">
+        <div><b>#{{ order.public_id|stringformat:'s'|slice:':8'|upper }}</b><small>{{ order.created_at|date:'d/m/Y H:i' }}{% if order.delivery_date %} · entrega {{ order.delivery_date|date:'d/m/Y' }}{% endif %}</small></div>
+        <span class="tag">{{ order.get_status_display }}</span><strong>R$ {{ order.total|floatformat:2 }}</strong>
+      </a>
+    {% empty %}
+      <div class="empty-state"><span class="eyebrow">Primeiro pedido</span><h3>Quando você fizer uma encomenda, ela aparece aqui.</h3><a class="cta" href="{% url 'catalog' %}">Escolher doces</a></div>
+    {% endfor %}
+  </div>
+
+  <aside class="panel" data-reveal>
+    <span class="eyebrow">Benefícios</span><h2>Ofertas para você</h2>
+    {% for promo in promotions %}<div class="promo"><b>{{ promo.name }}</b><p>{{ promo.percent_off|floatformat:0 }}% de desconto</p><code>{{ promo.code }}</code></div>{% empty %}<p class="muted">Quando houver uma condição disponível para o seu perfil, ela aparece aqui.</p>{% endfor %}
+    {% if event_quotes %}<div style="height:20px"></div><span class="eyebrow">Eventos</span><h2>Orçamentos recentes</h2>{% for quote in event_quotes %}<div class="quote-card"><b>#{{ quote.public_id|stringformat:'s'|slice:':8'|upper }}</b><p>{{ quote.get_event_type_display }} · {{ quote.event_date|date:'d/m/Y' }}</p><small>{{ quote.get_status_display }}</small></div>{% endfor %}{% endif %}
+  </aside>
+</section>
+{% endblock %}
