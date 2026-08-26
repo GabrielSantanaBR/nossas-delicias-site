@@ -1,5 +1,3 @@
-import os
-
 from django.conf import settings
 from django.contrib.admin import AdminSite
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
@@ -11,8 +9,7 @@ from django_otp.plugins.otp_totp.admin import TOTPDeviceAdmin
 from django_otp.plugins.otp_totp.models import TOTPDevice
 
 
-_demo_admin_bypass = settings.DEBUG and os.environ.get('DEMO_ALLOW_ADMIN_WITHOUT_OTP') == '1'
-secure_admin_site = AdminSite(name='nd_demo_admin') if _demo_admin_bypass else OTPAdminSite(OTPAdminSite.name)
+secure_admin_site = AdminSite(name='nd_demo_admin') if settings.DEMO_ALLOW_ADMIN_WITHOUT_OTP else OTPAdminSite(OTPAdminSite.name)
 secure_admin_site.site_header = 'Nossas Delícias — Central Administrativa'
 secure_admin_site.site_title = 'Nossas Delícias'
 secure_admin_site.index_title = 'Operação, catálogo e clientes'
