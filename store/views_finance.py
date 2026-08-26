@@ -3,6 +3,7 @@ from datetime import date
 from decimal import Decimal
 from functools import wraps
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -32,7 +33,7 @@ def _staff_otp_guard(view):
     @login_required
     def wrapped(request, *args, **kwargs):
         verified = getattr(request.user, 'is_verified', lambda: False)()
-        if not request.user.is_staff or not verified:
+        if not request.user.is_staff or (not verified and not settings.DEMO_ALLOW_ADMIN_WITHOUT_OTP):
             return HttpResponseForbidden('A central financeira exige acesso administrativo com segundo fator verificado.')
         return view(request, *args, **kwargs)
     return wrapped
@@ -88,145 +89,85 @@ def cafe_order_edit(request, public_id):
     note = ensure_cafe_note(order)
     if note:
         note = maybe_lock_cafe_note(note)
+    editable = cafe_order_editable(order)
 
     if request.method == 'POST':
-        if not cafe_order_editable(order):
-            messages.error(request, 'Esta nota já passou do horário de corte e não aceita mais alterações.')
-            return redirect('cafe_note', public_id=order.public_id)
+        if not editable:
+            messages.error(request, 'Esta nota já atingiu o horário limite para alterações comerciais.')
+            return redirect('cafe_order_edit', public_id=order.public_id)
 
-        action = request.POST.get('action', 'save')
+        action = request.POST.get('action', '').strip()
         try:
             with transaction.atomic():
                 locked_order = Order.objects.select_for_update().get(pk=order.pk)
+                locked_note = ensure_cafe_note(locked_order)
+                if locked_note:
+                    locked_note = maybe_lock_cafe_note(locked_note)
                 if not cafe_order_editable(locked_order):
-                    messages.error(request, 'O horário de corte foi atingido enquanto você editava. Nenhuma alteração foi salva.')
-                    return redirect('cafe_note', public_id=order.public_id)
+                    raise ValueError('O horário limite desta nota foi atingido.')
 
-                if action == 'add':
-                    try:
-                        product_id = int(request.POST.get('product_id', ''))
-                        quantity = int(request.POST.get('add_quantity', '1'))
-                    except (TypeError, ValueError):
-                        raise ValueError('Produto ou quantidade inválidos.')
-                    product = get_object_or_404(Product, pk=product_id, active=True)
-                    if not product_allowed(product, 'cafe'):
-                        raise ValueError('Este produto não está disponível para cafeterias.')
-                    quantity = max(product.min_quantity, min(quantity, 9999))
-                    unit_price = price_for(request.user, product, quantity, 'cafe')
-                    if unit_price is None:
-                        raise ValueError('Este produto ainda não possui preço B2B válido.')
-                    item = locked_order.items.filter(product=product).first()
-                    if item:
-                        item.quantity = min(item.quantity + quantity, 9999)
-                        item.unit_price = price_for(request.user, product, item.quantity, 'cafe') or unit_price
-                        item.save(update_fields=['quantity', 'unit_price', 'updated_at'])
-                    else:
-                        locked_order.items.create(product=product, quantity=quantity, unit_price=unit_price)
-                    _reprice_cafe_order(locked_order, cafe, request.user)
-                    locked_order.status_history.create(status=locked_order.status, changed_by=request.user, note=f'{product.name} adicionado à nota antes do corte.')
-                    messages.success(request, f'{product.name} adicionado à nota.')
-                    return redirect('cafe_order_edit', public_id=order.public_id)
-
-                proposals = []
-                for item in locked_order.items.select_related('product').all():
-                    raw = request.POST.get(f'qty_{item.pk}', str(item.quantity))
-                    try:
-                        quantity = max(0, min(int(raw), 9999))
-                    except (TypeError, ValueError):
-                        quantity = item.quantity
-                    proposals.append((item, quantity))
-
-                if not any(quantity > 0 for _, quantity in proposals):
-                    raise ValueError('A nota precisa ter pelo menos um item.')
-
-                # Validate the future state before deleting rows.
-                projected_subtotal = Decimal('0.00')
-                prices = {}
-                for item, quantity in proposals:
-                    if quantity <= 0:
-                        continue
-                    unit_price = price_for(request.user, item.product, quantity, 'cafe')
-                    if unit_price is None:
-                        raise ValueError(f'Não existe preço B2B válido para {item.product.name}.')
-                    prices[item.pk] = unit_price
-                    projected_subtotal += unit_price * quantity
-                minimum = max(locked_order.delivery_region.minimum_order if locked_order.delivery_region else Decimal('0'), cafe.minimum_order)
-                if projected_subtotal < minimum:
-                    raise ValueError(f'O pedido mínimo desta cafeteria/região é R$ {minimum:.2f}.')
-
-                for item, quantity in proposals:
+                if action == 'quantity':
+                    item = get_object_or_404(locked_order.items.select_related('product'), pk=request.POST.get('item_id'))
+                    quantity = max(0, min(int(request.POST.get('quantity', item.quantity)), 9999))
                     if quantity == 0:
                         item.delete()
                     else:
+                        if not product_allowed(request.user, item.product, 'cafe'):
+                            raise ValueError('Produto indisponível para esta cafeteria.')
                         item.quantity = quantity
-                        item.unit_price = prices[item.pk]
-                        item.save(update_fields=['quantity', 'unit_price', 'updated_at'])
+                        item.save(update_fields=['quantity', 'updated_at'])
+                elif action == 'add':
+                    product = get_object_or_404(Product, pk=request.POST.get('product_id'), active=True)
+                    quantity = max(1, min(int(request.POST.get('quantity', '1')), 9999))
+                    if not product_allowed(request.user, product, 'cafe'):
+                        raise ValueError('Produto indisponível para esta cafeteria.')
+                    existing = locked_order.items.filter(product=product).first()
+                    if existing:
+                        existing.quantity += quantity
+                        existing.save(update_fields=['quantity', 'updated_at'])
+                    else:
+                        unit_price = price_for(request.user, product, quantity, 'cafe')
+                        if unit_price is None:
+                            raise ValueError('Produto sem preço B2B válido.')
+                        locked_order.items.create(product=product, quantity=quantity, unit_price=unit_price)
+                elif action == 'note':
+                    pass
+                else:
+                    raise ValueError('Ação inválida.')
 
-                note_text = (request.POST.get('note') or '')[:1000]
-                _reprice_cafe_order(locked_order, cafe, request.user, note_text=note_text)
-                locked_order.status_history.create(status=locked_order.status, changed_by=request.user, note='Nota da cafeteria atualizada antes do horário de corte.')
-        except ValueError as exc:
+                _reprice_cafe_order(locked_order, cafe, request.user, request.POST.get('customer_note'))
+                ensure_cafe_note(locked_order, refresh=True)
+            messages.success(request, 'Nota atualizada.')
+        except (ValueError, TypeError) as exc:
             messages.error(request, str(exc))
-            return redirect('cafe_order_edit', public_id=order.public_id)
+        return redirect('cafe_order_edit', public_id=order.public_id)
 
-        messages.success(request, 'Nota atualizada. Os valores financeiros foram recalculados.')
-        return redirect('cafe_note', public_id=order.public_id)
-
-    available_products = Product.objects.filter(active=True, sell_cafe=True).select_related('category').order_by('category__sort_order', 'sort_order', 'name')
+    available_products = [
+        product for product in Product.objects.filter(active=True, sell_cafe=True).order_by('category__sort_order', 'sort_order', 'name')
+        if product_allowed(request.user, product, 'cafe')
+    ]
     return render(request, 'store/cafe_order_edit.html', {
-        'cafe': cafe,
         'order': order,
         'note': note,
-        'editable': cafe_order_editable(order),
+        'editable': editable,
         'available_products': available_products,
-    })
-
-
-@login_required
-def cafe_note(request, public_id):
-    cafe = _approved_cafe_for(request.user)
-    if not cafe:
-        return HttpResponseForbidden('Conta de cafeteria não aprovada.')
-    order = get_object_or_404(
-        Order.objects.prefetch_related('items__product', 'payments'),
-        public_id=public_id,
-        customer=request.user,
-        order_type='cafe',
-    )
-    note = ensure_cafe_note(order)
-    if note:
-        note = maybe_lock_cafe_note(note)
-    refresh_order_financials(order)
-    rows = [getattr(item, 'financial_snapshot', None) for item in order.items.select_related('product').all()]
-    rows = [row for row in rows if row]
-    return render(request, 'store/cafe_note.html', {
-        'cafe': cafe,
-        'order': order,
-        'note': note,
-        'rows': rows,
-        'editable': cafe_order_editable(order),
     })
 
 
 @_staff_otp_guard
 def finance_dashboard(request):
     today = timezone.localdate()
-    default_start = today.replace(day=1)
-    start = _parse_date(request.GET.get('from'), default_start)
+    start = _parse_date(request.GET.get('from'), today.replace(day=1))
     end = _parse_date(request.GET.get('to'), today)
     if start > end:
         start, end = end, start
-    report = business_financial_summary(start, end)
-    cafe_report = sales_report(start, end, order_type='cafe')
-    retail_report = sales_report(start, end, order_type='retail')
-    event_report = sales_report(start, end, order_type='event')
+    summary = business_financial_summary(start, end)
+    report = sales_report(start, end)
     return render(request, 'store/finance_dashboard.html', {
+        'summary': summary,
         'report': report,
-        'cafe_report': cafe_report,
-        'retail_report': retail_report,
-        'event_report': event_report,
-        'start': start,
-        'end': end,
+        'date_from': start,
+        'date_to': end,
     })
 
 
@@ -237,39 +178,20 @@ def finance_export_csv(request):
     end = _parse_date(request.GET.get('to'), today)
     if start > end:
         start, end = end, start
-    order_type = request.GET.get('type') or None
-    if order_type not in {None, 'retail', 'cafe', 'event'}:
-        order_type = None
-    report = sales_report(start, end, order_type=order_type)
-
+    report = sales_report(start, end)
     response = HttpResponse(content_type='text/csv; charset=utf-8')
-    response['Content-Disposition'] = f'attachment; filename="nossas-delicias-vendas-{start}-{end}.csv"'
+    response['Content-Disposition'] = f'attachment; filename="nossas-delicias-{start}-{end}.csv"'
     response.write('\ufeff')
     writer = csv.writer(response, delimiter=';')
-    writer.writerow([
-        'Data', 'Pedido/nota', 'Código', 'Produto', 'Quantidade', 'Preço unitário',
-        'Faturamento', 'Custo unitário', 'Custo total', 'Lucro', 'Margem',
-        'Pagamento', 'Mês', 'Ano', 'Observações',
-    ])
-    for snap in report['rows']:
-        item = snap.order_item
-        order = item.order
-        note = getattr(order, 'cafe_delivery_note', None)
+    writer.writerow(['Canal', 'Pedidos', 'Faturamento', 'Custo', 'Lucro', 'Margem'])
+    for row in report['channels']:
         writer.writerow([
-            order.delivery_date.strftime('%d/%m/%Y') if order.delivery_date else order.created_at.strftime('%d/%m/%Y'),
-            note.note_number if note else str(order.public_id)[:8].upper(),
-            snap.sku,
-            snap.product_name,
-            snap.quantity,
-            f'{snap.unit_price:.2f}',
-            f'{snap.revenue:.2f}',
-            '' if snap.unit_cost is None else f'{snap.unit_cost:.4f}',
-            '' if snap.total_cost is None else f'{snap.total_cost:.2f}',
-            '' if snap.profit is None else f'{snap.profit:.2f}',
-            '' if snap.margin_percent is None else f'{snap.margin_percent:.2f}%',
-            'Pago' if order.payments.filter(status='approved').exists() else 'Pendente',
-            order.delivery_date.strftime('%m') if order.delivery_date else order.created_at.strftime('%m'),
-            order.delivery_date.strftime('%Y') if order.delivery_date else order.created_at.strftime('%Y'),
-            order.customer_note,
+            row['order_type'], row['orders'], row['revenue'], row['cost'], row['profit'], row['margin_percent']
+        ])
+    writer.writerow([])
+    writer.writerow(['Produto', 'Qtd', 'Faturamento', 'Custo', 'Lucro', 'Margem'])
+    for row in report['products']:
+        writer.writerow([
+            row['name'], row['quantity'], row['revenue'], row['cost'], row['profit'], row['margin_percent']
         ])
     return response
