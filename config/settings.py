@@ -6,10 +6,12 @@ from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = os.environ.get('DEBUG', '0') == '1'
+DEMO_MODE = os.environ.get('DEMO_MODE', '0') == '1'
+DEMO_ALLOW_ADMIN_WITHOUT_OTP = DEMO_MODE and os.environ.get('DEMO_ALLOW_ADMIN_WITHOUT_OTP', '0') == '1'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-only-change-me')
 
 if not DEBUG and SECRET_KEY == 'dev-only-change-me':
-    raise ImproperlyConfigured('DJANGO_SECRET_KEY precisa ser configurado em produção.')
+    raise ImproperlyConfigured('DJANGO_SECRET_KEY precisa ser configurado em produção ou demonstração pública.')
 
 
 def csv_env(name, default=''):
@@ -29,6 +31,8 @@ if not PUBLIC_BASE_URL and public_domain:
     PUBLIC_BASE_URL = f'https://{public_domain}'
 elif not PUBLIC_BASE_URL and railway_host:
     PUBLIC_BASE_URL = f'https://{railway_host}'
+elif not PUBLIC_BASE_URL and render_host:
+    PUBLIC_BASE_URL = f'https://{render_host}'
 
 INSTALLED_APPS = [
     'daphne',
@@ -76,7 +80,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
 DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
-if not DEBUG and not DATABASE_URL:
+if not (DEBUG or DEMO_MODE) and not DATABASE_URL:
     raise ImproperlyConfigured('DATABASE_URL precisa apontar para PostgreSQL em produção.')
 DATABASES = {
     'default': dj_database_url.config(
@@ -187,9 +191,9 @@ if REDIS_URL:
             'TIMEOUT': 300,
         }
     }
-elif DEBUG or os.environ.get('ALLOW_INMEMORY_CHANNEL_LAYER') == '1':
+elif DEBUG or DEMO_MODE or os.environ.get('ALLOW_INMEMORY_CHANNEL_LAYER') == '1':
     CHANNEL_LAYERS = {'default': {'BACKEND': 'channels.layers.InMemoryChannelLayer'}}
-    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache', 'LOCATION': 'nossas-delicias-dev'}}
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache', 'LOCATION': 'nossas-delicias-demo' if DEMO_MODE else 'nossas-delicias-dev'}}
 else:
     raise ImproperlyConfigured('REDIS_URL é obrigatório em produção para chat e rate limiting consistentes.')
 
@@ -198,7 +202,7 @@ MERCADO_PAGO_WEBHOOK_SECRET = os.environ.get('MERCADO_PAGO_WEBHOOK_SECRET', '')
 
 EMAIL_BACKEND = os.environ.get(
     'EMAIL_BACKEND',
-    'django.core.mail.backends.console.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend',
+    'django.core.mail.backends.console.EmailBackend' if (DEBUG or DEMO_MODE) else 'django.core.mail.backends.smtp.EmailBackend',
 )
 EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
