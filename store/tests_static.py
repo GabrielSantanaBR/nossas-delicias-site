@@ -19,8 +19,9 @@ class StaticReferenceAuditTests(SimpleTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.static_root = Path(settings.BASE_DIR) / "static"
-        cls.template_root = Path(settings.BASE_DIR) / "templates"
+        cls.base_root = Path(settings.BASE_DIR)
+        cls.static_root = cls.base_root / "static"
+        cls.template_root = cls.base_root / "templates"
 
     def _template_static_assets(self):
         for template_path in self.template_root.rglob("*.html"):
@@ -34,7 +35,7 @@ class StaticReferenceAuditTests(SimpleTestCase):
         for template_path, asset in self._template_static_assets():
             source = self.static_root / asset
             if not source.is_file():
-                missing.append(f"{template_path.relative_to(settings.BASE_DIR)} -> {asset}")
+                missing.append(f"{template_path.relative_to(self.base_root)} -> {asset}")
 
         self.assertFalse(missing, "Missing {% static %} sources:\n" + "\n".join(sorted(missing)))
 
@@ -44,7 +45,7 @@ class StaticReferenceAuditTests(SimpleTestCase):
             try:
                 staticfiles_storage.url(asset)
             except ValueError as exc:
-                missing.append(f"{template_path.relative_to(settings.BASE_DIR)} -> {asset}: {exc}")
+                missing.append(f"{template_path.relative_to(self.base_root)} -> {asset}: {exc}")
 
         self.assertFalse(
             missing,
@@ -53,7 +54,9 @@ class StaticReferenceAuditTests(SimpleTestCase):
 
     def test_every_local_css_url_points_to_a_real_source_file(self):
         missing = []
-        for css_path in self.static_root.rglob("*.css"):
+        for css_path in self.base_root.rglob("*.css"):
+            if any(part in {".git", "staticfiles", "node_modules"} for part in css_path.parts):
+                continue
             content = css_path.read_text(encoding="utf-8")
             for raw_url in CSS_URL_RE.findall(content):
                 raw_url = raw_url.strip()
@@ -67,13 +70,17 @@ class StaticReferenceAuditTests(SimpleTestCase):
                     source = css_path.parent / path
 
                 if not source.is_file():
-                    missing.append(f"{css_path.relative_to(settings.BASE_DIR)} -> {raw_url}")
+                    missing.append(f"{css_path.relative_to(self.base_root)} -> {raw_url}")
 
         self.assertFalse(missing, "Missing local CSS url() assets:\n" + "\n".join(sorted(missing)))
 
     def test_webmanifest_local_icons_point_to_existing_files(self):
         missing = []
-        manifests = list(Path(settings.BASE_DIR).rglob("*.webmanifest"))
+        manifests = [
+            path
+            for path in self.base_root.rglob("*.webmanifest")
+            if ".git" not in path.parts and "staticfiles" not in path.parts
+        ]
         for manifest_path in manifests:
             data = json.loads(manifest_path.read_text(encoding="utf-8"))
             for icon in data.get("icons", []):
@@ -85,12 +92,12 @@ class StaticReferenceAuditTests(SimpleTestCase):
                 if path.startswith("/static/"):
                     source = self.static_root / path.removeprefix("/static/")
                 elif path.startswith("/"):
-                    source = Path(settings.BASE_DIR) / path.removeprefix("/")
+                    source = self.base_root / path.removeprefix("/")
                 else:
                     source = manifest_path.parent / path
 
                 if not source.is_file():
-                    missing.append(f"{manifest_path.relative_to(settings.BASE_DIR)} -> {raw_src}")
+                    missing.append(f"{manifest_path.relative_to(self.base_root)} -> {raw_src}")
 
         self.assertFalse(missing, "Missing webmanifest icon assets:\n" + "\n".join(sorted(missing)))
 
@@ -98,6 +105,6 @@ class StaticReferenceAuditTests(SimpleTestCase):
         missing = []
         for template_path, asset in self._template_static_assets():
             if finders.find(asset) is None:
-                missing.append(f"{template_path.relative_to(settings.BASE_DIR)} -> {asset}")
+                missing.append(f"{template_path.relative_to(self.base_root)} -> {asset}")
 
         self.assertFalse(missing, "Django staticfiles finders could not resolve:\n" + "\n".join(sorted(missing)))
