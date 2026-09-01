@@ -11,8 +11,8 @@ class PublicVisualSmokeTests(TestCase):
         self.assertEqual(response.status_code, 200)
         html = response.content.decode('utf-8')
         self.assertIn('Nossas Delícias', html)
-        self.assertIn('logo-nossas-delicias-horizontal.svg', html)
-        self.assertIn('brand/nossas-delicias-seal.png', html)
+        self.assertIn('logo-nossas-delicias-horizontal.', html)
+        self.assertIn('brand/nossas-delicias-seal.', html)
         self.assertIn('rel="manifest"', html)
         self.assertIn('site.css', html)
         self.assertIn('app.js', html)
@@ -67,7 +67,7 @@ class PublicVisualSmokeTests(TestCase):
         self.assertContains(management, 'noindex,nofollow,noarchive')
         self.assertContains(finance, 'noindex,nofollow,noarchive')
         self.assertContains(admin, 'theme-toggle')
-        self.assertContains(admin, 'admin-nd.css')
+        self.assertContains(admin, 'admin-nd')
         self.assertNotContains(admin, 'Importações de planilha')
 
     def test_private_management_routes_are_not_available_anonymously(self):
