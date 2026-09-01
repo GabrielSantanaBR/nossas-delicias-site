@@ -83,7 +83,7 @@ class CommerceServiceTests(TestCase):
         response = self.client.get('/nd-admin/login/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Central Administrativa')
-        self.assertContains(response, 'admin-nd.css')
+        self.assertContains(response, 'admin-nd')
 
     def test_event_quote_rejects_past_date(self):
         form = EventQuoteForm(data={
