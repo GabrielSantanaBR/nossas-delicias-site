@@ -15,7 +15,7 @@ services:
       - key: DEMO_MODE
         value: "0"
       - key: HSTS_PRELOAD
-        value: "1"
+        value: "0"
       - key: DJANGO_SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
