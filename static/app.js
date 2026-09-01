@@ -4,11 +4,13 @@
   const root = document.documentElement;
   const body = document.body;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const supportsFinePointer = window.matchMedia('(pointer: fine)').matches;
   const header = document.querySelector('[data-site-header]');
   const progress = document.querySelector('[data-scroll-progress]');
   const nav = document.querySelector('[data-site-nav]');
   const navToggle = document.querySelector('[data-nav-toggle]');
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  const normalizePath = (path) => path.replace(/\/+$/, '') || '/';
 
   if (navToggle && nav) {
     const closeNav = () => {
@@ -26,6 +28,24 @@
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') closeNav();
     });
+    document.addEventListener('click', (event) => {
+      if (!nav.classList.contains('is-open') || nav.contains(event.target) || navToggle.contains(event.target)) return;
+      closeNav();
+    });
+  }
+
+  if (nav) {
+    const currentPath = normalizePath(window.location.pathname);
+    nav.querySelectorAll('a[href]').forEach((link) => {
+      const target = new URL(link.href, window.location.origin);
+      if (target.origin !== window.location.origin) return;
+      const linkPath = normalizePath(target.pathname);
+      const active = linkPath === '/' ? currentPath === '/' : currentPath === linkPath || currentPath.startsWith(`${linkPath}/`);
+      if (active) {
+        link.classList.add('is-current');
+        link.setAttribute('aria-current', 'page');
+      }
+    });
   }
 
   let ticking = false;
@@ -36,20 +56,8 @@
     if (progress) progress.style.transform = `scaleX(${ratio})`;
     if (header) header.classList.toggle('is-scrolled', scrollTop > 22);
     root.style.setProperty('--page-scroll', ratio.toFixed(4));
-
-    if (!prefersReducedMotion) {
-      document.querySelectorAll('[data-parallax]').forEach((node) => {
-        const rect = node.getBoundingClientRect();
-        if (rect.bottom < -120 || rect.top > window.innerHeight + 120) return;
-        const strength = Number(node.dataset.parallax || 0.08);
-        const center = rect.top + rect.height / 2 - window.innerHeight / 2;
-        const offset = clamp(-center * strength, -42, 42);
-        node.style.setProperty('--parallax-y', `${offset.toFixed(2)}px`);
-      });
-    }
     ticking = false;
   };
-
   const requestScrollSync = () => {
     if (!ticking) {
       ticking = true;
@@ -57,11 +65,12 @@
     }
   };
   window.addEventListener('scroll', requestScrollSync, { passive: true });
-  window.addEventListener('resize', requestScrollSync);
+  window.addEventListener('resize', requestScrollSync, { passive: true });
   syncScrollState();
 
   const revealNodes = [...document.querySelectorAll('[data-reveal]')];
   if (revealNodes.length) {
+    revealNodes.forEach((node, index) => node.style.setProperty('--reveal-delay', `${Math.min(index * 55, 260)}ms`));
     if (prefersReducedMotion || !('IntersectionObserver' in window)) {
       revealNodes.forEach((node) => node.classList.add('is-visible'));
     } else {
@@ -71,9 +80,23 @@
           entry.target.classList.add('is-visible');
           observer.unobserve(entry.target);
         });
-      }, { threshold: 0.14, rootMargin: '0px 0px -8% 0px' });
+      }, { threshold: 0.12, rootMargin: '0px 0px -7% 0px' });
       revealNodes.forEach((node) => observer.observe(node));
     }
+  }
+
+  if (supportsFinePointer && !prefersReducedMotion) {
+    document.querySelectorAll('.featured-product, .portfolio-card, .public-process-card, .service-card, .product.interactive').forEach((card) => {
+      let frame = 0;
+      card.addEventListener('pointermove', (event) => {
+        if (frame) cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          const bounds = card.getBoundingClientRect();
+          card.style.setProperty('--spot-x', `${((event.clientX - bounds.left) / bounds.width * 100).toFixed(1)}%`);
+          card.style.setProperty('--spot-y', `${((event.clientY - bounds.top) / bounds.height * 100).toFixed(1)}%`);
+        });
+      }, { passive: true });
+    });
   }
 
   const story = document.querySelector('[data-story]');
@@ -111,8 +134,7 @@
       const duration = 850;
       const animate = (now) => {
         const value = clamp((now - start) / duration, 0, 1);
-        const eased = 1 - Math.pow(1 - value, 3);
-        node.textContent = `${Math.round(target * eased)}${suffix}`;
+        node.textContent = `${Math.round(target * (1 - Math.pow(1 - value, 3)))}${suffix}`;
         if (value < 1) requestAnimationFrame(animate);
       };
       requestAnimationFrame(animate);
