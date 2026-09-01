@@ -72,9 +72,7 @@ body {
 .button, .cta, .cta-secondary, .ghost-button { transition: transform .25s var(--nd-ease), box-shadow .25s ease, background .25s ease; }
 .button:hover, .cta:hover, .cta-secondary:hover, .ghost-button:hover { transform: translateY(-2px); }
 
-.featured-product, .portfolio-card, .public-process-card, .service-card, .product, .panel {
-  border-color: var(--nd-line);
-}
+.featured-product, .portfolio-card, .public-process-card, .service-card, .product, .panel { border-color: var(--nd-line); }
 .featured-product, .public-process-card, .service-card, .product, .panel {
   box-shadow: 0 12px 40px rgba(42,23,18,.055);
   transition: transform .38s var(--nd-ease), box-shadow .38s ease, border-color .3s ease;
@@ -93,8 +91,16 @@ body {
 .eyebrow { color: var(--nd-caramel); }
 .marquee-strip { background: rgba(255,250,244,.58); border-color: var(--nd-line); }
 .final-cta { box-shadow: 0 34px 90px rgba(42,23,18,.16); }
-
 .messages .message { box-shadow: 0 10px 30px rgba(42,23,18,.05); }
+
+/* Stable scroll reveal: only the element itself owns transform. */
+[data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition: opacity .65s var(--nd-ease), transform .65s var(--nd-ease);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+[data-reveal].is-visible { opacity: 1; transform: none; }
 
 @media (max-width: 980px) {
   .site-header { padding-inline: 10px; }
@@ -113,6 +119,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  [data-reveal] { opacity: 1; transform: none; }
   .featured-product:hover, .public-process-card:hover, .service-card:hover, .product.interactive:hover,
   .featured-product:hover .featured-media img, .product.interactive:hover > img, .portfolio-card:hover .portfolio-media img { transform: none; }
 }
