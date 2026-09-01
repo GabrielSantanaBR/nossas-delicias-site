@@ -1,0 +1,118 @@
+/* Nossas Delícias — canonical public surface.
+   One small layer for brand tokens and stable interaction; structural rules remain in platform.css. */
+:root {
+  --nd-cream: #fbf6ef;
+  --nd-paper: #fffaf4;
+  --nd-cocoa: #2a1712;
+  --nd-cocoa-soft: #4c3027;
+  --nd-caramel: #b66f4e;
+  --nd-rose: #a88471;
+  --nd-line: rgba(42, 23, 18, .11);
+  --nd-shadow: 0 24px 70px rgba(42, 23, 18, .10);
+  --nd-ease: cubic-bezier(.22, .72, .2, 1);
+}
+
+html { scroll-padding-top: 108px; }
+body {
+  background:
+    radial-gradient(circle at 8% 5%, rgba(190,132,104,.12), transparent 29rem),
+    radial-gradient(circle at 94% 26%, rgba(208,177,150,.12), transparent 34rem),
+    linear-gradient(180deg, #fcf8f2 0%, var(--nd-cream) 50%, #f7efe6 100%);
+  color: var(--nd-cocoa);
+  font-family: "DM Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.site-header { padding: 12px 18px 0; }
+.header-inner {
+  min-height: 76px;
+  padding: 6px 14px 6px 18px;
+  border: 1px solid rgba(42,23,18,.08);
+  border-radius: 24px;
+  background: rgba(255,250,244,.80);
+  box-shadow: 0 12px 36px rgba(42,23,18,.06);
+  backdrop-filter: blur(18px) saturate(1.18);
+  -webkit-backdrop-filter: blur(18px) saturate(1.18);
+}
+.site-header.is-scrolled .header-inner {
+  background: rgba(255,250,244,.94);
+  box-shadow: 0 16px 42px rgba(42,23,18,.09);
+}
+
+.brand-lockup { width: 236px; height: 62px; overflow: hidden; position: relative; display: block; }
+.brand-logo-image { width: 236px; height: 62px; object-fit: contain; object-position: left center; display: block; }
+.site-footer .brand-logo-image { filter: brightness(0) invert(1); opacity: .94; }
+
+.site-nav > a, .site-nav form button {
+  border-radius: 999px;
+  padding: 9px 11px;
+  color: #684e43;
+  font-size: 11px;
+  font-weight: 700;
+  transition: color .22s ease, background .22s ease, transform .22s var(--nd-ease);
+}
+.site-nav > a:hover, .site-nav form button:hover, .site-nav > a.is-current {
+  color: var(--nd-cocoa);
+  background: rgba(167,119,94,.10);
+  transform: translateY(-1px);
+}
+.site-nav .nav-cta { background: var(--nd-cocoa); color: #fffaf6; box-shadow: 0 10px 24px rgba(42,23,18,.14); }
+.site-nav .nav-cta:hover { background: #4c2b21; color: #fff; }
+
+.hero-stage { padding-top: clamp(70px, 8vw, 112px); }
+.hero-copy h1, .section-heading h2, .story-intro h2, .final-cta h2, .page-intro h1,
+.platform-title, .finance-title, .note-title, .auth-card h1 {
+  font-family: "Playfair Display", Georgia, serif;
+}
+.hero-copy h1 { letter-spacing: -.055em; }
+.hero-copy h1 em { color: var(--nd-caramel); }
+.hero-lead, .section-heading > p, .portfolio-heading > p { color: #725d54; }
+
+.button, .cta, .cta-secondary, .ghost-button { transition: transform .25s var(--nd-ease), box-shadow .25s ease, background .25s ease; }
+.button:hover, .cta:hover, .cta-secondary:hover, .ghost-button:hover { transform: translateY(-2px); }
+
+.featured-product, .portfolio-card, .public-process-card, .service-card, .product, .panel {
+  border-color: var(--nd-line);
+}
+.featured-product, .public-process-card, .service-card, .product, .panel {
+  box-shadow: 0 12px 40px rgba(42,23,18,.055);
+  transition: transform .38s var(--nd-ease), box-shadow .38s ease, border-color .3s ease;
+}
+.featured-product:hover, .public-process-card:hover, .service-card:hover, .product.interactive:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--nd-shadow);
+  border-color: rgba(166,112,85,.22);
+}
+.featured-media img, .product > img, .portfolio-media img { transition: transform .7s var(--nd-ease), filter .4s ease; }
+.featured-product:hover .featured-media img, .product.interactive:hover > img { transform: scale(1.035); }
+.portfolio-media img { transform: scale(1.02); }
+.portfolio-card:hover .portfolio-media img { transform: scale(1.045); }
+
+.public-process-card, .service-card { background: rgba(255,250,244,.88); }
+.eyebrow { color: var(--nd-caramel); }
+.marquee-strip { background: rgba(255,250,244,.58); border-color: var(--nd-line); }
+.final-cta { box-shadow: 0 34px 90px rgba(42,23,18,.16); }
+
+.messages .message { box-shadow: 0 10px 30px rgba(42,23,18,.05); }
+
+@media (max-width: 980px) {
+  .site-header { padding-inline: 10px; }
+  .header-inner { padding-left: 12px; }
+  .site-nav { left: 10px; right: 10px; border: 1px solid var(--nd-line); border-radius: 20px; background: rgba(255,250,244,.98); box-shadow: 0 24px 64px rgba(42,23,18,.14); backdrop-filter: blur(18px); }
+}
+@media (max-width: 680px) {
+  html { scroll-padding-top: 88px; }
+  .site-header { padding: 8px 8px 0; }
+  .header-inner { min-height: 64px; border-radius: 19px; padding-inline: 10px; }
+  .brand-lockup, .brand-logo-image { width: 202px; height: 54px; }
+  .hero-stage { width: min(calc(100% - 24px), 1280px); padding-top: 54px; }
+  .hero-copy h1 { font-size: clamp(52px, 15vw, 76px); }
+  .portfolio-shell, .public-process { width: min(calc(100% - 24px), 1280px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  .featured-product:hover, .public-process-card:hover, .service-card:hover, .product.interactive:hover,
+  .featured-product:hover .featured-media img, .product.interactive:hover > img, .portfolio-card:hover .portfolio-media img { transform: none; }
+}
