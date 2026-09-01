@@ -60,7 +60,11 @@ class StaticReferenceAuditTests(SimpleTestCase):
             content = css_path.read_text(encoding="utf-8")
             for raw_url in CSS_URL_RE.findall(content):
                 raw_url = raw_url.strip()
-                if not raw_url or raw_url.startswith(("http://", "https://", "//", "data:", "#")):
+                if (
+                    not raw_url
+                    or raw_url.startswith(("http://", "https://", "//", "data:", "#"))
+                    or raw_url.startswith("%23")
+                ):
                     continue
 
                 path = urlsplit(raw_url).path
