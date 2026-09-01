@@ -4,11 +4,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="Nossas Delícias — confeitaria artesanal, brownies, bolos, encomendas, cafeterias e eventos.">
-  <meta name="theme-color" content="#2d1a15">
+  <meta name="description" content="{% block meta_description %}Nossas Delícias — confeitaria artesanal, brownies, bolos, encomendas, cafeterias e eventos.{% endblock %}">
+  <meta name="theme-color" content="#2a1712">
   <meta name="color-scheme" content="light">
+  <meta name="robots" content="{% block robots %}index,follow,max-image-preview:large{% endblock %}">
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Nossas Delícias">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="{% block og_title %}Nossas Delícias | Confeitaria artesanal{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Confeitaria artesanal para encomendas, cafeterias e eventos.{% endblock %}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'brand/nossas-delicias-seal.png' %}">
+  <meta name="twitter:card" content="summary_large_image">
   <title>{% block title %}Nossas Delícias{% endblock %}</title>
-  <link rel="icon" type="image/png" href="{% static 'brand/nossas-delicias-seal.png' %}">
+  <link rel="icon" type="image/png" sizes="478x478" href="{% static 'brand/nossas-delicias-seal.png' %}">
   <link rel="shortcut icon" href="{% static 'brand/nossas-delicias-seal.png' %}">
   <link rel="apple-touch-icon" href="{% static 'brand/nossas-delicias-seal.png' %}">
   <link rel="manifest" href="{% static 'site.webmanifest' %}">
@@ -16,15 +26,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'app.css' %}">
-  <link rel="stylesheet" href="{% static 'commerce.css' %}">
   <link rel="stylesheet" href="{% static 'platform.css' %}">
-  <link rel="stylesheet" href="{% static 'v14-refinements.css' %}">
-  <link rel="stylesheet" href="{% static 'v15-cinematic.css' %}">
-  <link rel="stylesheet" href="{% static 'public-v17.css' %}">
+  <link rel="stylesheet" href="{% static 'site.css' %}">
   {% block head %}{% endblock %}
-  <link rel="stylesheet" href="{% static 'v18-polish.css' %}">
-  <link rel="stylesheet" href="{% static 'v18-media-fallback.css' %}">
-  <link rel="stylesheet" href="{% static 'brand-v19.css' %}">
   {% block late_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -36,7 +40,7 @@
   {% block site_header %}<header class="site-header" data-site-header>
     <div class="header-inner">
       <a class="brand-lockup" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
-        <span class="brand-logo-frame" aria-hidden="true"><img src="{% static 'brand/nossas-delicias-wordmark.png' %}" width="500" height="500" alt=""></span>
+        <img class="brand-logo-image" src="{% static 'logo-nossas-delicias-horizontal.svg' %}" width="236" height="62" alt="Nossas Delícias">
       </a>
       <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menu"><span></span><span></span></button>
       <nav class="site-nav" id="site-nav" data-site-nav aria-label="Navegação principal">
@@ -56,13 +60,14 @@
     {% block content %}{% endblock %}
   </main>
 
-  {% block site_footer %}<footer class="site-footer">
+  {% block site_footer %}<footer class="site-footer" itemscope itemtype="https://schema.org/Bakery">
+    <meta itemprop="name" content="Nossas Delícias">
     <div class="footer-grid">
       <div class="footer-brand">
         <a class="brand-lockup" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
-          <span class="brand-logo-frame" aria-hidden="true"><img src="{% static 'brand/nossas-delicias-wordmark.png' %}" width="500" height="500" alt=""></span>
+          <img class="brand-logo-image" src="{% static 'logo-nossas-delicias-horizontal.svg' %}" width="236" height="62" alt="Nossas Delícias" itemprop="logo">
         </a>
-        <p>Confeitaria artesanal para encomendas, cafeterias e eventos.</p>
+        <p itemprop="description">Confeitaria artesanal para encomendas, cafeterias e eventos.</p>
       </div>
       <div><span class="footer-label">Explorar</span><a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'cake_studio' %}">Monte seu bolo</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}">Cafeterias</a></div>
       <div><span class="footer-label">Sua conta</span>{% if user.is_authenticated %}<a href="{% url 'account' %}">Minha conta</a><a href="{% url 'cart' %}">Sacola</a>{% else %}<a href="{% url 'login' %}">Entrar</a><a href="{% url 'register' %}">Criar conta</a>{% endif %}</div>
@@ -72,9 +77,6 @@
   </footer>{% endblock %}
 
   <script src="{% static 'app.js' %}" defer></script>
-  <script src="{% static 'public-v17.js' %}" defer></script>
-  <script src="{% static 'v18-media-fallback.js' %}" defer></script>
-  <script src="{% static 'brand-v19.js' %}" defer></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

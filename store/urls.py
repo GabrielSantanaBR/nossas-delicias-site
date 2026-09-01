@@ -1,9 +1,13 @@
 from django.urls import path
-from . import health, views, views_finance, views_management
+from . import health, seo, views, views_finance, views_management
 
 urlpatterns=[
     path('',views.home,name='home'),
     path('health/',health.health_check,name='health_check'),
+    path('robots.txt',seo.robots,name='robots_txt'),
+    path('sitemap.xml',seo.sitemap,name='sitemap_xml'),
+    path('llms.txt',seo.llms,name='llms_txt'),
+    path('llms-full.txt',seo.llms_full,name='llms_full_txt'),
     path('cardapio/',views.catalog,name='catalog'),
     path('monte-seu-bolo/',views.cake_studio,name='cake_studio'),
     path('cadastro/',views.register,name='register'),
