@@ -8,6 +8,13 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      # Run Django checks/tests with the same staticfiles backend used by production.
+      # DEMO_MODE keeps CI self-contained while DEBUG=0 exercises the manifest path.
+      DEBUG: '0'
+      DEMO_MODE: '1'
+      DJANGO_SECRET_KEY: 'ci-only-secret-key-not-used-in-production'
+      DISABLE_HTTPS_REDIRECT: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -27,26 +34,14 @@ jobs:
             node --check "$file"
           done < <(find static -type f -name '*.js' -print0)
       - name: Validate ASGI startup
-        env:
-          DEBUG: '1'
         run: python -c "import config.asgi; assert config.asgi.application"
       - name: Ensure migrations are committed
-        env:
-          DEBUG: '1'
         run: python manage.py makemigrations --check --dry-run
       - name: Django system check
-        env:
-          DEBUG: '1'
         run: python manage.py check
       - name: Apply migrations from scratch
-        env:
-          DEBUG: '1'
         run: python manage.py migrate --noinput
-      - name: Build static assets
-        env:
-          DEBUG: '1'
+      - name: Build production static assets and manifest
         run: python manage.py collectstatic --noinput --clear
-      - name: Run test suite
-        env:
-          DEBUG: '1'
+      - name: Run test suite against the production static backend
         run: python manage.py test
