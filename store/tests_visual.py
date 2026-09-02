@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 from django_otp import DEVICE_ID_SESSION_KEY
@@ -16,6 +19,7 @@ class PublicVisualSmokeTests(TestCase):
         self.assertIn('rel="manifest"', html)
         self.assertIn('site.', html)
         self.assertIn('app.', html)
+        self.assertNotIn('app.css', html)
         self.assertNotIn('v15-cinematic.css', html)
         self.assertNotIn('public-v17.css', html)
         self.assertNotIn('brand-v19.css', html)
@@ -29,6 +33,15 @@ class PublicVisualSmokeTests(TestCase):
         self.assertIn('/monte-seu-bolo/', html)
         self.assertIn('og:title', html)
         self.assertIn('canonical', html)
+
+    def test_home_components_have_canonical_layout_rules(self):
+        css = (Path(settings.BASE_DIR) / 'static' / 'site.css').read_text(encoding='utf-8')
+        for selector in (
+            '.hero-photo-shell', '.hero-brand-seal', '.portfolio-shell',
+            '.portfolio-grid', '.portfolio-media', '.public-process-grid',
+        ):
+            with self.subTest(selector=selector):
+                self.assertIn(selector, css)
 
     def test_anonymous_storefront_does_not_expose_private_management_navigation(self):
         response = self.client.get(reverse('home'))
