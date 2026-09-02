@@ -93,6 +93,45 @@ body {
 .final-cta { box-shadow: 0 34px 90px rgba(42,23,18,.16); }
 .messages .message { box-shadow: 0 10px 30px rgba(42,23,18,.05); }
 
+/* Home editorial: every class below is owned by this canonical surface. */
+.hero-visual { isolation: isolate; }
+.hero-photo-shell { position: absolute; inset: 0; z-index: -1; overflow: hidden; background: #3b2119; }
+.hero-photo-shell::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(35,17,12,.16), rgba(35,17,12,.42)), linear-gradient(90deg, rgba(35,17,12,.54), transparent 68%); }
+.hero-photo-shell img { width: 100%; height: 100%; object-fit: cover; object-position: 56% center; filter: saturate(.88) contrast(1.04); transform: scale(1.035); }
+.hero-brand-seal { position: absolute; z-index: 1; top: 24px; left: 24px; width: 84px; height: 84px; display: grid; place-items: center; overflow: hidden; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; background: rgba(255,250,244,.90); box-shadow: 0 16px 40px rgba(25,10,6,.22); }
+.hero-brand-seal img { width: 104px; height: 104px; max-width: none; object-fit: contain; }
+.hero-scroll-cue { position: absolute; z-index: 2; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 9px; color: rgba(255,255,255,.78); font-size: 8px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+.hero-scroll-cue i { width: 34px; height: 1px; background: currentColor; }
+
+.portfolio-shell, .public-process { width: min(calc(100% - 40px), 1320px); margin: 0 auto; padding: 110px 0; }
+.portfolio-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .48fr); gap: 48px; align-items: end; margin-bottom: 44px; }
+.portfolio-heading h2, .public-process-heading h2 { margin: 9px 0 0; font: 600 clamp(44px, 5vw, 74px)/.98 "Playfair Display", Georgia, serif; letter-spacing: -.048em; }
+.portfolio-heading > p, .public-process-heading > p { margin: 0; color: #725d54; line-height: 1.75; }
+.portfolio-grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: 18px; }
+.portfolio-card { position: relative; min-height: 520px; overflow: hidden; border: 1px solid rgba(255,255,255,.35); border-radius: 32px; background: #392019; box-shadow: 0 24px 66px rgba(42,23,18,.11); isolation: isolate; }
+.portfolio-card.small { min-height: 410px; }
+.portfolio-card.wide { grid-column: 1 / -1; min-height: 460px; }
+.portfolio-media { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+.portfolio-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 24%, rgba(31,13,8,.18) 52%, rgba(31,13,8,.86)); }
+.portfolio-media img { width: 100%; height: 100%; object-fit: cover; }
+.portfolio-copy { position: absolute; left: 28px; right: 28px; bottom: 27px; z-index: 1; color: #fff; }
+.portfolio-copy > span { color: #efc7b5; font-size: 9px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+.portfolio-copy h3 { max-width: 680px; margin: 8px 0 9px; font: 600 clamp(29px, 3.3vw, 48px)/1.02 "Playfair Display", Georgia, serif; letter-spacing: -.035em; }
+.portfolio-copy p { max-width: 620px; margin: 0; color: rgba(255,255,255,.78); font-size: 13px; line-height: 1.65; }
+.public-process-heading { max-width: 780px; margin-bottom: 38px; }
+.public-process-heading > p { max-width: 640px; margin-top: 15px; }
+.public-process-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.public-process-card { min-height: 245px; padding: 25px; border: 1px solid var(--nd-line); border-radius: 24px; }
+.public-process-card > span { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: var(--nd-cocoa); color: #fff; font-size: 10px; font-weight: 800; }
+.public-process-card h3 { margin: 42px 0 10px; font: 600 28px/1.05 "Playfair Display", Georgia, serif; }
+.public-process-card p { margin: 0; color: #725d54; font-size: 13px; line-height: 1.65; }
+.site-footer { width: min(calc(100% - 40px), 1320px); margin: 24px auto 20px; padding: 48px clamp(24px, 4vw, 54px) 28px; border: 0; border-radius: 34px; background: linear-gradient(135deg, #24130f, #4b2a20); box-shadow: 0 26px 72px rgba(42,23,18,.16); color: #fffaf5; }
+.site-footer .footer-brand p, .site-footer .footer-note p, .site-footer .footer-bottom { color: rgba(255,250,245,.68); }
+.site-footer .footer-label { color: #e7ae93; }
+.site-footer .footer-grid a { color: rgba(255,250,245,.88); }
+.site-footer .footer-grid a:hover { color: #fff; }
+.site-footer .footer-bottom { border-color: rgba(255,255,255,.12); }
+
 /* Stable scroll reveal: only the element itself owns transform. */
 [data-reveal] {
   opacity: 0;
@@ -106,6 +145,10 @@ body {
   .site-header { padding-inline: 10px; }
   .header-inner { padding-left: 12px; }
   .site-nav { left: 10px; right: 10px; border: 1px solid var(--nd-line); border-radius: 20px; background: rgba(255,250,244,.98); box-shadow: 0 24px 64px rgba(42,23,18,.14); backdrop-filter: blur(18px); }
+  .portfolio-heading { grid-template-columns: 1fr; gap: 15px; }
+  .portfolio-grid { grid-template-columns: 1fr; }
+  .portfolio-card, .portfolio-card.small, .portfolio-card.wide { grid-column: auto; min-height: 460px; }
+  .public-process-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 680px) {
   html { scroll-padding-top: 88px; }
@@ -115,6 +158,16 @@ body {
   .hero-stage { width: min(calc(100% - 24px), 1280px); padding-top: 54px; }
   .hero-copy h1 { font-size: clamp(52px, 15vw, 76px); }
   .portfolio-shell, .public-process { width: min(calc(100% - 24px), 1280px); }
+  .portfolio-shell, .public-process { padding: 76px 0; }
+  .portfolio-card, .portfolio-card.small, .portfolio-card.wide { min-height: 390px; border-radius: 26px; }
+  .portfolio-copy { left: 21px; right: 21px; bottom: 21px; }
+  .public-process-grid { grid-template-columns: 1fr; }
+  .public-process-card { min-height: 210px; padding: 21px; }
+  .public-process-card h3 { margin-top: 32px; }
+  .hero-brand-seal { top: 16px; left: 16px; width: 68px; height: 68px; }
+  .hero-brand-seal img { width: 84px; height: 84px; }
+  .hero-scroll-cue { display: none; }
+  .site-footer { width: min(calc(100% - 16px), 1320px); margin-bottom: 8px; border-radius: 26px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

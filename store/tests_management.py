@@ -100,10 +100,11 @@ class SpreadsheetRoundTripTests(TestCase):
             subtotal=Decimal('20.00'), total=Decimal('20.00'),
         )
         item = order.items.create(product=self.product, quantity=2, unit_price=Decimal('10.00'))
-        OrderItemFinancialSnapshot.objects.create(
-            order_item=item, sku='REC-001', product_name=self.product.name, quantity=2,
+        OrderItemFinancialSnapshot.objects.update_or_create(
+            order_item=item, defaults=dict(sku='REC-001', product_name=self.product.name, quantity=2,
             unit_price=Decimal('10.00'), unit_cost=Decimal('4.00'), revenue=Decimal('20.00'),
             total_cost=Decimal('8.00'), profit=Decimal('12.00'), margin_percent=Decimal('60.00'),
+            )
         )
         stream = build_management_workbook(timezone.localdate().replace(day=1), timezone.localdate())
         workbook = load_workbook(stream, read_only=True, data_only=True)
