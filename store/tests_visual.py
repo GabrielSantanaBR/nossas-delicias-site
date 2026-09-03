@@ -9,7 +9,7 @@ from django_otp.plugins.otp_totp.models import TOTPDevice
 from PIL import Image
 
 from .models import Category, Product
-from .templatetags.store_tags import product_visual
+from .templatetags.store_tags import category_story, product_visual
 
 
 class PublicVisualSmokeTests(TestCase):
@@ -18,7 +18,8 @@ class PublicVisualSmokeTests(TestCase):
         self.assertEqual(response.status_code, 200)
         html = response.content.decode('utf-8')
         self.assertIn('Nossas Delícias', html)
-        self.assertIn('logo-nossas-delicias-horizontal.', html)
+        self.assertIn('brand-lockup-wordmark', html)
+        self.assertIn('brand-wordmark', html)
         self.assertIn('brand/nossas-delicias-seal.', html)
         self.assertIn('rel="manifest"', html)
         self.assertIn('site.', html)
@@ -32,6 +33,8 @@ class PublicVisualSmokeTests(TestCase):
         self.assertIn('hero-photo-shell', html)
         self.assertIn('hero-brand-seal', html)
         self.assertIn('portfolio-shell', html)
+        self.assertIn('home-guide', html)
+        self.assertIn('Escolha pelo momento, não só pelo produto.', html)
         self.assertIn('Nosso trabalho', html)
         self.assertIn('images/showcase/confeitaria-hero', html)
         self.assertIn('/monte-seu-bolo/', html)
@@ -43,6 +46,7 @@ class PublicVisualSmokeTests(TestCase):
         for selector in (
             '.hero-photo-shell', '.hero-brand-seal', '.portfolio-shell',
             '.portfolio-grid', '.portfolio-media', '.public-process-grid',
+            '.home-guide', '.catalog-hero', '.catalog-paths', '.category-showcase',
         ):
             with self.subTest(selector=selector):
                 self.assertIn(selector, css)
@@ -77,6 +81,31 @@ class PublicVisualSmokeTests(TestCase):
         app_js = (Path(settings.BASE_DIR) / 'static' / 'app.js').read_text(encoding='utf-8')
         self.assertIn("img[data-fallback-src]", app_js)
         self.assertIn('revealReachedNodes', app_js)
+
+    def test_catalog_is_a_guided_storefront_not_only_a_product_grid(self):
+        category = Category.objects.create(name='Brownies', slug='brownies')
+        Product.objects.create(
+            category=category,
+            name='Brownie da vitrine',
+            slug='brownie-da-vitrine',
+            description='Produto de teste para a vitrine editorial.',
+            image='',
+        )
+        response = self.client.get(reverse('catalog'))
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode('utf-8')
+        for expected in (
+            'catalog-hero', 'Tem doce para a vontade de agora',
+            'Comece pelo seu momento', 'Quero um bolo só meu',
+            'Tenho uma ocasião especial', 'catalog-closing',
+            'category--cocoa', 'brownie-classic', 'Brownie da vitrine',
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, html)
+
+        story = category_story(Category(name='Brownies', slug='brownies'))
+        self.assertEqual(story['tone'], 'cocoa')
+        self.assertIn('brownie-classic.webp', story['image'])
 
     def test_anonymous_storefront_does_not_expose_private_management_navigation(self):
         response = self.client.get(reverse('home'))
