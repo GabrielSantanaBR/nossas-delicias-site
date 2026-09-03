@@ -1,23 +1,23 @@
 /* Nossas Delícias — canonical public surface.
    One small layer for brand tokens and stable interaction; structural rules remain in platform.css. */
 :root {
-  --nd-cream: #fbf6ef;
-  --nd-paper: #fffaf4;
+  --nd-cream: #f4e7dc;
+  --nd-paper: #fff8f0;
   --nd-cocoa: #2a1712;
   --nd-cocoa-soft: #4c3027;
-  --nd-caramel: #b66f4e;
-  --nd-rose: #a88471;
+  --nd-caramel: #c36742;
+  --nd-rose: #c4867b;
   --nd-line: rgba(42, 23, 18, .11);
-  --nd-shadow: 0 24px 70px rgba(42, 23, 18, .10);
+  --nd-shadow: 0 24px 70px rgba(42, 23, 18, .14);
   --nd-ease: cubic-bezier(.22, .72, .2, 1);
 }
 
 html { scroll-padding-top: 108px; }
 body {
   background:
-    radial-gradient(circle at 8% 5%, rgba(190,132,104,.12), transparent 29rem),
-    radial-gradient(circle at 94% 26%, rgba(208,177,150,.12), transparent 34rem),
-    linear-gradient(180deg, #fcf8f2 0%, var(--nd-cream) 50%, #f7efe6 100%);
+    radial-gradient(circle at 8% 5%, rgba(197,103,66,.19), transparent 29rem),
+    radial-gradient(circle at 94% 26%, rgba(170,92,74,.16), transparent 34rem),
+    linear-gradient(180deg, #fbf3e9 0%, var(--nd-cream) 50%, #efddd0 100%);
   color: var(--nd-cocoa);
   font-family: "DM Sans", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -30,8 +30,8 @@ body {
   padding: 6px 14px 6px 18px;
   border: 1px solid rgba(42,23,18,.08);
   border-radius: 24px;
-  background: rgba(255,250,244,.80);
-  box-shadow: 0 12px 36px rgba(42,23,18,.06);
+  background: rgba(255,248,240,.91);
+  box-shadow: 0 12px 36px rgba(42,23,18,.09);
   backdrop-filter: blur(18px) saturate(1.18);
   -webkit-backdrop-filter: blur(18px) saturate(1.18);
 }
@@ -57,10 +57,26 @@ body {
   background: rgba(167,119,94,.10);
   transform: translateY(-1px);
 }
-.site-nav .nav-cta { background: var(--nd-cocoa); color: #fffaf6; box-shadow: 0 10px 24px rgba(42,23,18,.14); }
-.site-nav .nav-cta:hover { background: #4c2b21; color: #fff; }
+.site-nav .nav-cta { background: var(--nd-caramel); color: #fffaf6; box-shadow: 0 10px 24px rgba(123,55,34,.20); }
+.site-nav .nav-cta:hover { background: #9e492c; color: #fff; }
 
-.hero-stage { padding-top: clamp(70px, 8vw, 112px); }
+.hero-stage {
+  position: relative;
+  width: min(calc(100% - 24px), 1400px);
+  min-height: calc(100vh - 118px);
+  margin: 18px auto 34px;
+  padding: clamp(64px, 7vw, 100px) clamp(28px, 4.2vw, 66px);
+  overflow: hidden;
+  border: 1px solid rgba(126,63,41,.12);
+  border-radius: 52px;
+  background:
+    radial-gradient(circle at 10% 12%, rgba(255,255,255,.72), transparent 24rem),
+    radial-gradient(circle at 72% 105%, rgba(161,75,51,.16), transparent 30rem),
+    linear-gradient(130deg, #f4ddcd 0%, #f7e8dc 48%, #e8bea7 100%);
+  box-shadow: 0 28px 80px rgba(86,43,29,.12);
+}
+.hero-stage::after { content: ""; position: absolute; z-index: 0; width: 420px; height: 420px; left: -230px; bottom: -270px; border: 1px solid rgba(128,62,41,.13); border-radius: 50%; box-shadow: 0 0 0 55px rgba(255,255,255,.13), 0 0 0 110px rgba(128,62,41,.035); pointer-events: none; }
+.hero-copy, .hero-visual { position: relative; z-index: 1; }
 .hero-copy h1, .section-heading h2, .story-intro h2, .final-cta h2, .page-intro h1,
 .platform-title, .finance-title, .note-title, .auth-card h1 {
   font-family: "Playfair Display", Georgia, serif;
@@ -87,9 +103,10 @@ body {
 .portfolio-media img { transform: scale(1.02); }
 .portfolio-card:hover .portfolio-media img { transform: scale(1.045); }
 
-.public-process-card, .service-card { background: rgba(255,250,244,.88); }
+.public-process-card, .service-card { background: rgba(255,248,240,.94); }
 .eyebrow { color: var(--nd-caramel); }
-.marquee-strip { background: rgba(255,250,244,.58); border-color: var(--nd-line); }
+.marquee-strip { background: linear-gradient(90deg, #2a1712, #593125, #2a1712); border-color: rgba(255,255,255,.08); color: #fff8f0; box-shadow: 0 15px 38px rgba(42,23,18,.13); }
+.marquee-strip i { color: #e7aa8c; }
 .final-cta { box-shadow: 0 34px 90px rgba(42,23,18,.16); }
 .messages .message { box-shadow: 0 10px 30px rgba(42,23,18,.05); }
 
@@ -102,6 +119,28 @@ body {
 .hero-brand-seal img { width: 104px; height: 104px; max-width: none; object-fit: contain; }
 .hero-scroll-cue { position: absolute; z-index: 2; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 9px; color: rgba(255,255,255,.78); font-size: 8px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
 .hero-scroll-cue i { width: 34px; height: 1px; background: currentColor; }
+
+.featured-section {
+  width: min(calc(100% - 24px), 1400px);
+  margin: 72px auto;
+  padding: clamp(58px, 6vw, 88px) clamp(20px, 4vw, 58px);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 44px;
+  background:
+    radial-gradient(circle at 100% 0, rgba(226,153,119,.28), transparent 32rem),
+    radial-gradient(circle at 0 100%, rgba(174,92,64,.20), transparent 28rem),
+    linear-gradient(140deg, #271510 0%, #4f2b21 58%, #71412f 100%);
+  box-shadow: 0 32px 90px rgba(42,23,18,.20);
+  color: #fffaf4;
+}
+.featured-section .section-heading > p { color: rgba(255,250,244,.68); }
+.featured-section .eyebrow { color: #efb89d; }
+.featured-product { background: #fff8f0; color: var(--nd-cocoa); border-color: rgba(255,255,255,.18); }
+.featured-content p { color: #725d54; }
+.featured-content a { color: #a84f31; }
+.featured-media { background: #c89275; }
+.featured-media img.is-fallback-visual, .product > img.is-fallback-visual { filter: saturate(1.04) contrast(1.02); }
 
 .portfolio-shell, .public-process { width: min(calc(100% - 40px), 1320px); margin: 0 auto; padding: 110px 0; }
 .portfolio-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .48fr); gap: 48px; align-items: end; margin-bottom: 44px; }
@@ -118,13 +157,71 @@ body {
 .portfolio-copy > span { color: #efc7b5; font-size: 9px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
 .portfolio-copy h3 { max-width: 680px; margin: 8px 0 9px; font: 600 clamp(29px, 3.3vw, 48px)/1.02 "Playfair Display", Georgia, serif; letter-spacing: -.035em; }
 .portfolio-copy p { max-width: 620px; margin: 0; color: rgba(255,255,255,.78); font-size: 13px; line-height: 1.65; }
+.public-process {
+  width: min(calc(100% - 24px), 1400px);
+  margin: 38px auto 82px;
+  padding: clamp(58px, 6vw, 88px) clamp(20px, 4vw, 58px);
+  border: 1px solid rgba(128,64,43,.10);
+  border-radius: 42px;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(255,255,255,.58), transparent 26rem),
+    linear-gradient(135deg, #e8c3ae, #f2d8c8 54%, #e3b29b);
+  box-shadow: 0 25px 70px rgba(86,43,29,.10);
+}
 .public-process-heading { max-width: 780px; margin-bottom: 38px; }
 .public-process-heading > p { max-width: 640px; margin-top: 15px; }
 .public-process-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-.public-process-card { min-height: 245px; padding: 25px; border: 1px solid var(--nd-line); border-radius: 24px; }
+.public-process-card { min-height: 245px; padding: 25px; border: 1px solid rgba(92,45,31,.10); border-radius: 24px; }
 .public-process-card > span { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: var(--nd-cocoa); color: #fff; font-size: 10px; font-weight: 800; }
 .public-process-card h3 { margin: 42px 0 10px; font: 600 28px/1.05 "Playfair Display", Georgia, serif; }
 .public-process-card p { margin: 0; color: #725d54; font-size: 13px; line-height: 1.65; }
+.public-process-card:nth-child(2n) { background: rgba(255,242,232,.82); }
+
+.service-section { padding-top: 80px; }
+.service-card:nth-child(1) { background: linear-gradient(145deg, #f2cdb9, #fff3e9); }
+.service-card:nth-child(2) { background: linear-gradient(145deg, #efd2c2, #dca98f); }
+.service-card:nth-child(4) { background: linear-gradient(145deg, #e8c4bd, #fae8df); }
+.service-card-dark { background: linear-gradient(145deg, #2a1712, #5d3428); }
+
+/* Public inner pages keep the same warm, editorial identity as the home. */
+.page-intro {
+  margin-top: 34px;
+  padding: clamp(48px, 6vw, 82px) clamp(24px, 5vw, 70px);
+  border: 1px solid rgba(128,64,43,.10);
+  border-radius: 40px;
+  background:
+    radial-gradient(circle at 88% 15%, rgba(255,255,255,.58), transparent 25rem),
+    linear-gradient(128deg, #efd1bf, #f8eadd 60%, #e7b89f);
+  box-shadow: 0 24px 70px rgba(86,43,29,.09);
+}
+.catalog-tools {
+  position: sticky;
+  z-index: 40;
+  top: 92px;
+  margin-top: 24px;
+  padding: 12px;
+  border: 1px solid rgba(70,35,25,.10);
+  border-radius: 22px;
+  background: rgba(255,248,240,.92);
+  box-shadow: 0 16px 44px rgba(70,35,25,.10);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+}
+.category {
+  margin-top: 24px;
+  margin-bottom: 34px;
+  padding: clamp(34px, 4.5vw, 60px);
+  border: 1px solid rgba(94,46,31,.09);
+  border-radius: 36px;
+  background: linear-gradient(135deg, rgba(255,248,240,.90), rgba(239,208,190,.76));
+  box-shadow: 0 20px 60px rgba(70,35,25,.07);
+}
+.category:nth-of-type(odd) { background: linear-gradient(135deg, rgba(234,194,176,.82), rgba(255,246,237,.92)); }
+.category .section-head h2 { max-width: 760px; }
+.product { background: #fff9f2; border-color: rgba(96,47,31,.10); }
+.product img { background: #d4a087; }
+.product .price { color: #9d472c; }
+.product .cta, .product .cta-secondary { width: 100%; }
 .site-footer { width: min(calc(100% - 40px), 1320px); margin: 24px auto 20px; padding: 48px clamp(24px, 4vw, 54px) 28px; border: 0; border-radius: 34px; background: linear-gradient(135deg, #24130f, #4b2a20); box-shadow: 0 26px 72px rgba(42,23,18,.16); color: #fffaf5; }
 .site-footer .footer-brand p, .site-footer .footer-note p, .site-footer .footer-bottom { color: rgba(255,250,245,.68); }
 .site-footer .footer-label { color: #e7ae93; }
@@ -149,16 +246,17 @@ body {
   .portfolio-grid { grid-template-columns: 1fr; }
   .portfolio-card, .portfolio-card.small, .portfolio-card.wide { grid-column: auto; min-height: 460px; }
   .public-process-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero-stage { border-radius: 40px; }
 }
 @media (max-width: 680px) {
   html { scroll-padding-top: 88px; }
   .site-header { padding: 8px 8px 0; }
   .header-inner { min-height: 64px; border-radius: 19px; padding-inline: 10px; }
   .brand-lockup, .brand-logo-image { width: 202px; height: 54px; }
-  .hero-stage { width: min(calc(100% - 24px), 1280px); padding-top: 54px; }
+  .hero-stage { width: min(calc(100% - 16px), 1280px); margin-top: 8px; padding: 52px 16px 24px; border-radius: 28px; }
   .hero-copy h1 { font-size: clamp(52px, 15vw, 76px); }
-  .portfolio-shell, .public-process { width: min(calc(100% - 24px), 1280px); }
-  .portfolio-shell, .public-process { padding: 76px 0; }
+  .portfolio-shell { width: min(calc(100% - 24px), 1280px); padding: 76px 0; }
+  .featured-section, .public-process { width: min(calc(100% - 16px), 1280px); margin-block: 48px; padding: 52px 14px; border-radius: 28px; }
   .portfolio-card, .portfolio-card.small, .portfolio-card.wide { min-height: 390px; border-radius: 26px; }
   .portfolio-copy { left: 21px; right: 21px; bottom: 21px; }
   .public-process-grid { grid-template-columns: 1fr; }
@@ -168,6 +266,9 @@ body {
   .hero-brand-seal img { width: 84px; height: 84px; }
   .hero-scroll-cue { display: none; }
   .site-footer { width: min(calc(100% - 16px), 1320px); margin-bottom: 8px; border-radius: 26px; }
+  .page-intro { width: min(calc(100% - 16px), 1280px); margin-top: 8px; padding: 46px 20px; border-radius: 28px; }
+  .catalog-tools { position: relative; top: auto; width: min(calc(100% - 16px), 1280px); padding: 10px; }
+  .category { width: min(calc(100% - 16px), 1280px); padding: 34px 12px; border-radius: 28px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

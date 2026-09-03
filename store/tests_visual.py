@@ -6,6 +6,10 @@ from django.test import TestCase
 from django.urls import reverse
 from django_otp import DEVICE_ID_SESSION_KEY
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from PIL import Image
+
+from .models import Category, Product
+from .templatetags.store_tags import product_visual
 
 
 class PublicVisualSmokeTests(TestCase):
@@ -42,6 +46,36 @@ class PublicVisualSmokeTests(TestCase):
         ):
             with self.subTest(selector=selector):
                 self.assertIn(selector, css)
+
+    def test_catalogue_showcase_assets_exist_and_demo_media_never_breaks(self):
+        showcase = Path(settings.BASE_DIR) / 'static' / 'images' / 'showcase' / 'catalog'
+        for filename in (
+            'brownie-classic.webp', 'brownie-box.webp', 'brownie-stack.webp',
+            'cake-slice.webp', 'brigadeiro.webp', 'event-sweets.webp', 'gift-box.webp',
+        ):
+            with self.subTest(filename=filename):
+                asset = showcase / filename
+                self.assertTrue(asset.is_file())
+                with Image.open(asset) as image:
+                    self.assertEqual(image.format, 'WEBP')
+                    self.assertGreaterEqual(image.width, 1000)
+                    self.assertGreaterEqual(image.height, 700)
+                    image.verify()
+
+        category = Category.objects.create(name='Brownies visuais', slug='brownies-visuais')
+        product = Product.objects.create(
+            category=category,
+            name='Brownie visual',
+            slug='brownie-visual',
+            description='Imagem de demonstração local.',
+            image='products/demo/broken.jpg',
+        )
+        visual = product_visual(product)
+        self.assertIn('images/showcase/catalog/brownie-classic', visual)
+        self.assertNotIn('/media/products/demo/', visual)
+
+        app_js = (Path(settings.BASE_DIR) / 'static' / 'app.js').read_text(encoding='utf-8')
+        self.assertIn("img[data-fallback-src]", app_js)
 
     def test_anonymous_storefront_does_not_expose_private_management_navigation(self):
         response = self.client.get(reverse('home'))

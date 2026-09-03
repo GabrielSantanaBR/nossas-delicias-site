@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load store_tags %}
 {% block title %}Minha conta | Nossas Delícias{% endblock %}
 {% block content %}
 <section class="page-intro" data-reveal>
@@ -15,7 +16,7 @@
     </article>
     <article class="panel" data-reveal>
       <div class="section-head compact"><div><span class="eyebrow">Seus atalhos</span><h2>Favoritos</h2></div><a class="cta-secondary" href="{% url 'catalog' %}">Explorar cardápio</a></div>
-      <div class="favorite-list">{% for product in favorites %}<div class="favorite-row">{% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">{% else %}<span>{{ product.name|slice:':1' }}</span>{% endif %}<div><b>{{ product.name }}</b><small>{{ product.category.name }}</small></div><form method="post" action="{% url 'favorite_toggle' product.id %}">{% csrf_token %}<button type="submit">Remover</button></form></div>{% empty %}<p class="muted">Marque os doces que quer encontrar mais rápido depois.</p>{% endfor %}</div>
+      <div class="favorite-list">{% for product in favorites %}<div class="favorite-row">{% product_visual product as visual %}{% product_fallback_visual product as fallback_visual %}<img src="{{ visual }}" data-fallback-src="{{ fallback_visual }}" alt="{{ product.name }}" loading="lazy" decoding="async"><div><b>{{ product.name }}</b><small>{{ product.category.name }}</small></div><form method="post" action="{% url 'favorite_toggle' product.id %}">{% csrf_token %}<button type="submit">Remover</button></form></div>{% empty %}<p class="muted">Marque os doces que quer encontrar mais rápido depois.</p>{% endfor %}</div>
     </article>
     {% if event_quotes %}<article class="panel" data-reveal><span class="eyebrow">Eventos</span><h2>Orçamentos recentes</h2>{% for quote in event_quotes %}<a class="quote-card quote-link" href="{% url 'event_quote_detail' quote.public_id %}"><b>#{{ quote.public_id|stringformat:'s'|slice:':8'|upper }}</b><p>{{ quote.get_event_type_display }} · {{ quote.event_date|date:'d/m/Y' }}</p><small>{{ quote.get_status_display }} · abrir detalhes</small></a>{% endfor %}</article>{% endif %}
   </div>
