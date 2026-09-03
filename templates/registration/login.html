@@ -1,1 +1,22 @@
-{% extends 'base.html' %}{% block title %}Entrar | Nossas Delícias{% endblock %}{% block content %}<section class="auth-wrap"><form method="post" class="auth-card">{% csrf_token %}<span class="eyebrow">Área do cliente</span><h1>Entre na sua conta</h1>{{ form.as_p }}{% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}<button class="cta" type="submit">Entrar</button><p><a href="{% url 'password_reset' %}">Esqueci minha senha</a></p><p>Ainda não tem conta? <a href="{% url 'register' %}">Criar conta</a></p></form></section>{% endblock %}
+{% extends 'base.html' %}{% load static %}
+{% block title %}Entrar | Nossas Delícias{% endblock %}
+{% block content %}
+<section class="auth-page" aria-labelledby="login-title">
+  <aside class="auth-side" data-reveal>
+    <img src="{% static 'images/showcase/catalog/brownie-box.webp' %}" alt="Caixa de brownies artesanais" decoding="async">
+    <div><span class="eyebrow">Nossas Delícias</span><h2>Seu pedido, suas escolhas e a conversa com a equipe em um só lugar.</h2><p>Entre para acompanhar encomendas, salvar favoritos e pedir com mais facilidade.</p></div>
+  </aside>
+  <form method="post" class="auth-panel" data-reveal>
+    {% csrf_token %}
+    <span class="eyebrow">Área do cliente</span><h1 id="login-title">Que bom ter você de volta.</h1><p class="auth-lead">Use seu e-mail ou usuário para entrar.</p>
+    {% if form.non_field_errors %}<div class="form-errors" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+    <div class="auth-field{% if form.username.errors %} has-error{% endif %}">{{ form.username.label_tag }}{{ form.username }}{% for error in form.username.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+    <div class="auth-field{% if form.password.errors %} has-error{% endif %}">{{ form.password.label_tag }}<div class="auth-password-control">{{ form.password }}<button type="button" data-password-toggle="{{ form.password.id_for_label }}" aria-controls="{{ form.password.id_for_label }}" aria-pressed="false">Mostrar</button></div>{% for error in form.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <button class="cta auth-submit" type="submit">Entrar na minha conta</button>
+    <p class="auth-link-row"><a href="{% url 'password_reset' %}">Esqueci minha senha</a></p>
+    <p class="auth-switch">Ainda não tem conta? <a href="{% url 'register' %}">Criar conta</a></p>
+    <p class="auth-security-note">Seu acesso é protegido e suas informações ficam privadas.</p>
+  </form>
+</section>
+{% endblock %}

@@ -23,6 +23,17 @@
     }, { once: true });
   });
 
+  document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+    const input = document.getElementById(button.dataset.passwordToggle);
+    if (!input) return;
+    button.addEventListener('click', () => {
+      const isVisible = input.type === 'text';
+      input.type = isVisible ? 'password' : 'text';
+      button.textContent = isVisible ? 'Mostrar' : 'Ocultar';
+      button.setAttribute('aria-pressed', String(!isVisible));
+    });
+  });
+
   if (navToggle && nav) {
     const closeNav = () => {
       nav.classList.remove('is-open');

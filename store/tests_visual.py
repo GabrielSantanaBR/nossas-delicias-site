@@ -31,14 +31,14 @@ class PublicVisualSmokeTests(TestCase):
         self.assertNotIn('brand-v19.css', html)
         self.assertNotIn('public-v17.js', html)
         self.assertNotIn('brand-v19.js', html)
-        self.assertIn('hero-photo-shell', html)
-        self.assertIn('hero-brand-seal', html)
+        self.assertIn('storefront-hero', html)
+        self.assertIn('storefront-hero-media', html)
         self.assertIn('portfolio-shell', html)
         self.assertIn('home-guide', html)
-        self.assertIn('Escolha pelo momento, não só pelo produto.', html)
+        self.assertIn('Tem uma delícia para o que você quer viver hoje.', html)
         self.assertIn('brand-story', html)
-        self.assertIn('Nomes dos donos', html)
-        self.assertIn('Ano de início', html)
+        self.assertIn('Quem faz', html)
+        self.assertIn('Desde', html)
         self.assertIn('Nosso trabalho', html)
         self.assertIn('images/showcase/confeitaria-hero', html)
         self.assertIn('/monte-seu-bolo/', html)
@@ -48,10 +48,11 @@ class PublicVisualSmokeTests(TestCase):
     def test_home_components_have_canonical_layout_rules(self):
         css = (Path(settings.BASE_DIR) / 'static' / 'site.css').read_text(encoding='utf-8')
         for selector in (
-            '.hero-photo-shell', '.hero-brand-seal', '.portfolio-shell',
+            '.storefront-hero', '.storefront-hero-media', '.portfolio-shell',
             '.portfolio-grid', '.portfolio-media', '.public-process-grid',
-            '.home-guide', '.catalog-hero', '.catalog-paths', '.category-showcase',
-            '.brand-story', '.brand-facts', '.cafe-directory-grid', '.cafe-directory-card',
+            '.home-guide', '.occasion-list', '.catalog-hero', '.catalog-paths',
+            '.category-showcase', '.brand-story', '.brand-facts', '.cafe-directory-grid',
+            '.cafe-directory-card', '.auth-page', '.auth-panel',
         ):
             with self.subTest(selector=selector):
                 self.assertIn(selector, css)
@@ -101,8 +102,8 @@ class PublicVisualSmokeTests(TestCase):
         html = response.content.decode('utf-8')
         for expected in (
             'catalog-hero', 'Tem doce para a vontade de agora',
-            'Comece pelo seu momento', 'Quero um bolo só meu',
-            'Tenho uma ocasião especial', 'catalog-closing',
+            'Escolher agora', 'Montar um bolo', 'Planejar um evento',
+            'catalog-closing',
             'category--cocoa', 'brownie-classic', 'Brownie da vitrine',
         ):
             with self.subTest(expected=expected):
@@ -172,6 +173,15 @@ class PublicVisualSmokeTests(TestCase):
         self.assertContains(cafe, 'class="cafe-directory-card"', count=6)
         self.assertContains(cafe, 'Logo da cafeteria', count=6)
         self.assertContains(events, 'Eventos e encomendas especiais')
+
+    def test_public_authentication_never_shows_raw_django_username_help(self):
+        login = self.client.get(reverse('login'))
+        register = self.client.get(reverse('register'))
+        self.assertContains(login, 'E-mail ou usuário')
+        self.assertContains(login, 'data-password-toggle')
+        self.assertContains(register, 'Ex.: GabrielBezerra!!')
+        self.assertContains(register, 'Pode usar letras, números e . @ + - _ !')
+        self.assertNotContains(register, 'Obrigatório. 150 caracteres ou menos.')
 
     def test_public_brand_and_cafe_slots_render_real_content_when_it_is_added(self):
         BrandProfile.objects.create(

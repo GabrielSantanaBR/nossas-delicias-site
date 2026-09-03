@@ -2,23 +2,93 @@ import re
 from datetime import timedelta
 
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.utils import timezone
 
 from .models import CakeDesign, CakeOption, CafeAccount, CustomerAddress, CustomerProfile, EventQuote
 
 
-class RegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True, label='E-mail')
-    first_name = forms.CharField(max_length=80, label='Nome')
-    last_name = forms.CharField(max_length=80, label='Sobrenome')
-    marketing_opt_in = forms.BooleanField(required=False, label='Quero receber ofertas e novidades')
+class CustomerAuthenticationForm(AuthenticationForm):
+    """Customer-facing authentication without leaking Django's default wording."""
 
-    class Meta:
-        model = User
-        fields = ('first_name', 'last_name', 'email', 'username', 'password1', 'password2')
-        labels = {'username': 'Usuário'}
+    username = forms.CharField(
+        label='E-mail ou usuário',
+        widget=forms.TextInput(attrs={
+            'autocomplete': 'username',
+            'placeholder': 'voce@email.com ou seu usuário',
+            'autocapitalize': 'none',
+        }),
+    )
+    password = forms.CharField(
+        label='Senha',
+        strip=False,
+        widget=forms.PasswordInput(attrs={
+            'autocomplete': 'current-password',
+            'placeholder': 'Sua senha',
+        }),
+    )
+    error_messages = {
+        'invalid_login': 'Não encontramos uma conta com esses dados. Confira e tente de novo.',
+        'inactive': 'Esta conta está temporariamente indisponível.',
+    }
+
+    def clean(self):
+        identifier = (self.cleaned_data.get('username') or '').strip()
+        # E-mail is unique in the customer flow. Resolve it internally, then let
+        # Django authenticate as usual so timing and password checks stay intact.
+        if '@' in identifier:
+            username = User.objects.filter(email__iexact=identifier).values_list('username', flat=True).first()
+            if username:
+                self.cleaned_data['username'] = username
+        return super().clean()
+
+
+class RegisterForm(forms.Form):
+    first_name = forms.CharField(
+        max_length=80,
+        label='Como podemos te chamar?',
+        widget=forms.TextInput(attrs={'autocomplete': 'given-name', 'placeholder': 'Seu primeiro nome'}),
+    )
+    last_name = forms.CharField(
+        max_length=80,
+        required=False,
+        label='Sobrenome (opcional)',
+        widget=forms.TextInput(attrs={'autocomplete': 'family-name', 'placeholder': 'Seu sobrenome'}),
+    )
+    email = forms.EmailField(
+        label='Seu melhor e-mail',
+        widget=forms.EmailInput(attrs={'autocomplete': 'email', 'placeholder': 'voce@email.com'}),
+    )
+    username = forms.CharField(
+        max_length=150,
+        label='Crie seu usuário',
+        help_text='Pode usar letras, números e . @ + - _ !',
+        validators=[RegexValidator(
+            regex=r'^[\w.@+!\-]+$',
+            message='Use letras, números e apenas os sinais . @ + - _ !',
+        )],
+        widget=forms.TextInput(attrs={
+            'autocomplete': 'username',
+            'placeholder': 'Ex.: GabrielBezerra!!',
+            'autocapitalize': 'none',
+        }),
+    )
+    password1 = forms.CharField(
+        label='Crie uma senha',
+        help_text='Use pelo menos 12 caracteres e evite informações fáceis de adivinhar.',
+        strip=False,
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'placeholder': 'Crie uma senha segura'}),
+    )
+    password2 = forms.CharField(
+        label='Confirme sua senha',
+        strip=False,
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'placeholder': 'Repita a senha'}),
+    )
+    marketing_opt_in = forms.BooleanField(required=False, label='Quero receber ofertas e novidades')
 
     def clean_email(self):
         email = self.cleaned_data['email'].strip().lower()
@@ -34,15 +104,46 @@ class RegisterForm(UserCreationForm):
 
     def clean_last_name(self):
         value = ' '.join(self.cleaned_data['last_name'].split()).strip()
-        if len(value) < 2:
-            raise forms.ValidationError('Informe seu sobrenome.')
+        if value and len(value) < 2:
+            raise forms.ValidationError('Informe seu sobrenome ou deixe este campo em branco.')
         return value
 
+    def clean_username(self):
+        value = self.cleaned_data['username'].strip()
+        if len(value) < 3:
+            raise forms.ValidationError('Escolha um usuário com pelo menos 3 caracteres.')
+        if User.objects.filter(username__iexact=value).exists():
+            raise forms.ValidationError('Este usuário já está em uso. Tente outro.')
+        return value
+
+    def clean(self):
+        cleaned = super().clean()
+        password1 = cleaned.get('password1')
+        password2 = cleaned.get('password2')
+        if password1 and password2 and password1 != password2:
+            self.add_error('password2', 'As senhas não coincidem.')
+            return cleaned
+        if password1:
+            candidate = User(
+                username=cleaned.get('username', ''),
+                email=cleaned.get('email', ''),
+                first_name=cleaned.get('first_name', ''),
+                last_name=cleaned.get('last_name', ''),
+            )
+            try:
+                validate_password(password1, candidate)
+            except ValidationError as error:
+                self.add_error('password1', error)
+        return cleaned
+
     def save(self, commit=True):
-        user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
-        user.first_name = self.cleaned_data['first_name']
-        user.last_name = self.cleaned_data['last_name']
+        user = User(
+            username=self.cleaned_data['username'],
+            email=self.cleaned_data['email'],
+            first_name=self.cleaned_data['first_name'],
+            last_name=self.cleaned_data['last_name'],
+        )
+        user.set_password(self.cleaned_data['password1'])
         if commit:
             user.save()
         return user

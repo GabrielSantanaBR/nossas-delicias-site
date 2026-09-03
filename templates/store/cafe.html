@@ -5,27 +5,24 @@
   <div class="cafe-directory-copy" data-reveal>
     <span class="eyebrow">Onde encontrar</span>
     <h1 id="cafe-directory-title">Cafeterias que recebem Nossas Delícias.</h1>
-    <p>Uma vitrine para reunir os seis pontos parceiros de entrega, com logo, endereço resumido e a avaliação de cada cafeteria.</p>
+    <p>Conheça os seis pontos parceiros de entrega. Cada endereço reúne a logo, a localização e a avaliação da cafeteria.</p>
     <a class="button button-primary" href="#cafeterias">Ver cafeterias <span>↓</span></a>
   </div>
-  <div class="cafe-directory-emblem" data-reveal aria-hidden="true">
+  <figure class="cafe-directory-emblem" data-reveal aria-hidden="true">
     <img src="{% static 'brand/nossas-delicias-seal.png' %}" width="478" height="478" alt="">
-    <span>6 cafeterias<br>parceiras</span>
-  </div>
+    <figcaption>6 cafeterias parceiras</figcaption>
+  </figure>
 </section>
 
 <section class="cafe-directory" id="cafeterias" aria-labelledby="cafe-directory-list-title">
   <div class="cafe-directory-heading" data-reveal>
     <div><span class="eyebrow">Nossos parceiros</span><h2 id="cafe-directory-list-title">Seis endereços para encontrar a gente.</h2></div>
-    <p>Os cartões já estão prontos. A equipe pode completar o conteúdo público de cada cafeteria quando tiver os nomes, logos, locais e avaliações finais.</p>
+    <p>Os dados de cada ponto são atualizados pela equipe para que você saiba exatamente onde pedir ou retirar.</p>
   </div>
-  <div class="cafe-directory-grid">
+  <ol class="cafe-directory-grid">
     {% for cafe in cafe_locations %}
-      <article class="cafe-directory-card" data-reveal>
-        <div class="cafe-directory-card-top">
-          <span class="cafe-directory-number">{{ cafe.slot|stringformat:'02d' }}</span>
-          <span class="cafe-directory-status">{% if cafe.name %}Parceira de entrega{% else %}Dados em atualização{% endif %}</span>
-        </div>
+      <li class="cafe-directory-card" data-reveal>
+        <span class="cafe-directory-number">{{ cafe.slot|stringformat:'02d' }}</span>
         <div class="cafe-directory-logo">
           {% if cafe.logo %}
             <img src="{{ cafe.logo.url }}" alt="Logo de {{ cafe.name }}" loading="lazy" decoding="async">
@@ -35,17 +32,16 @@
           {% endif %}
         </div>
         <div class="cafe-directory-card-copy">
-          <span>Parceira {{ cafe.slot|stringformat:'02d' }}</span>
-          <h3>{% if cafe.name %}{{ cafe.name }}{% else %}Nome da cafeteria{% endif %}</h3>
-          <p>{% if cafe.delivery_note %}{{ cafe.delivery_note }}{% else %}Detalhe sobre entrega a preencher.{% endif %}</p>
+          <h3>{% if cafe.name %}{{ cafe.name }}{% else %}Cafeteria parceira{% endif %}</h3>
+          <p>{% if cafe.delivery_note %}{{ cafe.delivery_note }}{% else %}Informações de entrega em atualização.{% endif %}</p>
         </div>
         <dl class="cafe-directory-meta">
-          <div><dt>Local</dt><dd>{% if cafe.location %}{{ cafe.location }}{% else %}Localização a preencher{% endif %}</dd></div>
-          <div><dt>Avaliação</dt><dd>{% if cafe.rating %}<span aria-hidden="true">★</span> {{ cafe.rating|floatformat:1 }}/5{% else %}Nota a preencher{% endif %}</dd></div>
+          <div><dt>Local</dt><dd>{% if cafe.location %}{{ cafe.location }}{% else %}Endereço em atualização{% endif %}</dd></div>
+          <div><dt>Avaliação</dt><dd>{% if cafe.rating %}<span aria-hidden="true">★</span> {{ cafe.rating|floatformat:1 }}/5{% else %}Em atualização{% endif %}</dd></div>
         </dl>
-      </article>
+      </li>
     {% endfor %}
-  </div>
+  </ol>
 </section>
 
 <section class="cafe-portal-heading" id="parceria" data-reveal>

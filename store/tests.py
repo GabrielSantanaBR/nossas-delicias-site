@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase, TransactionTestCase
 from django.utils import timezone
 
-from .forms import EventQuoteForm
+from .forms import EventQuoteForm, RegisterForm
 from .models import (
     CafeAccount,
     CakeDesign,
@@ -75,6 +75,26 @@ class CommerceServiceTests(TestCase):
         self.assertEqual(response.headers['X-Permitted-Cross-Domain-Policies'], 'none')
         self.assertNotIn("script-src 'self' 'unsafe-inline'", response.headers['Content-Security-Policy'])
         self.assertEqual(response.headers['Cross-Origin-Resource-Policy'], 'same-origin')
+
+    def test_registration_accepts_friendly_username_and_login_accepts_email(self):
+        form = RegisterForm(data={
+            'first_name': 'Gabriel',
+            'last_name': 'Bezerra',
+            'email': 'gabriel.bezerrateste@example.com',
+            'username': 'GabrielBezerra!!',
+            'password1': 'UmaSenhaMuitoForte#2026!',
+            'password2': 'UmaSenhaMuitoForte#2026!',
+        })
+        self.assertTrue(form.is_valid(), form.errors)
+        user = form.save()
+        self.assertTrue(user.check_password('UmaSenhaMuitoForte#2026!'))
+
+        response = self.client.post('/login/', {
+            'username': 'gabriel.bezerrateste@example.com',
+            'password': 'UmaSenhaMuitoForte#2026!',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(int(self.client.session['_auth_user_id']), user.id)
 
     def test_authenticated_pages_are_not_stored_in_shared_browser_caches(self):
         self.client.login(username='cliente', password='StrongPassword-123!')
