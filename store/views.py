@@ -21,6 +21,8 @@ from .models import (
     CakeOption,
     Cart,
     CartItem,
+    BrandProfile,
+    CafeLocation,
     Category,
     Conversation,
     CustomerAddress,
@@ -81,7 +83,12 @@ def home(request):
         Prefetch('products', queryset=visible_products.order_by('sort_order', 'name'))
     )
     featured = visible_products.filter(featured=True).select_related('category').order_by('sort_order', 'name')[:8]
-    return render(request, 'store/home.html', {'categories': categories, 'featured': featured})
+    brand_profile = BrandProfile.objects.order_by('id').first()
+    return render(request, 'store/home.html', {
+        'categories': categories,
+        'featured': featured,
+        'brand_profile': brand_profile,
+    })
 
 
 def catalog(request):
@@ -478,7 +485,14 @@ def cafe_portal(request):
     account = CafeAccount.objects.filter(user=request.user).first() if request.user.is_authenticated else None
     form = None if account or not request.user.is_authenticated else CafeApplicationForm()
     recurring = account.recurring_orders.prefetch_related('items__product') if account and account.approved else []
-    return render(request, 'store/cafe.html', {'account': account, 'form': form, 'recurring': recurring})
+    saved_locations = {location.slot: location for location in CafeLocation.objects.all()}
+    cafe_locations = [saved_locations.get(slot, CafeLocation(slot=slot)) for slot in range(1, 7)]
+    return render(request, 'store/cafe.html', {
+        'account': account,
+        'form': form,
+        'recurring': recurring,
+        'cafe_locations': cafe_locations,
+    })
 
 
 @login_required
