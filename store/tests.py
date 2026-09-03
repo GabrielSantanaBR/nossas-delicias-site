@@ -351,6 +351,30 @@ class PaymentGatewayTests(TestCase):
 
     @patch('store.views.fetch_payment')
     @patch('store.views.validate_webhook', return_value=True)
+    def test_approved_webhook_rejects_currency_mismatch(self, mocked_validate, mocked_fetch):
+        mocked_fetch.return_value = {
+            'id': 124,
+            'external_reference': str(self.order.public_id),
+            'status': 'approved',
+            'transaction_amount': '92.00',
+            'currency_id': 'USD',
+            'payment_type_id': 'credit_card',
+        }
+        response = self.client.post(
+            '/pagamentos/mercado-pago/webhook/?data.id=124',
+            data=json.dumps({'data': {'id': '124'}}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.order.refresh_from_db()
+        payment = Payment.objects.get(order=self.order, provider_id='124')
+        self.assertEqual(self.order.status, 'pending_payment')
+        self.assertEqual(payment.status, 'rejected')
+        self.assertTrue(payment.raw_reference['amount_matches'])
+        self.assertFalse(payment.raw_reference['currency_matches'])
+
+    @patch('store.views.fetch_payment')
+    @patch('store.views.validate_webhook', return_value=True)
     def test_matching_approved_webhook_marks_order_as_paid(self, mocked_validate, mocked_fetch):
         mocked_fetch.return_value = {
             'id': 456,
