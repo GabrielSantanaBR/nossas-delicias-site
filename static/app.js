@@ -87,12 +87,35 @@
     } else {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
+          // Fast page jumps can move an item from below to above the viewport
+          // without ever meeting the intersection threshold. Once it has been
+          // reached, keep it visible instead of leaving an empty page section.
+          if (!entry.isIntersecting && entry.boundingClientRect.top >= 0) return;
           entry.target.classList.add('is-visible');
           observer.unobserve(entry.target);
         });
       }, { threshold: 0.12, rootMargin: '0px 0px -7% 0px' });
       revealNodes.forEach((node) => observer.observe(node));
+
+      let revealTicking = false;
+      const revealReachedNodes = () => {
+        const revealLine = window.innerHeight * 0.93;
+        revealNodes.forEach((node) => {
+          if (node.classList.contains('is-visible')) return;
+          if (node.getBoundingClientRect().top > revealLine) return;
+          node.classList.add('is-visible');
+          observer.unobserve(node);
+        });
+        revealTicking = false;
+      };
+      const requestRevealSync = () => {
+        if (revealTicking) return;
+        revealTicking = true;
+        window.requestAnimationFrame(revealReachedNodes);
+      };
+      window.addEventListener('scroll', requestRevealSync, { passive: true });
+      window.addEventListener('resize', requestRevealSync, { passive: true });
+      revealReachedNodes();
     }
   }
 
