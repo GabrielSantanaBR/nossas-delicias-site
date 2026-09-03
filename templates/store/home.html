@@ -32,6 +32,15 @@
 
 <div class="marquee-strip" aria-hidden="true"><div><span>Confeitaria artesanal</span><i>✦</i><span>Brownies</span><i>✦</i><span>Bolos</span><i>✦</i><span>Cafeterias</span><i>✦</i><span>Eventos</span><i>✦</i><span>Confeitaria artesanal</span><i>✦</i><span>Brownies</span><i>✦</i><span>Bolos</span><i>✦</i><span>Cafeterias</span><i>✦</i><span>Eventos</span></div></div>
 
+<section class="home-guide" aria-labelledby="home-guide-title">
+  <div class="home-guide-intro" data-reveal><span class="eyebrow">Mais do que um cardápio</span><h2 id="home-guide-title">Escolha pelo momento, não só pelo produto.</h2><p>Tem doce para dar um respiro no dia, presentear alguém querido e transformar uma celebração em memória boa.</p><a class="text-link" href="{% url 'catalog' %}">Ver todas as escolhas <span>→</span></a></div>
+  <div class="home-guide-grid">
+    <a class="home-guide-card home-guide-card-coffee" href="{% url 'catalog' %}" data-reveal><img src="{% static 'images/showcase/catalog/brownie-classic.webp' %}" alt="Brownies artesanais para acompanhar um café" loading="lazy" decoding="async"><span>Para agora</span><h3>Um café mais gostoso.</h3><p>Brownies e doces para a sua pausa.</p></a>
+    <a class="home-guide-card home-guide-card-gift" href="{% url 'catalog' %}#cat-caixas-presentes" data-reveal><img src="{% static 'images/showcase/catalog/gift-box.webp' %}" alt="Caixa de doces para presentear" loading="lazy" decoding="async"><span>Para surpreender</span><h3>Um presente que chega com afeto.</h3><p>Caixas e combinações para compartilhar.</p></a>
+    <a class="home-guide-card home-guide-card-event" href="{% url 'event_portal' %}" data-reveal><img src="{% static 'images/showcase/catalog/event-sweets.webp' %}" alt="Mesa de doces para uma celebração" loading="lazy" decoding="async"><span>Para celebrar</span><h3>Uma mesa que fica na memória.</h3><p>Doces e propostas para eventos.</p></a>
+  </div>
+</section>
+
 <section class="section-shell featured-section" id="cardapio">
   <div class="section-heading" data-reveal><div><span class="eyebrow">Escolhas que dão vontade</span><h2>Um cardápio para escolher sem pressa.</h2></div><p>Descubra os produtos disponíveis e encontre o que combina com o seu momento.</p></div>
   <div class="featured-grid">

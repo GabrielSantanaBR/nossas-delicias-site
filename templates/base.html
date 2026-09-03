@@ -38,8 +38,9 @@
 
   {% block site_header %}<header class="site-header" data-site-header>
     <div class="header-inner">
-      <a class="brand-lockup" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
-        <img class="brand-logo-image" src="{% static 'logo-nossas-delicias-horizontal.svg' %}" width="236" height="62" alt="Nossas Delícias">
+      <a class="brand-lockup brand-lockup-wordmark" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
+        <span class="brand-mark" aria-hidden="true"><img src="{% static 'brand/nossas-delicias-seal.png' %}" width="478" height="478" alt=""></span>
+        <span class="brand-wordmark"><span>Nossas</span><strong>Delícias</strong></span>
       </a>
       <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menu"><span></span><span></span></button>
       <nav class="site-nav" id="site-nav" data-site-nav aria-label="Navegação principal">
@@ -63,8 +64,9 @@
     <meta itemprop="name" content="Nossas Delícias">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a class="brand-lockup" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
-          <img class="brand-logo-image" src="{% static 'logo-nossas-delicias-horizontal.svg' %}" width="236" height="62" alt="Nossas Delícias" itemprop="logo">
+        <a class="brand-lockup brand-lockup-wordmark" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
+          <span class="brand-mark" aria-hidden="true"><img src="{% static 'brand/nossas-delicias-seal.png' %}" width="478" height="478" alt="" itemprop="logo"></span>
+          <span class="brand-wordmark"><span>Nossas</span><strong>Delícias</strong></span>
         </a>
         <p itemprop="description">Confeitaria artesanal para encomendas, cafeterias e eventos.</p>
       </div>
