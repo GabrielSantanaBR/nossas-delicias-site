@@ -41,6 +41,35 @@
   </div>
 </section>
 
+<section class="brand-story" id="sobre" aria-labelledby="brand-story-title">
+  <div class="brand-story-copy" data-reveal>
+    <span class="eyebrow">Por trás de cada doce</span>
+    <h2 id="brand-story-title">Uma casa feita por gente de verdade.</h2>
+    <p>A Nossas Delícias tem espaço para contar sua própria história: quem está por trás da marca, desde quando ela existe e de onde saem as encomendas preparadas com cuidado.</p>
+  </div>
+  <dl class="brand-facts" aria-label="Informações sobre a Nossas Delícias">
+    <div class="brand-fact" data-reveal>
+      <dt>Quem faz</dt>
+      <dd>{% if brand_profile and brand_profile.owner_names %}{{ brand_profile.owner_names }}{% else %}Nomes dos donos{% endif %}</dd>
+      <small>{% if brand_profile and brand_profile.owner_names %}Pessoas que dão vida à marca.{% else %}Informação a preencher.{% endif %}</small>
+    </div>
+    <div class="brand-fact brand-fact-highlight" data-reveal>
+      <dt>Desde</dt>
+      <dd>{% if brand_profile and brand_profile.operating_since %}{{ brand_profile.operating_since }}{% else %}Ano de início{% endif %}</dd>
+      <small>{% if brand_profile and brand_profile.operating_since %}Uma história em construção.{% else %}Informação a preencher.{% endif %}</small>
+    </div>
+    <div class="brand-fact" data-reveal>
+      <dt>De onde vem</dt>
+      <dd>{% if brand_profile and brand_profile.location %}{{ brand_profile.location }}{% else %}Cidade ou bairro{% endif %}</dd>
+      <small>{% if brand_profile and brand_profile.location %}Nosso ponto de partida.{% else %}Informação a preencher.{% endif %}</small>
+    </div>
+  </dl>
+  <figure class="brand-story-symbol" data-reveal>
+    <img src="{% static 'brand/nossas-delicias-seal.png' %}" width="478" height="478" alt="Símbolo Nossas Delícias" loading="lazy" decoding="async">
+    <figcaption>Bolos, doces e boas memórias.</figcaption>
+  </figure>
+</section>
+
 <section class="section-shell featured-section" id="cardapio">
   <div class="section-heading" data-reveal><div><span class="eyebrow">Escolhas que dão vontade</span><h2>Um cardápio para escolher sem pressa.</h2></div><p>Descubra os produtos disponíveis e encontre o que combina com o seu momento.</p></div>
   <div class="featured-grid">

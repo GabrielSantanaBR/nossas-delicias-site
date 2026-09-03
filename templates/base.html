@@ -39,12 +39,11 @@
   {% block site_header %}<header class="site-header" data-site-header>
     <div class="header-inner">
       <a class="brand-lockup brand-lockup-wordmark" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
-        <span class="brand-mark" aria-hidden="true"><img src="{% static 'brand/nossas-delicias-seal.png' %}" width="478" height="478" alt=""></span>
-        <span class="brand-wordmark"><span>Nossas</span><strong>Delícias</strong></span>
+        <img src="{% static 'brand/nossas-delicias-wordmark.png' %}" width="500" height="500" alt="Nossas Delícias — Bolos e doces">
       </a>
       <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menu"><span></span><span></span></button>
       <nav class="site-nav" id="site-nav" data-site-nav aria-label="Navegação principal">
-        <a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'cake_studio' %}">Monte seu bolo</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}">Cafeterias</a>
+        <a href="{% url 'home' %}#sobre">Sobre</a><a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'cake_studio' %}">Monte seu bolo</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}#cafeterias">Cafeterias</a>
         {% if user.is_authenticated %}
           {% cart_count as cart_total %}<a href="{% url 'cart' %}">Sacola{% if cart_total %}<span class="nav-count">{{ cart_total }}</span>{% endif %}</a><a href="{% url 'account' %}#pedidos">Pedidos e mensagens</a><a href="{% url 'account' %}">Minha conta</a>
           <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sair</button></form>
@@ -64,13 +63,13 @@
     <meta itemprop="name" content="Nossas Delícias">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a class="brand-lockup brand-lockup-wordmark" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
-          <span class="brand-mark" aria-hidden="true"><img src="{% static 'brand/nossas-delicias-seal.png' %}" width="478" height="478" alt="" itemprop="logo"></span>
-          <span class="brand-wordmark"><span>Nossas</span><strong>Delícias</strong></span>
+        <a class="footer-symbol-lockup" href="{% url 'home' %}" aria-label="Nossas Delícias — início">
+          <img src="{% static 'brand/nossas-delicias-seal.png' %}" width="478" height="478" alt="Símbolo Nossas Delícias" itemprop="logo">
+          <span><strong>Nossas Delícias</strong><small>Bolos e doces</small></span>
         </a>
         <p itemprop="description">Confeitaria artesanal para encomendas, cafeterias e eventos.</p>
       </div>
-      <div><span class="footer-label">Explorar</span><a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'cake_studio' %}">Monte seu bolo</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}">Cafeterias</a></div>
+      <div><span class="footer-label">Explorar</span><a href="{% url 'home' %}#sobre">Sobre nós</a><a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'cake_studio' %}">Monte seu bolo</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}#cafeterias">Cafeterias</a></div>
       <div><span class="footer-label">Sua conta</span>{% if user.is_authenticated %}<a href="{% url 'account' %}">Minha conta</a><a href="{% url 'cart' %}">Sacola</a>{% else %}<a href="{% url 'login' %}">Entrar</a><a href="{% url 'register' %}">Criar conta</a>{% endif %}</div>
       <div class="footer-note"><span class="footer-label">Nossas Delícias</span><p>Produção artesanal, atendimento próximo e doces para diferentes ocasiões.</p></div>
     </div>

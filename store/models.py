@@ -68,6 +68,54 @@ class ProductImage(TimeStamped):
     sort_order=models.PositiveIntegerField(default=0)
     class Meta: ordering=['sort_order','id']
 
+
+class BrandProfile(TimeStamped):
+    """Small, public-facing facts about the people behind the brand."""
+    owner_names=models.CharField(max_length=220,blank=True,help_text='Nomes dos donos/fundadores exibidos no site público.')
+    operating_since=models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(1800), MaxValueValidator(2100)],
+        help_text='Ano em que a Nossas Delícias começou a funcionar.',
+    )
+    location=models.CharField(max_length=160,blank=True,help_text='Cidade, bairro ou região exibida no site público.')
+    class Meta:
+        verbose_name='Informações da marca'
+        verbose_name_plural='Informações da marca'
+    def __str__(self): return 'Informações públicas da Nossas Delícias'
+
+
+class CafeLocation(TimeStamped):
+    """A public delivery-partner card. It intentionally does not expose B2B account data."""
+    slot=models.PositiveSmallIntegerField(
+        unique=True,
+        validators=[MinValueValidator(1), MaxValueValidator(6)],
+        help_text='Posição da cafeteria na vitrine pública (de 1 a 6).',
+    )
+    name=models.CharField(max_length=160,blank=True)
+    location=models.CharField(max_length=180,blank=True,help_text='Bairro, cidade ou endereço resumido para o público.')
+    rating=models.DecimalField(
+        max_digits=2,
+        decimal_places=1,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal('1.0')), MaxValueValidator(Decimal('5.0'))],
+        help_text='Nota pública de 1,0 a 5,0.',
+    )
+    logo=models.ImageField(upload_to='cafes/logos/',blank=True)
+    delivery_note=models.CharField(max_length=180,blank=True,help_text='Ex.: entrega por aplicativo, retirada ou dias atendidos.')
+    class Meta:
+        ordering=['slot']
+        verbose_name='Cafeteria parceira pública'
+        verbose_name_plural='Cafeterias parceiras públicas'
+        constraints=[
+            models.CheckConstraint(
+                condition=models.Q(slot__gte=1, slot__lte=6),
+                name='cafe_location_slot_between_1_and_6',
+            ),
+        ]
+    def __str__(self): return self.name or f'Cafeteria parceira {self.slot:02d}'
+
 class Favorite(TimeStamped):
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='favorite_products')
     product=models.ForeignKey(Product,on_delete=models.CASCADE,related_name='favorited_by')

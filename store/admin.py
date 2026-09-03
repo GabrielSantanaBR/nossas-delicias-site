@@ -108,6 +108,23 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = (ProductImageInline, ProductPriceInline,)
 
 
+@admin.register(BrandProfile, site=secure_admin_site)
+class BrandProfileAdmin(admin.ModelAdmin):
+    list_display = ('owner_names', 'operating_since', 'location', 'updated_at')
+    fields = ('owner_names', 'operating_since', 'location')
+
+    def has_add_permission(self, request):
+        return not BrandProfile.objects.exists()
+
+
+@admin.register(CafeLocation, site=secure_admin_site)
+class CafeLocationAdmin(admin.ModelAdmin):
+    list_display = ('slot', 'name', 'location', 'rating', 'updated_at')
+    list_editable = ('name', 'location', 'rating')
+    search_fields = ('name', 'location', 'delivery_note')
+    fields = ('slot', 'name', 'location', 'rating', 'logo', 'delivery_note')
+
+
 @admin.register(ProductCostProfile, site=secure_admin_site)
 class ProductCostProfileAdmin(admin.ModelAdmin):
     list_display = ('sku', 'product', 'sale_unit', 'yield_quantity', 'production_cost', 'unit_cost', 'active', 'updated_at')

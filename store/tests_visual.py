@@ -1,4 +1,5 @@
 from pathlib import Path
+from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -8,7 +9,7 @@ from django_otp import DEVICE_ID_SESSION_KEY
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from PIL import Image
 
-from .models import Category, Product
+from .models import BrandProfile, CafeLocation, Category, Product
 from .templatetags.store_tags import category_story, product_visual
 
 
@@ -19,7 +20,7 @@ class PublicVisualSmokeTests(TestCase):
         html = response.content.decode('utf-8')
         self.assertIn('Nossas Delícias', html)
         self.assertIn('brand-lockup-wordmark', html)
-        self.assertIn('brand-wordmark', html)
+        self.assertIn('brand/nossas-delicias-wordmark.', html)
         self.assertIn('brand/nossas-delicias-seal.', html)
         self.assertIn('rel="manifest"', html)
         self.assertIn('site.', html)
@@ -35,6 +36,9 @@ class PublicVisualSmokeTests(TestCase):
         self.assertIn('portfolio-shell', html)
         self.assertIn('home-guide', html)
         self.assertIn('Escolha pelo momento, não só pelo produto.', html)
+        self.assertIn('brand-story', html)
+        self.assertIn('Nomes dos donos', html)
+        self.assertIn('Ano de início', html)
         self.assertIn('Nosso trabalho', html)
         self.assertIn('images/showcase/confeitaria-hero', html)
         self.assertIn('/monte-seu-bolo/', html)
@@ -47,6 +51,7 @@ class PublicVisualSmokeTests(TestCase):
             '.hero-photo-shell', '.hero-brand-seal', '.portfolio-shell',
             '.portfolio-grid', '.portfolio-media', '.public-process-grid',
             '.home-guide', '.catalog-hero', '.catalog-paths', '.category-showcase',
+            '.brand-story', '.brand-facts', '.cafe-directory-grid', '.cafe-directory-card',
         ):
             with self.subTest(selector=selector):
                 self.assertIn(selector, css)
@@ -163,7 +168,35 @@ class PublicVisualSmokeTests(TestCase):
         cafe = self.client.get(reverse('cafe_portal'))
         events = self.client.get(reverse('event_portal'))
         self.assertContains(cafe, 'Quer levar Nossas Delícias para sua cafeteria?')
+        self.assertContains(cafe, 'Cafeterias que recebem Nossas Delícias.')
+        self.assertContains(cafe, 'class="cafe-directory-card"', count=6)
+        self.assertContains(cafe, 'Logo da cafeteria', count=6)
         self.assertContains(events, 'Eventos e encomendas especiais')
+
+    def test_public_brand_and_cafe_slots_render_real_content_when_it_is_added(self):
+        BrandProfile.objects.create(
+            owner_names='Nome dos donos',
+            operating_since=2021,
+            location='Cidade da marca',
+        )
+        CafeLocation.objects.create(
+            slot=1,
+            name='Cafeteria da parceira',
+            location='Bairro da parceira',
+            rating=Decimal('4.8'),
+            delivery_note='Entrega de quarta a sábado.',
+        )
+
+        home = self.client.get(reverse('home'))
+        cafe = self.client.get(reverse('cafe_portal'))
+
+        self.assertContains(home, 'Nome dos donos')
+        self.assertContains(home, '2021')
+        self.assertContains(home, 'Cidade da marca')
+        self.assertContains(cafe, 'Cafeteria da parceira')
+        self.assertContains(cafe, 'Bairro da parceira')
+        self.assertContains(cafe, '4,8/5')
+        self.assertContains(cafe, 'Entrega de quarta a sábado.')
 
     def test_public_discovery_endpoints_exclude_private_routes(self):
         robots = self.client.get(reverse('robots_txt'))
