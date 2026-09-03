@@ -663,7 +663,9 @@ def mercado_pago_webhook(request):
         except (InvalidOperation, TypeError):
             remote_amount = None
         amount_matches = remote_amount is not None and money(remote_amount) == money(order.total)
-        currency_matches = (remote.get('currency_id') or 'BRL') == 'BRL'
+        # Mercado Pago always returns the transaction currency. Do not infer a
+        # missing value: an approved transaction must explicitly be in BRL.
+        currency_matches = remote.get('currency_id') == 'BRL'
 
         effective_status = mapped
         mismatch = mapped == 'approved' and (not amount_matches or not currency_matches)
