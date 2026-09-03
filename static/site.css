@@ -43,7 +43,7 @@ body {
 }
 
 .brand-lockup-wordmark { position: relative; width: 174px; min-width: 174px; height: 58px; display: block; overflow: hidden; text-decoration: none; }
-.brand-lockup-wordmark > img { width: 192px; height: 192px; max-width: none; display: block; transform: translateY(-70px); filter: drop-shadow(0 2px 7px rgba(0,0,0,.18)); }
+.brand-lockup-wordmark > img { width: 192px; height: 192px; max-width: none; display: block; transform: translateY(-70px); filter: brightness(0) invert(1) sepia(.12) saturate(.72) drop-shadow(0 2px 7px rgba(0,0,0,.18)); }
 .footer-symbol-lockup { display: inline-flex; align-items: center; gap: 12px; color: #fffaf5; text-decoration: none; }
 .footer-symbol-lockup > img { width: 61px; height: 61px; padding: 3px; border: 1px solid rgba(255,255,255,.22); border-radius: 50%; background: rgba(255,248,240,.10); object-fit: contain; }
 .footer-symbol-lockup > span { display: grid; gap: 3px; }
