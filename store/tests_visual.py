@@ -76,6 +76,7 @@ class PublicVisualSmokeTests(TestCase):
 
         app_js = (Path(settings.BASE_DIR) / 'static' / 'app.js').read_text(encoding='utf-8')
         self.assertIn("img[data-fallback-src]", app_js)
+        self.assertIn('revealReachedNodes', app_js)
 
     def test_anonymous_storefront_does_not_expose_private_management_navigation(self):
         response = self.client.get(reverse('home'))
