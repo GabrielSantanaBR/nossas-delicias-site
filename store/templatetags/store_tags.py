@@ -8,18 +8,29 @@ register=template.Library()
 
 
 def _product_fallback_filename(product):
-    slug = getattr(product, 'slug', '') or ''
-    category = getattr(getattr(product, 'category', None), 'slug', '') or ''
+    slug = (getattr(product, 'slug', '') or '').lower()
+    category = (getattr(getattr(product, 'category', None), 'slug', '') or '').lower()
+    name = (getattr(product, 'name', '') or '').lower()
+    search_key = f'{slug} {category} {name}'
+
     if slug == 'bolo-personalizado-monte-o-seu':
         filename = 'bolo-personalizado.webp'
-    elif 'brigadeiro' in slug or 'brigadeiro' in category:
-        filename = 'brigadeiros-gourmet.webp'
-    elif 'banoffee' in slug or 'torta' in category:
+    elif 'banoffee' in search_key:
         filename = 'banoffee-brownies.webp'
-    elif 'brownie' in slug or 'brownie' in category:
-        filename = 'confeitaria-hero.webp'
+    elif any(term in search_key for term in ('camafeu', 'bem-casado', 'evento')):
+        filename = 'catalog/event-sweets.webp'
+    elif any(term in search_key for term in ('caixa', 'presente', 'kit', 'nd-cx')):
+        filename = 'catalog/gift-box.webp'
+    elif 'brownie' in search_key or 'nd-br' in search_key:
+        filename = 'catalog/brownie-stack.webp' if any(
+            term in search_key for term in ('recheado', 'brigadeiro', 'ninho', 'doce-de-leite', 'doce de leite')
+        ) else 'catalog/brownie-classic.webp'
+    elif 'brigadeiro' in search_key:
+        filename = 'catalog/brigadeiro.webp'
+    elif any(term in search_key for term in ('fatia', 'bolo', 'torta')):
+        filename = 'catalog/cake-slice.webp'
     else:
-        filename = 'confeitaria-hero.webp'
+        filename = 'catalog/brownie-box.webp'
     return filename
 
 
@@ -32,6 +43,11 @@ def product_fallback_visual(product):
 def product_visual(product):
     """Return an uploaded image when available and a local, reliable showcase otherwise."""
     if product and product.image:
+        image_name = (getattr(product.image, 'name', '') or '').lstrip('/')
+        # The demo catalogue used symbolic paths before real showcase assets
+        # existed. Never emit those known-broken media URLs in production.
+        if image_name.startswith('products/demo/'):
+            return product_fallback_visual(product)
         try:
             return product.image.url
         except (ValueError, AttributeError):

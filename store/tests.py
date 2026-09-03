@@ -1,3 +1,4 @@
+import json
 from datetime import time, timedelta
 from decimal import Decimal
 from unittest.mock import MagicMock, patch
@@ -17,6 +18,7 @@ from .models import (
     DeliveryRegion,
     DeliveryRoute,
     Order,
+    Payment,
     PriceTable,
     Product,
     ProductPrice,
@@ -313,3 +315,60 @@ class PaymentGatewayTests(TestCase):
         self.assertEqual(payload['items'][0]['unit_price'], 92.0)
         self.assertEqual(payload['external_reference'], str(self.order.public_id))
         self.assertEqual(result['id'], 'pref-123')
+
+    @patch('store.views.validate_webhook', return_value=False)
+    def test_webhook_rejects_an_invalid_signature(self, mocked_validate):
+        response = self.client.post(
+            '/pagamentos/mercado-pago/webhook/?data.id=123',
+            data=json.dumps({'data': {'id': '123'}}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 401)
+        self.assertFalse(Payment.objects.filter(order=self.order).exists())
+
+    @patch('store.views.fetch_payment')
+    @patch('store.views.validate_webhook', return_value=True)
+    def test_approved_webhook_rejects_amount_mismatch(self, mocked_validate, mocked_fetch):
+        mocked_fetch.return_value = {
+            'id': 123,
+            'external_reference': str(self.order.public_id),
+            'status': 'approved',
+            'transaction_amount': '91.99',
+            'currency_id': 'BRL',
+            'payment_type_id': 'credit_card',
+        }
+        response = self.client.post(
+            '/pagamentos/mercado-pago/webhook/?data.id=123',
+            data=json.dumps({'data': {'id': '123'}}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.order.refresh_from_db()
+        payment = Payment.objects.get(order=self.order, provider_id='123')
+        self.assertEqual(self.order.status, 'pending_payment')
+        self.assertEqual(payment.status, 'rejected')
+        self.assertFalse(payment.raw_reference['amount_matches'])
+
+    @patch('store.views.fetch_payment')
+    @patch('store.views.validate_webhook', return_value=True)
+    def test_matching_approved_webhook_marks_order_as_paid(self, mocked_validate, mocked_fetch):
+        mocked_fetch.return_value = {
+            'id': 456,
+            'external_reference': str(self.order.public_id),
+            'status': 'approved',
+            'transaction_amount': '92.00',
+            'currency_id': 'BRL',
+            'payment_type_id': 'pix',
+        }
+        response = self.client.post(
+            '/pagamentos/mercado-pago/webhook/?data.id=456',
+            data=json.dumps({'data': {'id': '456'}}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.order.refresh_from_db()
+        payment = Payment.objects.get(order=self.order, provider_id='456')
+        self.assertEqual(self.order.status, 'paid')
+        self.assertEqual(payment.status, 'approved')
+        self.assertTrue(payment.raw_reference['amount_matches'])
+        self.assertTrue(payment.raw_reference['currency_matches'])

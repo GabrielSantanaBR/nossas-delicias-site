@@ -12,6 +12,17 @@
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
   const normalizePath = (path) => path.replace(/\/+$/, '') || '/';
 
+  document.querySelectorAll('img[data-fallback-src]').forEach((image) => {
+    const fallback = image.dataset.fallbackSrc;
+    if (!fallback) return;
+    image.addEventListener('error', () => {
+      const fallbackUrl = new URL(fallback, window.location.origin).href;
+      if (image.src === fallbackUrl) return;
+      image.src = fallbackUrl;
+      image.classList.add('is-fallback-visual');
+    }, { once: true });
+  });
+
   if (navToggle && nav) {
     const closeNav = () => {
       nav.classList.remove('is-open');

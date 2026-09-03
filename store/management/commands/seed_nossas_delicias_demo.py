@@ -107,7 +107,9 @@ class Command(BaseCommand):
                 slug=slug,
                 defaults={
                     'category': cats[cat], 'name': name, 'description': desc,
-                    'image': f'products/demo/{slug}.jpg', 'active': True, 'featured': i < 6,
+                    # Showcase images are selected locally by product type until
+                    # the team uploads the final photography in management.
+                    'image': '', 'active': True, 'featured': i < 6,
                     'sell_retail': True, 'sell_cafe': True, 'sell_event': False,
                     'min_quantity': 1, 'lead_time_days': 7, 'stock_limit': 500, 'sort_order': i,
                 },
