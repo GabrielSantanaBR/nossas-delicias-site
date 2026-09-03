@@ -1,1 +1,29 @@
-{% extends 'base.html' %}{% block title %}Criar conta | Nossas Delícias{% endblock %}{% block content %}<section class="auth-wrap"><form method="post" class="auth-card">{% csrf_token %}<span class="eyebrow">Primeiro pedido?</span><h1>Crie sua conta</h1>{{ form.as_p }}<button class="cta" type="submit">Criar conta</button><p>Já tem conta? <a href="{% url 'login' %}">Entrar</a></p></form></section>{% endblock %}
+{% extends 'base.html' %}{% load static %}
+{% block title %}Criar conta | Nossas Delícias{% endblock %}
+{% block content %}
+<section class="auth-page auth-page-register" aria-labelledby="register-title">
+  <aside class="auth-side" data-reveal>
+    <img src="{% static 'images/showcase/catalog/gift-box.webp' %}" alt="Caixa de doces para presentear" decoding="async">
+    <div><span class="eyebrow">Primeiro pedido?</span><h2>Crie a sua conta e deixe as próximas escolhas mais fáceis.</h2><p>Salve favoritos, acompanhe encomendas e fale com a equipe sobre o seu pedido.</p></div>
+  </aside>
+  <form method="post" class="auth-panel auth-panel-wide" data-reveal>
+    {% csrf_token %}
+    <span class="eyebrow">Criar conta</span><h1 id="register-title">Vamos começar?</h1><p class="auth-lead">Preencha só o necessário. Depois você completa o perfil quando quiser.</p>
+    {% if form.non_field_errors %}<div class="form-errors" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+    <div class="auth-field-grid">
+      <div class="auth-field{% if form.first_name.errors %} has-error{% endif %}">{{ form.first_name.label_tag }}{{ form.first_name }}{% for error in form.first_name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+      <div class="auth-field{% if form.last_name.errors %} has-error{% endif %}">{{ form.last_name.label_tag }}{{ form.last_name }}{% for error in form.last_name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+    </div>
+    <div class="auth-field{% if form.email.errors %} has-error{% endif %}">{{ form.email.label_tag }}{{ form.email }}{% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+    <div class="auth-field{% if form.username.errors %} has-error{% endif %}">{{ form.username.label_tag }}{{ form.username }}{% if form.username.help_text %}<p class="field-help">{{ form.username.help_text }}</p>{% endif %}{% for error in form.username.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+    <div class="auth-field-grid">
+      <div class="auth-field{% if form.password1.errors %} has-error{% endif %}">{{ form.password1.label_tag }}<div class="auth-password-control">{{ form.password1 }}<button type="button" data-password-toggle="{{ form.password1.id_for_label }}" aria-controls="{{ form.password1.id_for_label }}" aria-pressed="false">Mostrar</button></div>{% if form.password1.help_text %}<p class="field-help">{{ form.password1.help_text }}</p>{% endif %}{% for error in form.password1.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+      <div class="auth-field{% if form.password2.errors %} has-error{% endif %}">{{ form.password2.label_tag }}<div class="auth-password-control">{{ form.password2 }}<button type="button" data-password-toggle="{{ form.password2.id_for_label }}" aria-controls="{{ form.password2.id_for_label }}" aria-pressed="false">Mostrar</button></div>{% for error in form.password2.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>
+    </div>
+    <label class="auth-check">{{ form.marketing_opt_in }}<span>{{ form.marketing_opt_in.label }}</span></label>
+    <button class="cta auth-submit" type="submit">Criar minha conta</button>
+    <p class="auth-switch">Já tem conta? <a href="{% url 'login' %}">Entrar</a></p>
+    <p class="auth-security-note">Usamos seus dados apenas para atender e acompanhar seus pedidos.</p>
+  </form>
+</section>
+{% endblock %}

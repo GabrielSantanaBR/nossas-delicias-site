@@ -7,61 +7,30 @@
   <div class="catalog-hero-copy" data-reveal>
     <span class="eyebrow">Cardápio Nossas Delícias</span>
     <h1 id="catalog-title">Tem doce para a vontade de agora e para a memória que você quer criar.</h1>
-    <p>Explore brownies, bolos, brigadeiros, caixas e encomendas especiais. Comece pelo que você está imaginando — um café mais gostoso, um presente ou uma mesa para celebrar.</p>
-    <div class="hero-actions catalog-hero-actions">
-      <a class="button button-primary" href="#produtos" data-scroll-to="#produtos">Ver o cardápio <span>↓</span></a>
-      <a class="button button-ghost" href="{% url 'cake_studio' %}">Montar meu bolo</a>
-    </div>
-    <dl class="catalog-hero-points" aria-label="Como funciona">
-      <div><dt>Feito com calma</dt><dd>produção artesanal</dd></div>
-      <div><dt>Escolha sua ocasião</dt><dd>do café ao evento</dd></div>
-      <div><dt>Pedido acompanhado</dt><dd>da sacola à entrega</dd></div>
-    </dl>
+    <p>Explore brownies, bolos, brigadeiros, caixas e encomendas especiais. Escolha o seu momento e deixe o resto com a gente.</p>
+    <div class="hero-actions"><a class="button button-primary" href="#produtos" data-scroll-to="#produtos">Ver o cardápio <span>↓</span></a><a class="button button-ghost" href="{% url 'cake_studio' %}">Montar meu bolo</a></div>
+    <dl class="catalog-hero-points" aria-label="Como funciona"><div><dt>Feito com calma</dt><dd>produção artesanal</dd></div><div><dt>Escolha a ocasião</dt><dd>do café ao evento</dd></div><div><dt>Acompanhe o pedido</dt><dd>da sacola à entrega</dd></div></dl>
   </div>
-  <div class="catalog-hero-gallery" data-reveal aria-label="Brownies, bolos e presentes Nossas Delícias">
-    <figure class="catalog-shot catalog-shot-main"><img src="{% static 'images/showcase/catalog/brownie-stack.webp' %}" alt="Brownies de chocolate em camadas" fetchpriority="high" decoding="async"><figcaption><span>Chocolate que chama</span><strong>mais uma mordida.</strong></figcaption></figure>
-    <figure class="catalog-shot catalog-shot-cake"><img src="{% static 'images/showcase/catalog/cake-slice.webp' %}" alt="Fatia de bolo de chocolate" loading="eager" decoding="async"><figcaption>Para celebrar</figcaption></figure>
-    <figure class="catalog-shot catalog-shot-gift"><img src="{% static 'images/showcase/catalog/gift-box.webp' %}" alt="Caixa com doces para presentear" loading="eager" decoding="async"><figcaption>Para surpreender</figcaption></figure>
-    <div class="catalog-seal" aria-hidden="true"><span>feito à mão</span><b>com afeto</b></div>
-  </div>
+  <figure class="catalog-hero-media" data-reveal><img src="{% static 'images/showcase/catalog/brownie-stack.webp' %}" alt="Brownies de chocolate em camadas" fetchpriority="high" decoding="async"><figcaption><span>Chocolate que chama</span><strong>mais uma mordida.</strong></figcaption></figure>
 </section>
 
-<section class="catalog-paths" aria-labelledby="catalog-paths-title">
-  <div class="catalog-paths-intro" data-reveal>
-    <span class="eyebrow">Comece pelo seu momento</span>
-    <h2 id="catalog-paths-title">O que você quer deixar mais gostoso hoje?</h2>
-  </div>
-  <a class="catalog-path catalog-path-now" href="#menu-search" data-scroll-to="#menu-search" data-reveal><span>01</span><h3>Quero escolher agora</h3><p>Brownies, doces e caixas para uma pausa, um café ou um presente.</p><b>Explorar opções <i>→</i></b></a>
-  <a class="catalog-path catalog-path-cake" href="{% url 'cake_studio' %}" data-reveal><span>02</span><h3>Quero um bolo só meu</h3><p>Escolha massa, recheios, cobertura e decoração em um ateliê guiado.</p><b>Montar bolo <i>→</i></b></a>
-  <a class="catalog-path catalog-path-event" href="{% url 'event_portal' %}" data-reveal><span>03</span><h3>Tenho uma ocasião especial</h3><p>Planeje doces, quantidades e uma proposta para sua celebração.</p><b>Falar sobre o evento <i>→</i></b></a>
-</section>
+<nav class="catalog-paths" aria-label="Escolha seu tipo de pedido">
+  <a href="#menu-search" data-scroll-to="#menu-search" data-reveal><span>01</span><strong>Escolher agora</strong><em>Brownies, doces e caixas para o seu momento.</em><b>→</b></a>
+  <a href="{% url 'cake_studio' %}" data-reveal><span>02</span><strong>Montar um bolo</strong><em>Uma composição guiada, do recheio à decoração.</em><b>→</b></a>
+  <a href="{% url 'event_portal' %}" data-reveal><span>03</span><strong>Planejar um evento</strong><em>Doces e uma proposta para celebrar.</em><b>→</b></a>
+</nav>
 
 <section class="catalog-browse" id="produtos" aria-labelledby="catalog-browse-title">
-  <div class="catalog-browse-intro" data-reveal>
-    <span class="eyebrow">Escolhas disponíveis</span>
-    <h2 id="catalog-browse-title">Encontre uma delícia pelo que deu vontade.</h2>
-    <p>Use a busca ou navegue por coleção. Disponibilidade, entrega e pagamento são confirmados no seu pedido.</p>
-  </div>
-  <div class="catalog-tools" id="menu-search" data-reveal>
-    <label class="catalog-search"><span class="sr-only">Buscar no cardápio</span><input type="search" data-catalog-search placeholder="Buscar brownie, bolo, brigadeiro..." autocomplete="off"></label>
-    <nav class="category-tabs" aria-label="Categorias do cardápio">{% for category in categories %}<a href="#cat-{{ category.slug }}">{{ category.name }}</a>{% endfor %}</nav>
-  </div>
+  <div class="catalog-browse-intro" data-reveal><span class="eyebrow">Escolhas disponíveis</span><h2 id="catalog-browse-title">Encontre a sua favorita.</h2><p>Busque pelo nome ou navegue pelas coleções do cardápio.</p></div>
+  <div class="catalog-tools" id="menu-search" data-reveal><label class="catalog-search"><span class="sr-only">Buscar no cardápio</span><input type="search" data-catalog-search placeholder="Buscar brownie, bolo, brigadeiro..." autocomplete="off"></label><nav class="category-tabs" aria-label="Categorias do cardápio">{% for category in categories %}<a href="#cat-{{ category.slug }}">{{ category.name }}</a>{% endfor %}</nav></div>
 </section>
 
 {% for category in categories %}
   {% category_story category as story %}
   <section class="section category category--{{ story.tone }}" id="cat-{{ category.slug }}" data-category-section>
     <div class="category-showcase">
-      <div class="category-copy" data-reveal>
-        <span class="eyebrow">{{ category.name }}</span>
-        <h2>{{ story.title }}</h2>
-        <p>{{ category.description|default:story.description }}</p>
-        <div class="category-copy-note"><span>✦</span>{{ story.note }}</div>
-      </div>
-      <figure class="category-visual" data-reveal>
-        <img src="{% static story.image %}" alt="{{ story.alt }}" loading="lazy" decoding="async">
-        <figcaption>{{ category.name }}</figcaption>
-      </figure>
+      <div class="category-copy" data-reveal><span class="eyebrow">{{ category.name }}</span><h2>{{ story.title }}</h2><p>{{ category.description|default:story.description }}</p><div class="category-copy-note"><span>✦</span>{{ story.note }}</div></div>
+      <figure class="category-visual" data-reveal><img src="{% static story.image %}" alt="{{ story.alt }}" loading="lazy" decoding="async"><figcaption>{{ category.name }}</figcaption></figure>
     </div>
     <div class="category-products-head" data-reveal><span>Escolha sua favorita</span><p>Produtos ativos e valores atualizados no cardápio.</p></div>
     <div class="grid">
@@ -71,25 +40,9 @@
           <article class="product interactive" data-product-card data-search="{{ product.name }} {{ product.description }} {{ category.name }}" data-reveal>
             {% if user.is_authenticated %}<form method="post" action="{% url 'favorite_toggle' product.id %}" class="favorite-toggle">{% csrf_token %}<button type="submit" aria-label="{% if product.id in favorite_ids %}Remover {{ product.name }} dos favoritos{% else %}Favoritar {{ product.name }}{% endif %}" title="Favoritos" class="{% if product.id in favorite_ids %}is-favorite{% endif %}">{% if product.id in favorite_ids %}♥{% else %}♡{% endif %}</button></form>{% endif %}
             {% product_visual product as visual %}{% product_fallback_visual product as fallback_visual %}<img src="{{ visual }}" data-fallback-src="{{ fallback_visual }}" alt="{{ product.name }}" loading="lazy" decoding="async">
-            <small class="eyebrow">{{ category.name }}</small>
-            <h3>{{ product.name }}</h3>
-            <p>{{ product.description }}</p>
-            <div class="product-meta"><span>mínimo {{ product.min_quantity }}</span><span>{{ product.lead_time_days }} dia{{ product.lead_time_days|pluralize }} de antecedência</span></div>
+            <small class="eyebrow">{{ category.name }}</small><h3>{{ product.name }}</h3><p>{{ product.description }}</p><div class="product-meta"><span>mínimo {{ product.min_quantity }}</span><span>{{ product.lead_time_days }} dia{{ product.lead_time_days|pluralize }} de antecedência</span></div>
             {% if display_price %}<strong class="price">a partir de R$ {{ display_price|floatformat:2 }}</strong>{% else %}<strong class="price">Consulte valor</strong>{% endif %}
-            {% if product.slug == 'bolo-personalizado-monte-o-seu' %}
-              <a class="cta cake-catalog-cta" href="{% url 'cake_studio' %}">Abrir ateliê de bolos →</a>
-            {% elif display_price and user.is_authenticated %}
-              <form method="post" action="{% url 'add_to_cart' %}" class="add-cart">{% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.id }}">
-                <label>Quantidade<input name="quantity" type="number" min="{{ product.min_quantity }}" max="9999" value="{{ product.min_quantity }}" inputmode="numeric"></label>
-                <button class="cta" type="submit">Adicionar à sacola</button>
-                <small class="form-status" aria-live="polite"></small>
-              </form>
-            {% elif display_price %}
-              <a class="cta" href="{% url 'login' %}?next={% url 'catalog' %}">Entrar para pedir</a>
-            {% else %}
-              <a class="cta-secondary" href="{% url 'event_portal' %}">Solicitar orçamento</a>
-            {% endif %}
+            {% if product.slug == 'bolo-personalizado-monte-o-seu' %}<a class="cta cake-catalog-cta" href="{% url 'cake_studio' %}">Abrir ateliê de bolos →</a>{% elif display_price and user.is_authenticated %}<form method="post" action="{% url 'add_to_cart' %}" class="add-cart">{% csrf_token %}<input type="hidden" name="product_id" value="{{ product.id }}"><label>Quantidade<input name="quantity" type="number" min="{{ product.min_quantity }}" max="9999" value="{{ product.min_quantity }}" inputmode="numeric"></label><button class="cta" type="submit">Adicionar à sacola</button><small class="form-status" aria-live="polite"></small></form>{% elif display_price %}<a class="cta" href="{% url 'login' %}?next={% url 'catalog' %}">Entrar para pedir</a>{% else %}<a class="cta-secondary" href="{% url 'event_portal' %}">Solicitar orçamento</a>{% endif %}
           </article>
         {% endif %}
       {% endfor %}
@@ -97,9 +50,6 @@
   </section>
 {% endfor %}
 
-<section class="catalog-closing" data-reveal>
-  <div><span class="eyebrow">Ainda imaginando?</span><h2>A melhor escolha pode começar por uma ideia sua.</h2><p>Para um bolo personalizado, uma mesa de doces ou uma parceria de cafeteria, a gente conduz o próximo passo com você.</p></div>
-  <div class="catalog-closing-actions"><a class="button button-light" href="{% url 'cake_studio' %}">Montar meu bolo</a><a class="button button-outline-light" href="{% url 'event_portal' %}">Planejar um evento</a><a class="catalog-closing-link" href="{% url 'cafe_portal' %}">Sou uma cafeteria <span>→</span></a></div>
-</section>
+<section class="catalog-closing" data-reveal><div><span class="eyebrow">Ainda imaginando?</span><h2>A melhor escolha pode começar por uma ideia sua.</h2><p>Para um bolo personalizado, uma mesa de doces ou uma parceria de cafeteria, a gente conduz o próximo passo com você.</p></div><div class="catalog-closing-actions"><a class="button button-light" href="{% url 'cake_studio' %}">Montar meu bolo</a><a class="button button-outline-light" href="{% url 'event_portal' %}">Planejar um evento</a><a class="catalog-closing-link" href="{% url 'cafe_portal' %}">Sou uma cafeteria <span>→</span></a></div></section>
 {% endblock %}
 {% block scripts %}<script src="{% static 'catalog.js' %}" defer></script>{% endblock %}
