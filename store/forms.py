@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.utils import timezone
 
-from .models import CakeDesign, CakeOption, CafeAccount, CustomerAddress, CustomerProfile, EventQuote
+from .models import CakeDesign, CakeOption, CafeAccount, CustomerAddress, CustomerProfile, DataSubjectRequest, EventQuote
 
 
 class CustomerAuthenticationForm(AuthenticationForm):
@@ -334,8 +334,17 @@ class CakeDesignForm(forms.Form):
 
     def clean_reference_image(self):
         image = self.cleaned_data.get('reference_image')
-        if image and image.size > 5 * 1024 * 1024:
+        if not image:
+            return image
+        if image.size > 5 * 1024 * 1024:
             raise forms.ValidationError('A imagem de referência deve ter no máximo 5 MB.')
+        image_format = str(getattr(getattr(image, 'image', None), 'format', '')).upper()
+        if image_format not in {'JPEG', 'PNG', 'WEBP'}:
+            raise forms.ValidationError('Envie uma imagem JPG, PNG ou WebP válida.')
+        width = getattr(getattr(image, 'image', None), 'width', 0)
+        height = getattr(getattr(image, 'image', None), 'height', 0)
+        if not width or not height or width * height > 25_000_000:
+            raise forms.ValidationError('A imagem de referência é grande demais para ser processada com segurança.')
         return image
 
     def clean(self):
@@ -347,4 +356,35 @@ class CakeDesignForm(forms.Form):
             option = cleaned.get(field)
             if option and (not option.active or option.kind != kind):
                 self.add_error(field, 'Esta opção não está disponível para esta etapa.')
+        primary = cleaned.get('primary_filling')
+        secondary = cleaned.get('secondary_filling')
+        if primary and secondary and primary.pk == secondary.pk:
+            self.add_error('secondary_filling', 'Escolha um segundo recheio diferente ou selecione “sem segundo recheio”.')
         return cleaned
+
+
+class PrivacyRequestForm(forms.ModelForm):
+    confirmation = forms.BooleanField(
+        label='Confirmo que sou o titular dos dados ou tenho autorização para fazer esta solicitação.',
+        error_messages={'required': 'Confirme que você pode fazer esta solicitação.'},
+    )
+
+    class Meta:
+        model = DataSubjectRequest
+        fields = ('email', 'request_type', 'details')
+        widgets = {
+            'email': forms.EmailInput(attrs={'autocomplete': 'email', 'placeholder': 'voce@email.com'}),
+            'details': forms.Textarea(attrs={'rows': 5, 'maxlength': 1200, 'placeholder': 'Conte o que você precisa. Não envie senha, cartão ou documento neste campo.'}),
+        }
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        if user and user.is_authenticated and user.email:
+            self.fields['email'].initial = user.email
+            self.fields['email'].widget.attrs['readonly'] = True
+
+    def clean_email(self):
+        if self.user and self.user.is_authenticated and self.user.email:
+            return self.user.email.strip().lower()
+        return self.cleaned_data['email'].strip().lower()

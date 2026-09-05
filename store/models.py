@@ -248,6 +248,43 @@ class Message(TimeStamped):
     read_at=models.DateTimeField(null=True,blank=True)
     class Meta: ordering=['created_at']
 
+
+class DataSubjectRequest(TimeStamped):
+    """A tracked, human-reviewed channel for LGPD data-subject requests."""
+    TYPES = [
+        ('access', 'Acesso ou cópia dos dados'),
+        ('correction', 'Correção de dados'),
+        ('deletion', 'Eliminação ou anonimização'),
+        ('portability', 'Portabilidade'),
+        ('consent', 'Revogação de consentimento'),
+        ('information', 'Informações sobre tratamento'),
+    ]
+    STATUSES = [
+        ('new', 'Nova'),
+        ('review', 'Em análise'),
+        ('waiting', 'Aguardando confirmação'),
+        ('resolved', 'Concluída'),
+        ('rejected', 'Não aplicável'),
+    ]
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='data_subject_requests')
+    email = models.EmailField()
+    request_type = models.CharField(max_length=20, choices=TYPES)
+    details = models.TextField(max_length=1200, blank=True)
+    status = models.CharField(max_length=16, choices=STATUSES, default='new', db_index=True)
+    resolution_note = models.TextField(max_length=1200, blank=True, help_text='Somente equipe interna.')
+    resolved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='resolved_data_subject_requests')
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['status', '-created_at']
+        indexes = [models.Index(fields=['status', 'created_at'])]
+        verbose_name = 'Solicitação de dados (LGPD)'
+        verbose_name_plural = 'Solicitações de dados (LGPD)'
+
+    def __str__(self):
+        return f'{self.get_request_type_display()} · {self.email}'
+
 class Promotion(TimeStamped):
     AUDIENCES=[('all','Todos'),('retail','Clientes'),('cafe','Cafeterias'),('event','Eventos'),('loyal','Clientes recorrentes')]
     name=models.CharField(max_length=120)

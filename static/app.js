@@ -221,4 +221,93 @@
       target.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
     });
   });
+
+  const analyticsId = (body.dataset.analyticsId || '').trim();
+  const cookieBanner = document.querySelector('[data-cookie-banner]');
+  const cookieForm = document.querySelector('[data-cookie-consent-form]');
+  const analyticsCheckbox = document.querySelector('[data-cookie-analytics]');
+  let analyticsEnabled = body.dataset.analyticsConsent === 'granted';
+  let analyticsLoaded = false;
+
+  const analyticsConsent = (enabled) => ({
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: enabled ? 'granted' : 'denied',
+    functionality_storage: 'denied',
+    personalization_storage: 'denied',
+    security_storage: 'granted',
+  });
+  const ensureAnalytics = () => {
+    if (!analyticsId || !analyticsEnabled) return;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function gtag() { window.dataLayer.push(arguments); };
+    window.gtag('consent', 'default', analyticsConsent(false));
+    window.gtag('consent', 'update', analyticsConsent(true));
+    if (!analyticsLoaded) {
+      analyticsLoaded = true;
+      window.gtag('js', new Date());
+      window.gtag('config', analyticsId, {
+        allow_ad_personalization_signals: false,
+        allow_google_signals: false,
+        anonymize_ip: true,
+      });
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(analyticsId)}`;
+      script.dataset.ndAnalytics = 'true';
+      document.head.append(script);
+    }
+  };
+  const syncAnalytics = (enabled) => {
+    analyticsEnabled = Boolean(enabled);
+    body.dataset.analyticsConsent = analyticsEnabled ? 'granted' : 'denied';
+    if (window.gtag) window.gtag('consent', 'update', analyticsConsent(analyticsEnabled));
+    if (analyticsEnabled) ensureAnalytics();
+  };
+  window.ndTrack = (eventName, parameters = {}) => {
+    if (!analyticsEnabled || !window.gtag) return;
+    window.gtag('event', eventName, parameters);
+  };
+  const saveCookieChoice = async (enabled) => {
+    if (!cookieForm) return false;
+    const token = cookieForm.querySelector('[name="csrfmiddlewaretoken"]')?.value;
+    if (!token) return false;
+    const bodyData = new URLSearchParams({ analytics: enabled ? '1' : '0' });
+    const response = await fetch(cookieForm.action, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': token, 'X-Requested-With': 'XMLHttpRequest' },
+      body: bodyData.toString(),
+    });
+    if (!response.ok) throw new Error('cookie-preference-failed');
+    syncAnalytics(enabled);
+    if (cookieBanner) cookieBanner.hidden = true;
+    return true;
+  };
+  const handleCookieChoice = async (enabled) => {
+    try {
+      await saveCookieChoice(enabled);
+    } catch (_) {
+      const note = cookieBanner?.querySelector('[data-cookie-options]');
+      if (note) {
+        note.hidden = false;
+        note.insertAdjacentHTML('beforeend', '<p class="cookie-error" role="alert">Não foi possível salvar sua escolha agora. Tente novamente.</p>');
+      }
+    }
+  };
+  if (analyticsId) {
+    if (analyticsEnabled) ensureAnalytics();
+    document.querySelectorAll('[data-cookie-accept]').forEach((button) => button.addEventListener('click', () => handleCookieChoice(true)));
+    document.querySelectorAll('[data-cookie-reject]').forEach((button) => button.addEventListener('click', () => handleCookieChoice(false)));
+    document.querySelectorAll('[data-cookie-customize], [data-cookie-open]').forEach((button) => button.addEventListener('click', () => {
+      if (!cookieBanner) return;
+      cookieBanner.hidden = false;
+      const options = cookieBanner.querySelector('[data-cookie-options]');
+      if (options) options.hidden = false;
+      if (analyticsCheckbox) analyticsCheckbox.checked = analyticsEnabled;
+      options?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'nearest' });
+    }));
+    document.querySelectorAll('[data-cookie-save]').forEach((button) => button.addEventListener('click', () => handleCookieChoice(Boolean(analyticsCheckbox?.checked))));
+  }
 })();

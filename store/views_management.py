@@ -47,6 +47,7 @@ from .models import (
     Category,
     Conversation,
     CustomerProfile,
+    DataSubjectRequest,
     DeliveryRegion,
     DeliveryRoute,
     EventQuote,
@@ -136,6 +137,10 @@ def _operations_context(start, end):
         .prefetch_related('items__product', 'messages__sender', 'status_history')
         .order_by('-created_at')[:40]
     )
+    privacy_requests = list(
+        DataSubjectRequest.objects.select_related('requester', 'resolved_by')
+        .order_by('status', '-created_at')[:40]
+    )
 
     regions = list(DeliveryRegion.objects.order_by('-active', 'name'))
     routes = list(DeliveryRoute.objects.prefetch_related('regions').order_by('-active', 'name'))
@@ -198,6 +203,9 @@ def _operations_context(start, end):
         'active_cafes': sum(1 for cafe in cafes if cafe.approved and cafe.active),
         'events': events,
         'new_events': sum(1 for event in events if event.status in {'new', 'review'}),
+        'privacy_requests': privacy_requests,
+        'pending_privacy_requests': sum(1 for item in privacy_requests if item.status in {'new', 'review', 'waiting'}),
+        'privacy_status_choices': DataSubjectRequest.STATUSES,
         'event_status_choices': EventQuote.STATUSES,
         'regions': regions,
         'routes': routes,
@@ -524,6 +532,31 @@ def management_conversation_toggle(request):
     conversation.save(update_fields=['closed', 'updated_at'])
     messages.success(request, 'Conversa reaberta.' if not conversation.closed else 'Conversa encerrada.')
     return _management_redirect('messages')
+
+
+@_staff_otp_guard
+@require_POST
+@ratelimit(key='user', rate='30/m', method='POST', block=True)
+def management_privacy_request_update(request):
+    item = get_object_or_404(DataSubjectRequest, pk=request.POST.get('request_id'))
+    status = request.POST.get('status')
+    if status not in dict(DataSubjectRequest.STATUSES):
+        messages.error(request, 'Status de solicitação de dados inválido.')
+        return _management_redirect('privacy')
+    item.status = status
+    item.resolution_note = (request.POST.get('resolution_note') or '').strip()[:1200]
+    update_fields = ['status', 'resolution_note', 'updated_at']
+    if status in {'resolved', 'rejected'}:
+        item.resolved_by = request.user
+        item.resolved_at = timezone.now()
+        update_fields.extend(['resolved_by', 'resolved_at'])
+    else:
+        item.resolved_by = None
+        item.resolved_at = None
+        update_fields.extend(['resolved_by', 'resolved_at'])
+    item.save(update_fields=update_fields)
+    messages.success(request, 'Solicitação de dados atualizada e registrada para acompanhamento interno.')
+    return _management_redirect('privacy')
 
 
 @_staff_otp_guard

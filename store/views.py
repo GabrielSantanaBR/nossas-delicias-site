@@ -103,13 +103,55 @@ def catalog(request):
     return render(request, 'store/catalog.html', {'categories': categories, 'order_type': order_type, 'favorite_ids': favorite_ids})
 
 
+_CAKE_DRAFT_SESSION_KEY = 'cake_studio_draft'
+_CAKE_DRAFT_FIELDS = (
+    'dough', 'primary_filling', 'secondary_filling', 'complement', 'frosting',
+    'decoration_style', 'guest_count', 'occasion', 'event_date', 'address',
+    'decoration_notes', 'notes',
+)
+
+
+def _cake_draft_from_cleaned_data(data):
+    """Keep a short-lived, server-side draft while a visitor signs in.
+
+    The reference image is intentionally excluded: uploaded files are not
+    persisted before the person has authenticated and must be selected again.
+    """
+    draft = {}
+    for field in _CAKE_DRAFT_FIELDS:
+        value = data.get(field)
+        if hasattr(value, 'pk'):
+            value = str(value.pk)
+        elif hasattr(value, 'isoformat'):
+            value = value.isoformat()
+        if value not in (None, ''):
+            draft[field] = value
+        elif field in {'secondary_filling', 'complement'}:
+            draft[field] = ''
+    return draft
+
+
+def _cake_draft_initial(request):
+    draft = request.session.get(_CAKE_DRAFT_SESSION_KEY)
+    return draft if isinstance(draft, dict) else {}
+
+
 @ratelimit(key='ip', rate='10/d', method='POST', block=True)
 def cake_studio(request):
-    form = CakeDesignForm(request.POST or None, request.FILES or None)
+    initial = _cake_draft_initial(request) if request.method == 'GET' else None
+    form = CakeDesignForm(request.POST or None, request.FILES or None, initial=initial)
     if request.method == 'POST':
         if not request.user.is_authenticated:
-            messages.info(request, 'Entre na sua conta para enviar a composição do bolo.')
-            return redirect(f"{reverse('login')}?next={reverse('cake_studio')}")
+            if not form.is_valid():
+                messages.error(request, 'Revise os campos destacados antes de entrar para enviar a composição.')
+            else:
+                request.session[_CAKE_DRAFT_SESSION_KEY] = _cake_draft_from_cleaned_data(form.cleaned_data)
+                request.session.modified = True
+                if request.FILES.get('reference_image'):
+                    messages.info(request, 'Sua composição foi guardada temporariamente. Depois de entrar, escolha a imagem de referência novamente por segurança.')
+                else:
+                    messages.info(request, 'Sua composição foi guardada temporariamente. Entre para enviá-la à equipe.')
+                return redirect(f"{reverse('login')}?next={reverse('cake_studio')}")
         if form.is_valid():
             data = form.cleaned_data
             selected = {
@@ -161,6 +203,7 @@ def cake_studio(request):
                     quantity=1,
                 )
                 quote.status_history.create(status='new', changed_by=request.user, note='Composição criada no estúdio de bolos.')
+            request.session.pop(_CAKE_DRAFT_SESSION_KEY, None)
             messages.success(request, 'Seu bolo foi enviado para orçamento. Acompanhe a proposta e converse com a equipe por aqui.')
             return redirect('event_quote_detail', public_id=quote.public_id)
     option_groups = {

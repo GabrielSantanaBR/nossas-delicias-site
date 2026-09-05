@@ -30,7 +30,7 @@
   {% block head %}{% endblock %}
   {% block late_head %}{% endblock %}
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% block body_class %}{% endblock %}" data-analytics-id="{{ privacy_analytics_id }}" data-analytics-consent="{{ privacy_consent_state }}">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
   <div class="scroll-progress" aria-hidden="true"><span data-scroll-progress></span></div>
   <div class="ambient-orb ambient-orb-one" aria-hidden="true"></div>
@@ -70,11 +70,20 @@
         <p itemprop="description">Confeitaria artesanal para encomendas, cafeterias e eventos.</p>
       </div>
       <div><span class="footer-label">Explorar</span><a href="{% url 'home' %}#sobre">Sobre nós</a><a href="{% url 'catalog' %}">Cardápio</a><a href="{% url 'cake_studio' %}">Monte seu bolo</a><a href="{% url 'event_portal' %}">Eventos</a><a href="{% url 'cafe_portal' %}#cafeterias">Cafeterias</a></div>
-      <div><span class="footer-label">Sua conta</span>{% if user.is_authenticated %}<a href="{% url 'account' %}">Minha conta</a><a href="{% url 'cart' %}">Sacola</a>{% else %}<a href="{% url 'login' %}">Entrar</a><a href="{% url 'register' %}">Criar conta</a>{% endif %}</div>
+      <div><span class="footer-label">Sua conta</span>{% if user.is_authenticated %}<a href="{% url 'account' %}">Minha conta</a><a href="{% url 'cart' %}">Sacola</a>{% else %}<a href="{% url 'login' %}">Entrar</a><a href="{% url 'register' %}">Criar conta</a>{% endif %}<a href="{% url 'privacy_notice' %}">Privacidade e cookies</a></div>
       <div class="footer-note"><span class="footer-label">Nossas Delícias</span><p>Produção artesanal, atendimento próximo e doces para diferentes ocasiões.</p></div>
     </div>
     <div class="footer-bottom"><span>© {% now 'Y' %} Nossas Delícias</span><span>Bolos e doces feitos com cuidado.</span></div>
   </footer>{% endblock %}
+
+  {% block privacy_controls %}{% if privacy_analytics_id %}
+  <section class="cookie-banner" data-cookie-banner {% if privacy_consent_state != 'unknown' %}hidden{% endif %} aria-label="Preferências de cookies">
+    <div><span class="eyebrow">Sua privacidade</span><h2>Você decide sobre métricas.</h2><p>Os cookies necessários mantêm o site seguro e funcionando. O Google Analytics só é ativado se você permitir; não usamos seus dados para anúncios personalizados.</p><a href="{% url 'privacy_notice' %}">Ler aviso de privacidade</a></div>
+    <div class="cookie-actions"><button type="button" class="button button-ghost" data-cookie-reject>Usar só o necessário</button><button type="button" class="button button-primary" data-cookie-accept>Permitir métricas</button><button type="button" class="cookie-customize" data-cookie-customize>Personalizar</button></div>
+    <div class="cookie-options" data-cookie-options hidden><label><input type="checkbox" data-cookie-analytics checked> <span><b>Métricas de uso</b><small>Ajuda a entender páginas visitadas e melhorar a experiência de forma agregada. Não inclui publicidade personalizada.</small></span></label><button type="button" class="button button-primary" data-cookie-save>Salvar escolha</button></div>
+  </section>
+  <form data-cookie-consent-form action="{% url 'privacy_cookie_preferences' %}" method="post" hidden>{% csrf_token %}</form>
+  {% endif %}{% endblock %}
 
   <script src="{% static 'app.js' %}" defer></script>
   {% block scripts %}{% endblock %}

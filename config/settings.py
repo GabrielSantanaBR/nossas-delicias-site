@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 import dj_database_url
@@ -73,6 +74,7 @@ TEMPLATES = [{
             'django.template.context_processors.request',
             'django.contrib.auth.context_processors.auth',
             'django.contrib.messages.context_processors.messages',
+            'store.context_processors.privacy',
         ],
     },
 }]
@@ -199,6 +201,12 @@ else:
 
 MERCADO_PAGO_ACCESS_TOKEN = os.environ.get('MERCADO_PAGO_ACCESS_TOKEN', '')
 MERCADO_PAGO_WEBHOOK_SECRET = os.environ.get('MERCADO_PAGO_WEBHOOK_SECRET', '')
+
+GOOGLE_ANALYTICS_MEASUREMENT_ID = os.environ.get('GOOGLE_ANALYTICS_MEASUREMENT_ID', '').strip().upper()
+if GOOGLE_ANALYTICS_MEASUREMENT_ID and not re.fullmatch(r'G-[A-Z0-9]{4,32}', GOOGLE_ANALYTICS_MEASUREMENT_ID):
+    raise ImproperlyConfigured('GOOGLE_ANALYTICS_MEASUREMENT_ID precisa ser um ID GA4 no formato G-XXXX.')
+PRIVACY_POLICY_VERSION = os.environ.get('PRIVACY_POLICY_VERSION', '2026-09-05').strip() or '2026-09-05'
+COOKIE_CONSENT_MAX_AGE = 180 * 24 * 60 * 60
 
 EMAIL_BACKEND = os.environ.get(
     'EMAIL_BACKEND',

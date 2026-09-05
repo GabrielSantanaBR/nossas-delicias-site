@@ -1,5 +1,5 @@
 from django.urls import path
-from . import health, seo, views, views_finance, views_management
+from . import health, seo, views, views_finance, views_management, views_privacy
 
 urlpatterns=[
     path('',views.home,name='home'),
@@ -10,6 +10,10 @@ urlpatterns=[
     path('llms-full.txt',seo.llms_full,name='llms_full_txt'),
     path('cardapio/',views.catalog,name='catalog'),
     path('monte-seu-bolo/',views.cake_studio,name='cake_studio'),
+    path('privacidade/',views_privacy.privacy_notice,name='privacy_notice'),
+    path('privacidade/cookies/',views_privacy.privacy_cookie_preferences,name='privacy_cookie_preferences'),
+    path('privacidade/solicitacoes/',views_privacy.privacy_request_create,name='privacy_request_create'),
+    path('privacidade/exportar-meus-dados/',views_privacy.privacy_export,name='privacy_export'),
     path('cadastro/',views.register,name='register'),
     path('minha-conta/',views.account,name='account'),
     path('minha-conta/perfil/',views.account_profile_update,name='account_profile_update'),
@@ -42,6 +46,7 @@ urlpatterns=[
     path('gestao/mensagens/<int:conversation_id>/',views_management.management_conversation_thread,name='management_conversation_thread'),
     path('gestao/mensagens/lida/',views_management.management_conversation_read,name='management_conversation_read'),
     path('gestao/mensagens/alternar/',views_management.management_conversation_toggle,name='management_conversation_toggle'),
+    path('gestao/privacidade/atualizar/',views_management.management_privacy_request_update,name='management_privacy_request_update'),
     path('gestao/cafeterias/acao/',views_management.management_cafe_action,name='management_cafe_action'),
     path('gestao/eventos/status/',views_management.management_event_status,name='management_event_status'),
     path('gestao/eventos/mensagem/',views_management.management_event_message_send,name='management_event_message_send'),

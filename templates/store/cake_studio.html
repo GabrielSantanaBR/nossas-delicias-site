@@ -11,7 +11,9 @@
   <div class="cake-builder-main">
     <header class="cake-builder-head" data-reveal><div><span class="eyebrow">Composição guiada</span><h2>Monte camada por camada.</h2></div><div class="cake-progress" aria-label="Progresso da composição"><span data-progress-label>Etapa 1 de 4</span><div><i data-progress-bar></i></div></div></header>
     {% if form.non_field_errors %}<div class="cake-form-alert" role="alert">{{ form.non_field_errors }}</div>{% endif %}
-    <form method="post" enctype="multipart/form-data" class="cake-form" data-cake-form novalidate>{% csrf_token %}
+    <form method="post" enctype="multipart/form-data" class="cake-form" data-cake-form novalidate>
+      {% csrf_token %}
+      <div class="cake-form-alert" data-cake-validation role="alert" aria-live="assertive" hidden></div>
       <nav class="cake-steps" aria-label="Etapas do configurador">
         <button type="button" class="is-active" data-step-tab="1" aria-current="step"><i>01</i><span>Base</span><small>Massa e tamanho</small></button>
         <button type="button" data-step-tab="2"><i>02</i><span>Interior</span><small>Recheios</small></button>
@@ -44,10 +46,11 @@
         <div class="cake-inline-fields"><label><span>Dia da festa ou entrega</span>{{ form.event_date }}{{ form.event_date.errors }}</label><label><span>Local de entrega</span>{{ form.address }}{{ form.address.errors }}</label></div>
         <label class="cake-upload"><span class="cake-upload-icon">↥</span><span><b>Imagem de referência</b><small>JPG, PNG ou WebP, até 5 MB. Opcional.</small></span>{{ form.reference_image }}{{ form.reference_image.errors }}<em data-file-name>Nenhum arquivo escolhido</em></label>
         <label class="cake-text-field"><span>Observações gerais</span>{{ form.notes }}{{ form.notes.errors }}</label>
-        <div class="cake-submit-card"><div><span>Próximo passo</span><h4>A equipe transforma sua composição em proposta.</h4><p>Você acompanha o orçamento, conversa sobre ajustes e aceita somente quando tudo estiver certo.</p></div>{% if user.is_authenticated %}<button class="cake-submit" type="submit"><span>Enviar para orçamento</span><i>→</i></button>{% else %}<a class="cake-submit" href="{% url 'login' %}?next={% url 'cake_studio' %}"><span>Entrar para enviar</span><i>→</i></a>{% endif %}</div>
+        <div class="cake-submit-card"><div><span>Próximo passo</span><h4>A equipe transforma sua composição em proposta.</h4><p>Você acompanha o orçamento, conversa sobre ajustes e aceita somente quando tudo estiver certo.</p>{% if not user.is_authenticated %}<small class="cake-login-note">Ao entrar, preservamos temporariamente sua composição. A imagem de referência deverá ser escolhida novamente.</small>{% endif %}</div>{% if user.is_authenticated %}<button class="cake-submit" type="submit"><span>Enviar para orçamento</span><i>→</i></button>{% else %}<button class="cake-submit" type="submit" name="sign_in_to_send" value="1"><span>Entrar para enviar</span><i>→</i></button>{% endif %}</div>
       </section>
 
       <footer class="cake-form-nav"><button type="button" data-step-prev disabled>← Voltar</button><span data-step-count>1 / 4</span><button type="button" data-step-next>Continuar →</button></footer>
+      <p class="cake-draft-note">Enquanto você monta, os sabores escolhidos ficam neste navegador. Endereço, observações e imagens não são gravados nele.</p>
     </form>
   </div>
 

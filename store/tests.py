@@ -287,6 +287,25 @@ class CakeStudioTests(TestCase):
         self.assertRedirects(response, '/login/?next=/monte-seu-bolo/', fetch_redirect_response=False)
         self.assertFalse(CakeDesign.objects.exists())
 
+    def test_anonymous_customer_keeps_a_valid_composition_through_login(self):
+        response = self.client.post('/monte-seu-bolo/', self.payload())
+        self.assertEqual(response.status_code, 302)
+        draft = self.client.session['cake_studio_draft']
+        self.assertEqual(draft['dough'], str(self.dough.pk))
+        self.assertNotIn('reference_image', draft)
+
+        self.client.login(username='boleira', password='StrongPassword-123!')
+        response = self.client.get('/monte-seu-bolo/')
+        self.assertEqual(response.context['form']['dough'].value(), str(self.dough.pk))
+        self.assertEqual(response.context['form']['event_date'].value(), self.payload()['event_date'].isoformat())
+
+    def test_cake_builder_rejects_the_same_filling_twice(self):
+        self.client.login(username='boleira', password='StrongPassword-123!')
+        response = self.client.post('/monte-seu-bolo/', self.payload(secondary_filling=self.filling.pk))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Escolha um segundo recheio diferente')
+        self.assertFalse(CakeDesign.objects.exists())
+
 
 class TransactionBoundaryTests(TransactionTestCase):
     reset_sequences = True
