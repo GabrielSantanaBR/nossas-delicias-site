@@ -674,3 +674,130 @@ body {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Footer identity is an inline lockup, never a full-size source image. */
+.site-footer .footer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(28px, 4vw, 58px);
+}
+.site-footer .footer-brand { max-width: 330px; }
+.footer-symbol-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  max-width: 100%;
+  color: #fffaf5;
+  text-decoration: none;
+}
+.footer-symbol-lockup > img {
+  display: block;
+  flex: 0 0 auto;
+  width: 64px !important;
+  height: 64px !important;
+  max-width: 64px !important;
+  padding: 6px;
+  object-fit: contain;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 50%;
+  background: rgba(255,248,240,.1);
+}
+.footer-symbol-lockup > span { display: grid; gap: 2px; min-width: 0; }
+.footer-symbol-lockup strong { font: 600 24px/1 "Playfair Display", Georgia, serif; letter-spacing: -.035em; }
+.footer-symbol-lockup small { color: #e7ae93; font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.site-footer .footer-brand p { margin: 17px 0 0; line-height: 1.65; }
+.site-footer .footer-grid > div:not(.footer-brand) { gap: 10px; }
+.site-footer .footer-grid a { text-decoration: none; }
+.site-footer .footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 36px;
+  padding-top: 18px;
+}
+
+@media (max-width: 1040px) {
+  .site-footer .footer-grid { grid-template-columns: minmax(220px, 1.4fr) 1fr 1fr; }
+  .site-footer .footer-note { display: none !important; }
+}
+
+@media (max-width: 760px) {
+  .site-footer { padding: 42px 0 24px; }
+  .site-footer .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px 22px; }
+  .site-footer .footer-brand { grid-column: 1 / -1; }
+  .site-footer .footer-bottom { flex-direction: column; gap: 6px; margin-top: 30px; }
+}
+
+@media (max-width: 480px) {
+  .site-footer .footer-grid { grid-template-columns: 1fr; }
+  .site-footer .footer-brand { grid-column: auto; }
+  .footer-symbol-lockup > img { width: 58px !important; height: 58px !important; max-width: 58px !important; }
+}
+
+/* Privacy controls stay compact and readable instead of interrupting the store. */
+.cookie-banner {
+  position: fixed;
+  z-index: 100;
+  right: 22px;
+  bottom: 22px;
+  width: min(510px, calc(100% - 32px));
+  display: grid;
+  gap: 17px;
+  padding: 23px;
+  border: 1px solid rgba(61,31,23,.18);
+  background: #fffaf5;
+  box-shadow: 0 22px 54px rgba(37,18,13,.2);
+}
+.cookie-banner[hidden] { display: none; }
+.cookie-banner h2 { margin: 5px 0 8px; font: 600 30px/1.02 "Playfair Display", Georgia, serif; letter-spacing: -.04em; }
+.cookie-banner p { margin: 0; color: var(--nd-ink-muted); font-size: 12px; line-height: 1.6; }
+.cookie-banner a { color: #93442d; font-size: 11px; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+.cookie-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.cookie-actions .button { min-height: 38px; padding-inline: 12px; }
+.cookie-customize { padding: 6px 0; border: 0; background: transparent; color: #93442d; font: 800 10px "DM Sans", sans-serif; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.cookie-options { display: grid; gap: 13px; padding-top: 15px; border-top: 1px solid var(--nd-line); }
+.cookie-options label { display: flex; align-items: flex-start; gap: 10px; color: #4d3128; font-size: 11px; cursor: pointer; }
+.cookie-options input { margin-top: 3px; accent-color: var(--nd-caramel); }
+.cookie-options b,.cookie-options small { display: block; }
+.cookie-options small { margin-top: 3px; color: var(--nd-ink-muted); line-height: 1.45; }
+.cookie-error { color: #ab342e !important; font-weight: 700; }
+.privacy-page { width: min(calc(100% - 48px), 1080px); margin: 0 auto; padding: clamp(64px, 9vw, 118px) 0; }
+.privacy-hero { max-width: 790px; padding-bottom: clamp(45px, 7vw, 82px); }
+.privacy-hero h1,.privacy-card h2,.privacy-request h2 { margin: 9px 0 16px; font: 600 clamp(45px, 6vw, 78px)/.97 "Playfair Display", Georgia, serif; letter-spacing: -.052em; }
+.privacy-hero p { max-width: 720px; margin: 0; color: var(--nd-ink-muted); font-size: 16px; line-height: 1.72; }
+.privacy-hero .privacy-version { margin-top: 16px; font-size: 11px; }
+.privacy-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; border: 1px solid var(--nd-line); background: var(--nd-line); }
+.privacy-card { min-height: 300px; padding: clamp(25px, 4vw, 45px); background: #fffaf6; }
+.privacy-card-wide { grid-column: 1 / -1; min-height: 0; background: #f0dfd3; }
+.privacy-card h2 { font-size: clamp(31px, 4vw, 48px); }
+.privacy-card p,.privacy-card li { color: var(--nd-ink-muted); font-size: 13px; line-height: 1.68; }
+.privacy-card ul { display: grid; gap: 10px; margin: 18px 0 0; padding: 0; list-style: none; }
+.privacy-card li { padding-left: 16px; position: relative; }
+.privacy-card li::before { content: "•"; position: absolute; left: 0; color: var(--nd-caramel); }
+.privacy-card li b { color: var(--nd-cocoa); }
+.privacy-muted { color: var(--nd-ink-muted); }
+.privacy-export { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 22px; }
+.privacy-export small { color: var(--nd-ink-muted); font-size: 10px; line-height: 1.5; }
+.privacy-request { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(30px, 7vw, 88px); margin-top: 1px; padding: clamp(38px, 7vw, 76px); background: var(--nd-cocoa); color: #fffaf5; }
+.privacy-request h2 { font-size: clamp(37px, 4.8vw, 60px); }
+.privacy-request p { margin: 0; color: rgba(255,250,245,.7); font-size: 13px; line-height: 1.68; }
+.privacy-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-content: start; }
+.privacy-form label { display: grid; gap: 7px; }
+.privacy-form label > span { color: #f1c4ae; font-size: 9px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.privacy-form input:not([type=checkbox]),.privacy-form select,.privacy-form textarea { width: 100%; min-height: 45px; padding: 10px 11px; border: 1px solid rgba(255,255,255,.22); border-radius: 4px; background: #fffaf6; color: var(--nd-cocoa); font: 12px "DM Sans", sans-serif; }
+.privacy-form textarea { min-height: 120px; resize: vertical; }
+.privacy-form .privacy-wide { grid-column: 1 / -1; }
+.privacy-check { grid-template-columns: auto 1fr; align-items: flex-start; color: rgba(255,250,245,.86); font-size: 11px; line-height: 1.45; cursor: pointer; }
+.privacy-check input { margin-top: 2px; accent-color: var(--nd-caramel); }
+.privacy-check > span { color: rgba(255,250,245,.86) !important; font-size: 11px !important; font-weight: 500 !important; letter-spacing: 0 !important; text-transform: none !important; }
+.privacy-form .button { justify-self: start; }
+
+@media (max-width: 760px) {
+  .cookie-banner { right: 12px; bottom: 12px; width: calc(100% - 24px); }
+  .privacy-page { width: min(calc(100% - 24px), 1080px); }
+  .privacy-layout,.privacy-request,.privacy-form { grid-template-columns: 1fr; }
+  .privacy-card-wide { grid-column: auto; }
+  .privacy-request { gap: 28px; }
+}

@@ -10,24 +10,55 @@
   const count = root.querySelector('[data-step-count]');
   const progressLabel = root.querySelector('[data-progress-label]');
   const progressBar = root.querySelector('[data-progress-bar]');
+  const validationAlert = root.querySelector('[data-cake-validation]');
   const stage = root.querySelector('.cake-stage');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const draftKey = 'nd-cake-builder-selections-v1';
   let current = 1;
 
-  const requiredInStep = (step) => [...sections[step - 1].querySelectorAll('[required]')];
+  const requiredInStep = (step) => [...sections[step - 1].querySelectorAll('[required]:not([disabled])')];
+  const announceValidation = (message = '') => {
+    if (!validationAlert) return;
+    validationAlert.hidden = !message;
+    validationAlert.textContent = message;
+  };
+  const attentionFor = (input) => input.closest('.cake-choice-field, label, .cake-inline-fields') || input;
   const validateStep = (step) => {
-    const invalid = requiredInStep(step).find((input) => !input.checkValidity());
-    if (!invalid) return true;
-    invalid.reportValidity();
-    const field = invalid.closest('.cake-choice-field, label');
+    const inputs = requiredInStep(step);
+    const radioNames = [...new Set(inputs.filter((input) => input.type === 'radio').map((input) => input.name))];
+    const missingRadio = radioNames
+      .map((name) => inputs.find((input) => input.name === name))
+      .find((input) => !inputs.some((candidate) => candidate.name === input.name && candidate.checked));
+    const invalid = missingRadio || inputs.find((input) => input.type !== 'radio' && !input.checkValidity());
+    if (!invalid) {
+      announceValidation();
+      return true;
+    }
+    if (!missingRadio) invalid.reportValidity();
+    const field = attentionFor(invalid);
     field?.classList.add('needs-attention');
     window.setTimeout(() => field?.classList.remove('needs-attention'), 800);
+    announceValidation(missingRadio ? 'Escolha uma opção para continuar esta etapa.' : 'Revise o campo destacado para continuar.');
+    field?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
     return false;
+  };
+
+  const firstInvalidUntil = (target) => {
+    for (let step = 1; step < target; step += 1) {
+      if (!validateStep(step)) return step;
+    }
+    return null;
   };
 
   const showStep = (step, validateForward = true) => {
     const bounded = Math.max(1, Math.min(step, sections.length));
-    if (validateForward && bounded > current && !validateStep(current)) return;
+    if (validateForward && bounded > current) {
+      const invalidStep = firstInvalidUntil(bounded);
+      if (invalidStep) {
+        if (invalidStep !== current) showStep(invalidStep, false);
+        return;
+      }
+    }
     current = bounded;
     sections.forEach((section, index) => {
       const active = index + 1 === current;
@@ -58,6 +89,38 @@
     showStep(target, target > current);
   }));
 
+  const saveBrowserDraft = () => {
+    try {
+      const draft = {};
+      root.querySelectorAll('[data-cake-choice]:checked, [data-decoration]:checked').forEach((input) => {
+        draft[input.name] = input.value;
+      });
+      const guestCount = form?.querySelector('[name="guest_count"]');
+      if (guestCount?.value) draft.guest_count = guestCount.value;
+      window.sessionStorage.setItem(draftKey, JSON.stringify(draft));
+    } catch (_) {
+      // Storage is a convenience only; the server remains authoritative.
+    }
+  };
+
+  const restoreBrowserDraft = () => {
+    if (!form || form.querySelector('[data-cake-choice]:checked, [data-decoration]:checked')) return;
+    try {
+      const draft = JSON.parse(window.sessionStorage.getItem(draftKey) || '{}');
+      Object.entries(draft).forEach(([name, value]) => {
+        const input = form.querySelector(`[name="${CSS.escape(name)}"][value="${CSS.escape(String(value))}"]`);
+        if (input) {
+          input.checked = true;
+          syncSummary(input);
+        }
+      });
+      const guestCount = form.querySelector('[name="guest_count"]');
+      if (guestCount && draft.guest_count && !guestCount.value) guestCount.value = draft.guest_count;
+    } catch (_) {
+      // Private browser settings may disable sessionStorage.
+    }
+  };
+
   const summaryDefaults = {
     dough: 'Escolha uma massa', primary_filling: 'Escolha o recheio',
     secondary_filling: 'Opcional', complement: 'Opcional',
@@ -80,8 +143,19 @@
     requestAnimationFrame(() => stage.classList.add('is-changing'));
   };
   root.querySelectorAll('[data-cake-choice],[data-decoration]').forEach((input) => {
-    input.addEventListener('change', () => syncSummary(input));
+    input.addEventListener('change', () => {
+      syncSummary(input);
+      saveBrowserDraft();
+      announceValidation();
+    });
     if (input.checked) syncSummary(input);
+  });
+  form?.querySelectorAll('input, textarea').forEach((input) => {
+    input.addEventListener('input', () => {
+      input.removeAttribute('aria-invalid');
+      announceValidation();
+      if (input.name === 'guest_count') saveBrowserDraft();
+    });
   });
 
   const file = form?.querySelector('input[type="file"]');
@@ -105,6 +179,7 @@
     }
   });
 
+  restoreBrowserDraft();
   const firstError = sections.findIndex((section) => section.querySelector('.errorlist'));
   showStep(firstError >= 0 ? firstError + 1 : 1, false);
 })();

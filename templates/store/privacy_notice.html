@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Privacidade e cookies | Nossas Delícias{% endblock %}
+{% block meta_description %}Como a Nossas Delícias trata dados de clientes, pedidos, cookies e métricas, e como solicitar seus direitos de privacidade.{% endblock %}
+{% block content %}
+<section class="privacy-page">
+  <header class="privacy-hero" data-reveal>
+    <span class="eyebrow">Privacidade e dados</span>
+    <h1>Clareza para você decidir.</h1>
+    <p>Usamos os dados estritamente para atender pedidos, manter sua conta segura, conversar sobre encomendas e cumprir obrigações aplicáveis. Métricas de navegação são opcionais.</p>
+    <p class="privacy-version">Aviso atualizado em {{ privacy_policy_version }}.</p>
+  </header>
+
+  <div class="privacy-layout">
+    <article class="privacy-card" data-reveal>
+      <span class="eyebrow">O que tratamos</span>
+      <h2>Dados para fazer seu pedido acontecer.</h2>
+      <ul>
+        <li><b>Conta e contato:</b> nome, e-mail, telefone e preferências que você informar.</li>
+        <li><b>Pedido e entrega:</b> itens, endereço, data, conversa e observações necessárias para produzir e entregar.</li>
+        <li><b>Pagamento:</b> status e identificadores de confirmação. Não armazenamos número completo de cartão.</li>
+        <li><b>Operação:</b> dados mínimos para atendimento, prevenção a fraude, suporte e obrigações fiscais/legais.</li>
+      </ul>
+    </article>
+    <article class="privacy-card" data-reveal>
+      <span class="eyebrow">Cookies e métricas</span>
+      <h2>Necessários primeiro. Analytics, só se você quiser.</h2>
+      <p>Cookies necessários ajudam a manter sessão, segurança e proteção contra abuso. Se ativado por você, o Google Analytics mede o uso agregado do site para melhorar páginas e jornadas. Não habilitamos sinais do Google nem personalização de anúncios.</p>
+      {% if privacy_analytics_id %}<button class="button button-primary" type="button" data-cookie-open>Revisar preferência de métricas</button>{% else %}<p class="privacy-muted">Métricas opcionais não estão ativas neste momento.</p>{% endif %}
+    </article>
+    <article class="privacy-card privacy-card-wide" data-reveal>
+      <span class="eyebrow">Seus direitos</span>
+      <h2>Peça acesso, correção, cópia ou revisão.</h2>
+      <p>Você pode solicitar confirmação de tratamento, acesso/cópia, correção, anonimização/eliminação quando aplicável, portabilidade, informações sobre compartilhamentos e revisão de consentimento. Alguns registros podem precisar ser preservados por prazos legais, fiscais ou para defesa de direitos; por isso cada solicitação passa por validação de identidade e análise humana.</p>
+      {% if user.is_authenticated %}<form method="post" action="{% url 'privacy_export' %}" class="privacy-export">{% csrf_token %}<button class="button button-ghost">Baixar uma cópia dos meus dados</button><small>O arquivo é gerado somente para a conta conectada e não inclui dados de pagamento sensíveis.</small></form>{% else %}<p class="privacy-muted">Entre na sua conta para baixar uma cópia direta dos dados vinculados a ela.</p>{% endif %}
+    </article>
+  </div>
+
+  <section class="privacy-request" id="solicitacao" data-reveal>
+    <div><span class="eyebrow">Canal de privacidade</span><h2>Enviar uma solicitação.</h2><p>Explique o que precisa. Não envie senha, código de acesso, cartão ou documento por este formulário. A equipe pedirá somente as confirmações necessárias para proteger sua identidade.</p></div>
+    <form method="post" action="{% url 'privacy_request_create' %}" class="privacy-form">
+      {% csrf_token %}
+      {% if request_form.non_field_errors %}<div class="form-errors" role="alert">{{ request_form.non_field_errors }}</div>{% endif %}
+      <label{% if request_form.email.errors %} class="has-error"{% endif %}><span>{{ request_form.email.label }}</span>{{ request_form.email }}{% for error in request_form.email.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</label>
+      <label{% if request_form.request_type.errors %} class="has-error"{% endif %}><span>Tipo de solicitação</span>{{ request_form.request_type }}{% for error in request_form.request_type.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</label>
+      <label class="privacy-wide{% if request_form.details.errors %} has-error{% endif %}"><span>Detalhes (opcional)</span>{{ request_form.details }}{% for error in request_form.details.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</label>
+      <label class="privacy-check privacy-wide">{{ request_form.confirmation }}<span>{{ request_form.confirmation.label }}</span></label>
+      <button class="button button-primary privacy-wide" type="submit">Registrar solicitação</button>
+    </form>
+  </section>
+</section>
+{% endblock %}

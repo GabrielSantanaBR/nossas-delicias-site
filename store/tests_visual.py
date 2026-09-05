@@ -56,6 +56,8 @@ class PublicVisualSmokeTests(TestCase):
         ):
             with self.subTest(selector=selector):
                 self.assertIn(selector, css)
+        self.assertIn('.footer-symbol-lockup > img', css)
+        self.assertIn('width: 64px !important', css)
 
     def test_catalogue_showcase_assets_exist_and_demo_media_never_breaks(self):
         showcase = Path(settings.BASE_DIR) / 'static' / 'images' / 'showcase' / 'catalog'
@@ -182,6 +184,15 @@ class PublicVisualSmokeTests(TestCase):
         self.assertContains(register, 'Ex.: GabrielBezerra!!')
         self.assertContains(register, 'Pode usar letras, números e . @ + - _ !')
         self.assertNotContains(register, 'Obrigatório. 150 caracteres ou menos.')
+
+    def test_cake_builder_exposes_progressive_validation_and_login_preservation(self):
+        response = self.client.get(reverse('cake_studio'))
+        self.assertContains(response, 'data-cake-validation')
+        self.assertContains(response, 'sign_in_to_send')
+        self.assertContains(response, 'imagem de referência deverá ser escolhida novamente')
+        builder_js = (Path(settings.BASE_DIR) / 'static' / 'cake-builder.js').read_text(encoding='utf-8')
+        self.assertIn('firstInvalidUntil', builder_js)
+        self.assertIn('nd-cake-builder-selections-v1', builder_js)
 
     def test_public_brand_and_cafe_slots_render_real_content_when_it_is_added(self):
         BrandProfile.objects.create(

@@ -433,6 +433,21 @@ class MessageAdmin(admin.ModelAdmin):
     readonly_fields = ('body', 'sender', 'conversation', 'created_at', 'read_at')
 
 
+@admin.register(DataSubjectRequest, site=secure_admin_site)
+class DataSubjectRequestAdmin(admin.ModelAdmin):
+    list_display = ('request_type', 'email', 'status', 'requester', 'created_at', 'resolved_at', 'resolved_by')
+    list_filter = ('request_type', 'status')
+    search_fields = ('email', 'requester__username', 'requester__email', 'details', 'resolution_note')
+    readonly_fields = ('public_id', 'requester', 'email', 'request_type', 'details', 'created_at', 'updated_at', 'resolved_at', 'resolved_by')
+
+    def save_model(self, request, obj, form, change):
+        if obj.status in {'resolved', 'rejected'} and not obj.resolved_at:
+            obj.resolved_by = request.user
+            from django.utils import timezone
+            obj.resolved_at = timezone.now()
+        super().save_model(request, obj, form, change)
+
+
 @admin.register(Favorite, site=secure_admin_site)
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('user', 'product', 'created_at')

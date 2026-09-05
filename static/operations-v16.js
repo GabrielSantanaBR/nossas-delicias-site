@@ -191,7 +191,7 @@
   const commandOpen=document.querySelector('[data-command-open]');
   const commandClose=document.querySelector('[data-command-close]');
   const labels={
-    overview:['Visão geral','Resumo do negócio e operação'],portfolio:['Portfólio & site','Vitrine, produtos e presença pública'],orders:['Pedidos','Fila, status e entregas'],messages:['Mensagens','Atendimento de clientes e parceiros'],cafes:['Cafeterias','Parcerias B2B e faturamento'],events:['Eventos','Orçamentos e pipeline'],logistics:['Logística','Rotas, capacidade e calendário'],data:['Dados & relatórios','Exportação e inteligência'],finance:['Financeiro','Caixa, recebíveis, despesas e lucro'],pricing:['Precificação','Custos, margem e simulador'],production:['Produção & estoque','Ingredientes, fichas e movimentações']
+    overview:['Visão geral','Resumo do negócio e operação'],portfolio:['Portfólio & site','Vitrine, produtos e presença pública'],orders:['Pedidos','Fila, status e entregas'],messages:['Mensagens','Atendimento de clientes e parceiros'],privacy:['Privacidade','Solicitações LGPD e preferências de cookies'],cafes:['Cafeterias','Parcerias B2B e faturamento'],events:['Eventos','Orçamentos e pipeline'],logistics:['Logística','Rotas, capacidade e calendário'],data:['Dados & relatórios','Exportação e inteligência'],finance:['Financeiro','Caixa, recebíveis, despesas e lucro'],pricing:['Precificação','Custos, margem e simulador'],production:['Produção & estoque','Ingredientes, fichas e movimentações']
   };
   let visibleKeys=[];
   let selected=0;
