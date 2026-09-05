@@ -193,6 +193,8 @@ class PublicVisualSmokeTests(TestCase):
         builder_js = (Path(settings.BASE_DIR) / 'static' / 'cake-builder.js').read_text(encoding='utf-8')
         self.assertIn('firstInvalidUntil', builder_js)
         self.assertIn('nd-cake-builder-selections-v1', builder_js)
+        self.assertIn('defaultOptionalChoice', builder_js)
+        self.assertIn('guestCount.defaultValue', builder_js)
 
     def test_public_brand_and_cafe_slots_render_real_content_when_it_is_added(self):
         BrandProfile.objects.create(

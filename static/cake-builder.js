@@ -104,18 +104,26 @@
   };
 
   const restoreBrowserDraft = () => {
-    if (!form || form.querySelector('[data-cake-choice]:checked, [data-decoration]:checked')) return;
+    if (!form) return;
     try {
       const draft = JSON.parse(window.sessionStorage.getItem(draftKey) || '{}');
       Object.entries(draft).forEach(([name, value]) => {
-        const input = form.querySelector(`[name="${CSS.escape(name)}"][value="${CSS.escape(String(value))}"]`);
+        const escapedName = CSS.escape(name);
+        const current = form.querySelector(`[name="${escapedName}"]:checked`);
+        const defaultOptionalChoice = current
+          && current.value === ''
+          && ['secondary_filling', 'complement'].includes(name);
+        if (current && !defaultOptionalChoice) return;
+        const input = form.querySelector(`[name="${escapedName}"][value="${CSS.escape(String(value))}"]`);
         if (input) {
           input.checked = true;
           syncSummary(input);
         }
       });
       const guestCount = form.querySelector('[name="guest_count"]');
-      if (guestCount && draft.guest_count && !guestCount.value) guestCount.value = draft.guest_count;
+      if (guestCount && draft.guest_count && (!guestCount.value || guestCount.value === guestCount.defaultValue)) {
+        guestCount.value = draft.guest_count;
+      }
     } catch (_) {
       // Private browser settings may disable sessionStorage.
     }
